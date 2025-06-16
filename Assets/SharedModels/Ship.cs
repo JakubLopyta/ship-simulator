@@ -8,6 +8,7 @@ using System.Xml;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEditor.Timeline;
+using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -554,26 +555,138 @@ public class Ship : MonoBehaviour, INotifyPropertyChanged, IDisposable
 		}
 	}
 
-	#endregion
-	private TextMeshProUGUI latLongUI;
-	// Start is called once before the first execution of Update after the MonoBehaviour is created
-	void Start()
-    {
-		Model = ModelsFactory.GetModel(null, ModelEnum.classic, this);
-		latLongUI = GameObject.FindGameObjectWithTag("LatLongUI").GetComponent<TextMeshProUGUI>();
-	}
+    #endregion
+    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    public Slider enginePowerSlider;
+    public TMP_InputField enginePowerField;
 
-    // Update is called once per frame
+    public Slider RudderSlider;
+    public TMP_InputField RudderField;
+
+    public TextMeshProUGUI speedText;
+    public TextMeshProUGUI rotText;
+
+    public TextMeshProUGUI cogText;
+    public TextMeshProUGUI hdgText;
+    public TextMeshProUGUI sogText;
+
+    public Button playButton;
+	public Button stopButton;
+	public Button pauseButton;
+	public Button returnButton;
+
+    private bool isUpdatingUI = false;
+	private bool simulationRunning = false;
+
+	
+
+    void Start()
+    {
+        Button playBtn = playButton.GetComponent<Button>();
+        playBtn.onClick.AddListener(onPlayBtnClick);
+		Button stopBtn = stopButton.GetComponent<Button>();
+		stopBtn.onClick.AddListener(onStopBtnClick);
+		Button pauseBtn = pauseButton.GetComponent<Button>();
+		pauseBtn.onClick.AddListener(onPauseBtnClick);
+		Button returnBtn = returnButton.GetComponent<Button>();
+		returnBtn.onClick.AddListener(onReturnBtnClick);
+
+        Model = ModelsFactory.GetModel(null, ModelEnum.classic, this);
+
+        enginePowerSlider.onValueChanged.AddListener(OnEnginePowerSliderChanged);
+        enginePowerField.onEndEdit.AddListener(OnEnginePowerFieldChanged);
+        RudderSlider.onValueChanged.AddListener(OnRudderSliderChanged);
+        RudderField.onEndEdit.AddListener(OnRudderChanged);
+    }
+    private void onReturnBtnClick()
+    {
+        simulationRunning = false;
+        UpdateUI();
+    }
+    private void onPauseBtnClick()
+    {
+        simulationRunning = false;
+        UpdateUI();
+    }
+    private void onStopBtnClick()
+    {
+        simulationRunning = false;
+		UpdateUI();
+    }
+    private void onPlayBtnClick()
+    {
+		simulationRunning = true;
+		Debug.Log("run");
+    }
+
+    private void OnRudderSliderChanged(float value)
+    {
+        if (isUpdatingUI) return;
+
+		Rudder = value;
+        UpdateUI();
+    }
+
+    private void OnRudderChanged(string text)
+    {
+        if (isUpdatingUI) return;
+
+        if (double.TryParse(text, out double value))
+        {
+			Rudder = value;
+            UpdateUI();
+        }
+    }
+
+    private void OnEnginePowerSliderChanged(float value)
+    {
+        if (isUpdatingUI) return;
+
+        EnginePower = value / 100f;
+        UpdateUI(); 
+    }
+
+    private void OnEnginePowerFieldChanged(string text)
+    {
+        if (isUpdatingUI) return;
+
+        if (double.TryParse(text, out double value))
+        {
+			if (value > 100) EnginePower = value / 100;
+			else if (value < 0) EnginePower = 0;
+			else EnginePower = value / 100;
+            UpdateUI();
+        }
+    }
+
     void Update()
     {
-		Step();
-		Debug.Log(posX + " " + posY + "\n" + "speed: " + speed + "\n");
-		latLongUI.text = "Longitude: " + Math.Round((posX / 1852 / 60), 4).ToString("F4") + "   Latitude: " + Math.Round((posY / 1852 / 60),4).ToString("F4");
-		transform.position = new Vector3((float)posX, 0f, (float)posY) * Time.fixedDeltaTime;
-		transform.rotation = Quaternion.Euler(0f, (float)Cog, 0f);
-	}
+		if (simulationRunning)
+		{
+			Step();
+			transform.position = new Vector3((float)posX, 0f, (float)posY);
+			transform.rotation = Quaternion.Euler(0f, (float)Cog, 0f);
+			speedText.text = Speed.ToString() + " m/s";
+			rotText.text = Math.Floor(Rot).ToString() + "°/s";
+			cogText.text = Math.Floor(Cog).ToString() + "°";
+			hdgText.text = Math.Floor(Hdg).ToString() + "°";
+			sogText.text = Sog.ToString() + " m/s";
+		}
+    }
 
-	public void Step()
+    void UpdateUI()
+    {
+        isUpdatingUI = true;
+
+        enginePowerField.text = (EnginePower * 100).ToString();
+        enginePowerSlider.value = (float)(EnginePower * 100);
+		RudderField.text = Rudder.ToString(); 
+        RudderSlider.value = (float)Rudder;
+
+        isUpdatingUI = false;
+    }
+
+    public void Step()
 	{
 		if (AutoPilot != null)
 		{
@@ -616,6 +729,10 @@ public class Ship : MonoBehaviour, INotifyPropertyChanged, IDisposable
 		}
 	}
 
+	public string GetCurrentCoordinates()
+	{
+		return "Longitude: " + Math.Round((posX / 1852 / 60), 4).ToString("F4") + "   Latitude: " + Math.Round((posY / 1852 / 60), 4).ToString("F4");
+    }
 	public void Dispose()
 	{
 		AutoPilot.Dispose();
