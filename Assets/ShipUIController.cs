@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class ShipUIController : MonoBehaviour
 {
     public Ship shipReference;
+    public Weather weatherReference;
 
     public Slider enginePowerSlider;
     public TMP_InputField enginePowerField;
@@ -86,17 +87,21 @@ public class ShipUIController : MonoBehaviour
     private void onPauseBtnClick()
     {
         shipReference.simulationRunning = false;
+        weatherReference.SimulationRunning = false;
+
     }
     private void onStopBtnClick()
     {
         shipReference.PosX = 0;
         shipReference.PosY = 0;
         shipReference.simulationRunning = false;
-        
+        weatherReference.SimulationRunning = false;
+
     }
     private void onPlayBtnClick()
     {
         shipReference.simulationRunning = true;
+        weatherReference.SimulationRunning = true;
     }
 
     private void OnRudderSliderChanged(float value)
