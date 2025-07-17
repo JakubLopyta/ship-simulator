@@ -1584,7 +1584,7 @@ MonoBehaviour:
   weather: {fileID: 1791320289}
   timeLabel: {fileID: 1611836568}
   sunLight: {fileID: 1595163391}
-  timeMultiplier: 30
+  timeMultiplier: 1
 --- !u!4 &262839493
 Transform:
   m_ObjectHideFlags: 0

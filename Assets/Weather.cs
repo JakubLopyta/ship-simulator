@@ -29,7 +29,7 @@ public class Weather : MonoBehaviour
             if (value > 1439) // 1440 to godzina 23:59  
             {
                 // Jeżeli wartość czasu jest równa jakiejś dziwnej wartości to usuwa jej nadmiar np. 2881 (dwie doby) to zostanie jedna minuta
-                time = value % 1439 + 1;
+                time = value % 1439 - 1;
             }
             else if (value < 0)
             {
