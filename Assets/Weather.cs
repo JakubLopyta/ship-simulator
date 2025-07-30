@@ -10,14 +10,21 @@ public class Weather : MonoBehaviour
 
     private bool isRaining; // true - pada, false - nie pada
     private bool isStorm; // true - burza, false - nie ma burzy
+    private bool isFog; // true - mgła, false - nie ma mgły
 
     private double visibility; // Widoczność wyrażona w metrach
     private double waveHeight; // Wysokość fal wyrażona w metrach
     private double pressure; // Ciśnienie atmosferyczne wyrażone w hPa
     private double humidity; // Wilgotność powietrza wyrażona w %
+    private float rainIntensity;
+    private float fogDensity; // Gęstość mgły
+    private float thunderstormIntensity; // Intensywność burzy
 
     public bool SimulationRunning = false;
 
+    public float RainIntensity { get => rainIntensity; set => rainIntensity = value; }
+    public float FogDensity { get => fogDensity; set => fogDensity = value; }
+    public float ThunderstormIntensity { get => thunderstormIntensity; set => thunderstormIntensity = value; }
     public double Temperature { get => temperature; set => temperature = value; }
     public double WindSpeed { get => windSpeed; set => windSpeed = value; }
     public double WindDirection { get => windDirection; set => windDirection = value; }
@@ -43,6 +50,7 @@ public class Weather : MonoBehaviour
     }
     public bool IsRaining { get => isRaining; set => isRaining = value; }
     public bool IsStorm { get => isStorm; set => isStorm = value; }
+    public bool IsFog { get => isFog; set => isFog = value; }
     public double Visibility { get => visibility; set => visibility = value; }
     public double WaveHeight { get => waveHeight; set => waveHeight = value; }
     public double Pressure { get => pressure; set => pressure = value; }
@@ -70,6 +78,15 @@ public class Weather : MonoBehaviour
         isRaining = false;
         isStorm = false;
     }
+    public void SetRain()
+    {
+        Temperature = 18;
+        Visibility = 5000;
+        WindSpeed = 3d;
+        WaveHeight = 1.0d;
+        IsRaining = true;
+        IsStorm = false;
+    }
 
     public void SetThunderstorm()
     {
@@ -89,6 +106,7 @@ public class Weather : MonoBehaviour
         WaveHeight = 0.2d;
         IsRaining = false;
         IsStorm = false;
+        IsFog = true;
     }
     public void SetWindy()
     {

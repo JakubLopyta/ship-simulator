@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using TMPro;
+using UnityEngine.UI;
 
 public class WeatherController : MonoBehaviour
 {
@@ -8,11 +9,77 @@ public class WeatherController : MonoBehaviour
     public TextMeshProUGUI timeLabel;
     public Light sunLight;
     public int timeMultiplier = 1;
+    public bool rainEnabled = false;
+    public bool thunderstormEnabled = false;
+    public bool fogEnabled = false;
+
+    public GameObject rainParticles;
+    public GameObject thunderstormParticles;
+    public GameObject fogParticles;
+
+    public float rainIntensity
+    {
+        get
+        {
+            return weather.RainIntensity;
+        }
+        set
+        {
+            _rainIntensity = Mathf.Round(value);
+            var ps = rainParticles.GetComponent<ParticleSystem>();
+            var emission = ps.emission;
+            var emissionRate = _rainIntensity * 100.0f;
+            emission.rateOverTime = emissionRate;
+            weather.RainIntensity = _rainIntensity;
+        }
+    }
+    public float fogDensity
+    {
+        get
+        {
+            return _fogDensity;
+        }
+        set
+        {
+            _fogDensity = Mathf.Round(value);
+            var ps = fogParticles.GetComponent<ParticleSystem>();
+            var emission = ps.emission;
+            var emissionRate = _fogDensity;
+            emission.rateOverTime = emissionRate;
+            weather.FogDensity = _fogDensity;
+        }
+    }
+    public float thunderstormIntensity
+    {
+        get
+        {
+            return _thunderstormIntensity;
+        }
+        set
+        {
+            var ps = thunderstormParticles.GetComponent<ParticleSystem>();
+            var emission = ps.emission;
+            var emissionRate = _thunderstormIntensity;
+            emission.rateOverTime = emissionRate;
+            weather.ThunderstormIntensity = _thunderstormIntensity;
+        }
+    }
+    [SerializeField]
+    [Range(0, 100)]
+    private float _rainIntensity = 0.0f;
+
+    [SerializeField]
+    [Range(0, 60)]
+    private float _fogDensity = 0.0f;
+
+    [SerializeField]
+    [Range(0, 1)]
+    private float _thunderstormIntensity = 0.0f;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        StartCoroutine(UpdateEverySecond());
+       StartCoroutine(UpdateEverySecond());
     }
 
     IEnumerator UpdateEverySecond()
@@ -20,9 +87,36 @@ public class WeatherController : MonoBehaviour
         // Wszystko co jest tutaj wrzucone będzie się działo co sekunde
         while (true)
         {
+            rainIntensity = _rainIntensity;
+            fogDensity = _fogDensity;
+            thunderstormIntensity = _thunderstormIntensity;
             updateLighting();
             weather.AdvanceTime(timeMultiplier);
             timeLabel.text = weather.GetTimeAsString();
+            if (weather.IsRaining || rainEnabled)
+            {
+                rainParticles.SetActive(true);
+            }
+            else
+            {
+                rainParticles.SetActive(false);
+            }
+            if (weather.IsStorm || thunderstormEnabled)
+            {
+                thunderstormParticles.SetActive(true);
+            }
+            else
+            {
+                thunderstormParticles.SetActive(false);
+            }
+            if (weather.IsFog || fogEnabled)
+            {
+                fogParticles.SetActive(true);
+            }
+            else
+            {
+                fogParticles.SetActive(false);
+            }
             yield return new WaitForSeconds(1);
         }
     }
