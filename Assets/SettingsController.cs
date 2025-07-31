@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -23,8 +22,8 @@ public class SettingsController : MonoBehaviour
     [SerializeField] private Toggle vsyncToggle;
 
     [Header("Volume")]
-    [SerializeField] private TMP_Text volumeTextValue = null;
-    [SerializeField] private Slider volumeSlider = null;
+    [SerializeField] private TMP_Text volumeTextValue;
+    [SerializeField] private Slider volumeSlider;
 
     private void Start()
     {
@@ -61,7 +60,12 @@ public class SettingsController : MonoBehaviour
         resolutionDropdown.RefreshShownValue();
 
         //Display
-        if (Screen.fullScreenMode == FullScreenMode.FullScreenWindow)
+        if (Screen.fullScreenMode == FullScreenMode.ExclusiveFullScreen) 
+        {
+            displayModeDropdown.value = 2;
+            resolutionDropdown.interactable = true;
+        }
+        else if (Screen.fullScreenMode == FullScreenMode.FullScreenWindow)
         {
             displayModeDropdown.value = 1;
             resolutionDropdown.interactable = false;
@@ -72,10 +76,6 @@ public class SettingsController : MonoBehaviour
             resolutionDropdown.interactable = true;
         }
         displayModeDropdown.RefreshShownValue();
-
-        //Vsync
-        if (vsyncToggle.isOn) QualitySettings.vSyncCount = 1;
-        else QualitySettings.vSyncCount = 0;
     }
 
     public void ShowTab(int index)
@@ -90,37 +90,32 @@ public class SettingsController : MonoBehaviour
     {
         if (displayIndex == 0)
         {
-            StopAllCoroutines();
             Screen.fullScreenMode = FullScreenMode.Windowed;
             resolutionDropdown.interactable = true;
         }
         else if (displayIndex == 1)
         {
-            StopAllCoroutines();
-            StartCoroutine(DelayBorderlessMode());
-        }
-    }
-
-    //Bez tego IEnumeratora Unity nie umie sprawnie przejsc z okna do borderlessa
-    private IEnumerator DelayBorderlessMode()
-    {
-        yield return null;
-
-        Screen.fullScreenMode = FullScreenMode.FullScreenWindow;
-
-        Resolution nativeRes = Screen.currentResolution;
-        for (int i = 0; i < filteredResolutions.Count; i++)
-        {
-            if (filteredResolutions[i].width == nativeRes.width && filteredResolutions[i].height == nativeRes.height)
+            Screen.fullScreenMode = FullScreenMode.FullScreenWindow;
+            Resolution nativeRes = Screen.currentResolution;
+            for (int i = 0; i < filteredResolutions.Count; i++)
             {
-                currentResolutionIndex = i;
-                resolutionDropdown.value = currentResolutionIndex;
-                resolutionDropdown.RefreshShownValue();
-                break;
+                if (filteredResolutions[i].width == nativeRes.width && filteredResolutions[i].height == nativeRes.height)
+                {
+                    currentResolutionIndex = i;
+                    resolutionDropdown.value = currentResolutionIndex;
+                    resolutionDropdown.RefreshShownValue();
+                    break;
+                }
             }
-        }
 
-        resolutionDropdown.interactable = false;
+            resolutionDropdown.interactable = false;
+            Screen.fullScreen = true;
+        }
+        else
+        {
+            Screen.fullScreenMode = FullScreenMode.ExclusiveFullScreen;
+            resolutionDropdown.interactable = true;
+        }
     }
 
     public void SetResolution(int resolutionIndex)
@@ -134,7 +129,7 @@ public class SettingsController : MonoBehaviour
         if (vSync == true) QualitySettings.vSyncCount = 1;
         else QualitySettings.vSyncCount = 0;
 
-        //PlayerPrefs.SetInt("vSync", QualitySettings.vSyncCount);
+        PlayerPrefs.SetInt("vSync", QualitySettings.vSyncCount);
     }
 
     public void SetVolume(float volume)
@@ -142,6 +137,6 @@ public class SettingsController : MonoBehaviour
         AudioListener.volume = volume;
         volumeTextValue.text = volume.ToString("0") + "%";
 
-        //PlayerPrefs.SetFloat("masterVolume", AudioListener.volume);
+        PlayerPrefs.SetFloat("masterVolume", AudioListener.volume);
     }
 }
