@@ -1,7 +1,7 @@
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Rendering;
 using UnityEngine.UI;
 
 public class SettingsController : MonoBehaviour
@@ -9,12 +9,18 @@ public class SettingsController : MonoBehaviour
     [Header("Setting Tabs")]
     [SerializeField] private List<GameObject> tabs;
 
+    [Header("Display")]
+    [SerializeField] private TMP_Dropdown displayModeDropdown;
+
     [Header("Resolution")]
-    public TMP_Dropdown resolutionDropdown;
+    [SerializeField] private TMP_Dropdown resolutionDropdown;
     private Resolution[] resolutions;
+    private List<Resolution> filteredResolutions;
+    private float currentRefreshRate;
+    private int currentResolutionIndex = 0;
 
     [Header("Vsync")]
-    public Toggle vsyncToggle;
+    [SerializeField] private Toggle vsyncToggle;
 
     [Header("Volume")]
     [SerializeField] private TMP_Text volumeTextValue = null;
@@ -22,29 +28,52 @@ public class SettingsController : MonoBehaviour
 
     private void Start()
     {
+        //Resolution
         resolutions = Screen.resolutions;
+        filteredResolutions = new List<Resolution>();
+        
         resolutionDropdown.ClearOptions();
-
-        List<string> options = new List<string>();
-
-        int currentResolutionIndex = 0;
+        currentRefreshRate = (float)Screen.currentResolution.refreshRateRatio.value;
 
         for (int i = 0; i < resolutions.Length; i++)
         {
-            string option = resolutions[i].width + " × " + resolutions[i].height + " @ " + resolutions[i].refreshRateRatio;
-            options.Add(option);
+            if (resolutions[i].refreshRateRatio.value == currentRefreshRate)
+            {
+                filteredResolutions.Add(resolutions[i]);
+            }
+        }
 
-            if (resolutions[i].width == Screen.width && resolutions[i].height == Screen.height)
+        List<string> resolutionOptions = new List<string>();
+
+        for(int i = 0; i < filteredResolutions.Count; i++)
+        {
+            string option = filteredResolutions[i].width + " × " + filteredResolutions[i].height;
+            resolutionOptions.Add(option);
+
+            if (filteredResolutions[i].width == Screen.width && filteredResolutions[i].height == Screen.height)
             {
                 currentResolutionIndex = i;
             }
         }
 
-        resolutionDropdown.AddOptions(options);
+        resolutionDropdown.AddOptions(resolutionOptions);
         resolutionDropdown.value = currentResolutionIndex;
         resolutionDropdown.RefreshShownValue();
 
+        //Display
+        if (Screen.fullScreenMode == FullScreenMode.FullScreenWindow)
+        {
+            displayModeDropdown.value = 1;
+            resolutionDropdown.interactable = false;
+        }
+        else
+        {
+            displayModeDropdown.value = 0;
+            resolutionDropdown.interactable = true;
+        }
+        displayModeDropdown.RefreshShownValue();
 
+        //Vsync
         if (vsyncToggle.isOn) QualitySettings.vSyncCount = 1;
         else QualitySettings.vSyncCount = 0;
     }
@@ -57,15 +86,52 @@ public class SettingsController : MonoBehaviour
         }
     }
 
+    public void SetDisplayMode(int displayIndex)
+    {
+        if (displayIndex == 0)
+        {
+            StopAllCoroutines();
+            Screen.fullScreenMode = FullScreenMode.Windowed;
+            resolutionDropdown.interactable = true;
+        }
+        else if (displayIndex == 1)
+        {
+            StopAllCoroutines();
+            StartCoroutine(DelayBorderlessMode());
+        }
+    }
+
+    //Bez tego IEnumeratora Unity nie umie sprawnie przejsc z okna do borderlessa
+    private IEnumerator DelayBorderlessMode()
+    {
+        yield return null;
+
+        Screen.fullScreenMode = FullScreenMode.FullScreenWindow;
+
+        Resolution nativeRes = Screen.currentResolution;
+        for (int i = 0; i < filteredResolutions.Count; i++)
+        {
+            if (filteredResolutions[i].width == nativeRes.width && filteredResolutions[i].height == nativeRes.height)
+            {
+                currentResolutionIndex = i;
+                resolutionDropdown.value = currentResolutionIndex;
+                resolutionDropdown.RefreshShownValue();
+                break;
+            }
+        }
+
+        resolutionDropdown.interactable = false;
+    }
+
     public void SetResolution(int resolutionIndex)
     {
-        Resolution resolution = resolutions[resolutionIndex];
+        Resolution resolution = filteredResolutions[resolutionIndex];
         Screen.SetResolution(resolution.width, resolution.height, Screen.fullScreen);
     }
 
-    public void SetVsync()
+    public void SetVsync(bool vSync)
     {
-        if (vsyncToggle.isOn) QualitySettings.vSyncCount = 1;
+        if (vSync == true) QualitySettings.vSyncCount = 1;
         else QualitySettings.vSyncCount = 0;
 
         //PlayerPrefs.SetInt("vSync", QualitySettings.vSyncCount);
