@@ -7,8 +7,10 @@ using System.Runtime.CompilerServices;
 using System.Xml;
 using TMPro;
 using Unity.VisualScripting;
+#if UNITY_EDITOR
 using UnityEditor.Timeline;
 using UnityEditor.UIElements;
+#endif
 using UnityEngine;
 using UnityEngine.UI;
 
