@@ -17,6 +17,21 @@ public class OrbitCamera : MonoBehaviour
     private float x = 0f;
     private float y = 0f;
 
+    public void SetTarget(Transform newTarget)
+    {
+        target = newTarget;
+        if (target != null)
+        {
+            // Opcjonalnie ustaw początkowe kąty obrotu na aktualne
+            Vector3 angles = transform.eulerAngles;
+            x = angles.y;
+            y = angles.x;
+
+            // Ustaw też dystans domyślny (opcjonalne)
+            distance = Mathf.Clamp(distance, minDistance, maxDistance);
+        }
+    }
+
     void Start()
     {
         Vector3 angles = transform.eulerAngles;

@@ -3891,7 +3891,7 @@ MonoBehaviour:
   fogParticles: {fileID: 1864338365}
   _rainIntensity: 58.7
   _fogDensity: 0
-  _thunderstormIntensity: 9.65
+  _thunderstormIntensity: 1
 --- !u!4 &262839493
 Transform:
   m_ObjectHideFlags: 0
@@ -13259,6 +13259,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   shipRowPrefab: {fileID: 5658190502241333302, guid: 5eab380d2d93fa846adcc470d0f5ec17, type: 3}
   contentPanel: {fileID: 1974522755}
+  shipUIController: {fileID: 1775614176}
 --- !u!1 &536316562
 GameObject:
   m_ObjectHideFlags: 0
@@ -35312,6 +35313,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c0976725768fd3744bc9b89cd2d52e2b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  orbitCamera: {fileID: 1633863019}
   shipReference: {fileID: 501526636}
   weatherReference: {fileID: 1791320289}
   enginePowerSlider: {fileID: 1946886730}

@@ -4,10 +4,10 @@ using UnityEngine;
 
 public class ShipListUIManager : MonoBehaviour
 {
-    public GameObject shipRowPrefab;              // Prefab ShipRow
-    public Transform contentPanel;                // Content z ScrollView
+    public GameObject shipRowPrefab;
+    public Transform contentPanel;
+    public ShipUIController shipUIController;
 
-    // Mapa: Ship GameObject => odpowiadaj¹cy ShipRow
     private Dictionary<GameObject, ShipRow> shipRows = new Dictionary<GameObject, ShipRow>();
 
     void Start()
@@ -20,7 +20,7 @@ public class ShipListUIManager : MonoBehaviour
         while (true)
         {
             UpdateShipRows();
-            yield return new WaitForSeconds(1f);  // co sekundê
+            yield return new WaitForSeconds(1f);
         }
     }
 
@@ -30,7 +30,6 @@ public class ShipListUIManager : MonoBehaviour
 
         HashSet<GameObject> currentShips = new HashSet<GameObject>(ships);
 
-        // 1. Dodaj nowe statki
         foreach (GameObject ship in ships)
         {
             if (!shipRows.ContainsKey(ship))
@@ -38,11 +37,11 @@ public class ShipListUIManager : MonoBehaviour
                 GameObject rowGO = Instantiate(shipRowPrefab, contentPanel);
                 ShipRow row = rowGO.GetComponent<ShipRow>();
                 row.SetShipData(ship);
+                row.SetUIController(shipUIController);
                 shipRows[ship] = row;
             }
         }
 
-        // 2. Aktualizuj dane
         foreach (var kvp in shipRows)
         {
             GameObject ship = kvp.Key;
@@ -52,7 +51,6 @@ public class ShipListUIManager : MonoBehaviour
                 row.SetShipData(ship);
         }
 
-        // 3. Usuñ wiersze dla nieistniej¹cych statków
         List<GameObject> toRemove = new List<GameObject>();
         foreach (var kvp in shipRows)
         {
