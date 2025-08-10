@@ -6,6 +6,8 @@ using UnityEngine.UI;
 
 public class ShipUIController : MonoBehaviour
 {
+    public OrbitCamera orbitCamera;
+
     public Ship shipReference;
     public Weather weatherReference;
 
@@ -66,6 +68,8 @@ public class ShipUIController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (shipReference == null) return;
+
         speedText.text = shipReference.Speed.ToString() + " m/s";
         rotText.text = Math.Floor(shipReference.Rot).ToString() + "°/s";
         cogText.text = Math.Floor(shipReference.Cog).ToString() + "°";
@@ -96,6 +100,15 @@ public class ShipUIController : MonoBehaviour
             {
                 Pause();
             }
+        }
+    }
+    public void SetSelectedShip(Ship newShip)
+    {
+        shipReference = newShip;
+
+        if (orbitCamera != null && newShip != null)
+        {
+            orbitCamera.SetTarget(newShip.transform);
         }
     }
 
