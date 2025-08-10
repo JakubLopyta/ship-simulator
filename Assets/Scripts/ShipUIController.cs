@@ -1,6 +1,7 @@
 using System;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class ShipUIController : MonoBehaviour
@@ -24,13 +25,20 @@ public class ShipUIController : MonoBehaviour
     public TextMeshProUGUI latitudeText;
     public TextMeshProUGUI longitudeText;
 
+    [Header("Buttons")]
     public Button playButton;
     public Button stopButton;
     public Button pauseButton;
     public Button returnButton;
 
+    [Header("Switchable Panels")]
+    [SerializeField] private GameObject shipControlsPanel;
+    [SerializeField] private GameObject adminControlPanel;
+    [SerializeField] private GameObject pauseMenu;
+
     private bool isEditingEngine = false;
     private bool isEditingRudder = false;
+    private bool isPaused = false;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -76,6 +84,18 @@ public class ShipUIController : MonoBehaviour
         {
             RudderField.text = shipReference.Rudder.ToString("F1");
             RudderSlider.value = (float)shipReference.Rudder;
+        }
+
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            if (isPaused)
+            {
+                Resume();
+            }
+            else
+            {
+                Pause();
+            }
         }
     }
 
@@ -136,4 +156,30 @@ public class ShipUIController : MonoBehaviour
         }
     }
 
+    public void ToggleShipControlPanel()
+    {
+        shipControlsPanel.SetActive(!shipControlsPanel.activeSelf);
+    }
+
+    public void ToggleAdminControlPanel()
+    {
+        adminControlPanel.SetActive(!adminControlPanel.activeSelf);
+    }
+
+    public void Resume()
+    {
+        isPaused = false;
+        pauseMenu.SetActive(false);
+    }
+
+    public void Pause()
+    {
+        isPaused = true;
+        pauseMenu.SetActive(true);
+    }
+
+    public void ReturnToMenu()
+    {
+        SceneManager.LoadScene(0);
+    }
 }
