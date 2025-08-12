@@ -32,12 +32,18 @@ public class ShipUIController : MonoBehaviour
     public Button stopButton;
     public Button pauseButton;
     public Button returnButton;
+    public Button weatherButton;
+    public Button adminPanelButton;
+    public Button controlsButton;
 
     [Header("Switchable Panels")]
-    [SerializeField] private GameObject shipControlsPanel;
+    [SerializeField] private GameObject weatherControlPanel;
+    [SerializeField] private GameObject shipControlPanel;
     [SerializeField] private GameObject adminControlPanel;
     [SerializeField] private GameObject pauseMenu;
 
+    private Color translucentButtonColor = new Color32(0, 0, 0, 0);
+    private Color selectedButtonColor = new Color32(107, 125, 197, 190);
     private bool isEditingEngine = false;
     private bool isEditingRudder = false;
     private bool isPaused = false;
@@ -169,14 +175,28 @@ public class ShipUIController : MonoBehaviour
         }
     }
 
+    public void ToggleWeatherControlPanel()
+    {
+        weatherControlPanel.SetActive(!weatherControlPanel.activeSelf);
+        ColorBlock colorBlock = weatherButton.colors;
+        colorBlock.normalColor = weatherControlPanel.activeSelf ? selectedButtonColor : translucentButtonColor;
+        weatherButton.colors = colorBlock;
+    }
+
     public void ToggleShipControlPanel()
     {
-        shipControlsPanel.SetActive(!shipControlsPanel.activeSelf);
+        shipControlPanel.SetActive(!shipControlPanel.activeSelf);
+        ColorBlock colorBlock = controlsButton.colors;
+        colorBlock.normalColor = shipControlPanel.activeSelf ? selectedButtonColor : translucentButtonColor;
+        controlsButton.colors = colorBlock;
     }
 
     public void ToggleAdminControlPanel()
     {
         adminControlPanel.SetActive(!adminControlPanel.activeSelf);
+        ColorBlock colorBlock = adminPanelButton.colors;
+        colorBlock.normalColor = adminControlPanel.activeSelf ? selectedButtonColor : translucentButtonColor;
+        adminPanelButton.colors = colorBlock;
     }
 
     public void Resume()
