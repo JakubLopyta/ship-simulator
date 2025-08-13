@@ -77,6 +77,7 @@ public class Weather : MonoBehaviour
         WaveHeight = 0.1d;
         isRaining = false;
         isStorm = false;
+        isFog = false;
     }
     public void SetRain()
     {

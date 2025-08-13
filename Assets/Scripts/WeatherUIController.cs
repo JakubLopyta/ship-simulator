@@ -6,16 +6,35 @@ using UnityEngine.UI;
 public class WeatherController : MonoBehaviour
 {
     public Weather weather;
-    public TextMeshProUGUI timeLabel;
+    
     public Light sunLight;
     public int timeMultiplier = 1;
     public bool rainEnabled = false;
     public bool thunderstormEnabled = false;
     public bool fogEnabled = false;
 
+    [Header("Particles")]
     public GameObject rainParticles;
     public GameObject thunderstormParticles;
     public GameObject fogParticles;
+
+    [Header("Labels")]
+    public TextMeshProUGUI timeLabel;
+    public TextMeshProUGUI wavesSizeLabel;
+    public TextMeshProUGUI visibilityRangeLabel;
+    public TextMeshProUGUI windLabel;
+
+    [Header("Buttons")]
+    public Button sunnyButton;
+    public Button rainyButton;
+    public Button foggyButton;
+    public Button thunderstormButton;
+
+    [Header("Sliders")]
+    public Slider windSpeedSlider;
+    public Slider windDirectionSlider;
+    public Slider wavesSizeSlider;
+    public Slider visibilityRangeSlider;
 
     public float rainIntensity
     {
@@ -78,8 +97,47 @@ public class WeatherController : MonoBehaviour
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
-    {
-       StartCoroutine(UpdateEverySecond());
+    {  
+       Button sunnyBtn = sunnyButton.GetComponent<Button>();
+       sunnyBtn.onClick.AddListener(() =>
+       {
+           weather.SetClear();
+       });
+         Button rainyBtn = rainyButton.GetComponent<Button>();
+         rainyBtn.onClick.AddListener(() =>
+            {
+                weather.SetRain();
+            });
+            Button foggyBtn = foggyButton.GetComponent<Button>();
+            foggyBtn.onClick.AddListener(() =>
+            {
+                weather.SetFog();
+            });
+            Button thunderstormBtn = thunderstormButton.GetComponent<Button>();
+            thunderstormBtn.onClick.AddListener(() =>
+            {
+                weather.SetThunderstorm();
+            });
+
+        windDirectionSlider.onValueChanged.AddListener((float value) => {
+            weather.WindDirection = value;
+            windLabel.text = weather.WindSpeed + "kts @" + weather.WindDirection + "°";
+        }
+        );
+        windSpeedSlider.onValueChanged.AddListener((float value) => {
+            weather.WindSpeed = value;
+            windLabel.text = weather.WindSpeed + "kts @" + weather.WindDirection + "°";
+        });
+        wavesSizeSlider.onValueChanged.AddListener((float value) => {
+            weather.WaveHeight = value;
+            wavesSizeLabel.text = value.ToString() + " m";
+        });
+        visibilityRangeSlider.onValueChanged.AddListener((float value) => {
+            visibilityRangeLabel.text = value.ToString() + " m";
+            weather.Visibility = value;
+          });
+
+        StartCoroutine(UpdateEverySecond());
     }
 
     IEnumerator UpdateEverySecond()
@@ -92,7 +150,14 @@ public class WeatherController : MonoBehaviour
             thunderstormIntensity = _thunderstormIntensity;
             updateLighting();
             weather.AdvanceTime(timeMultiplier);
-            timeLabel.text = weather.GetTimeAsString();
+            if (timeLabel == null)
+            {
+                Debug.LogWarning("Time label is not assigned in the WeatherController.");
+            }
+            else {
+                timeLabel.text = weather.GetTimeAsString();
+            }
+                
             if (weather.IsRaining || rainEnabled)
             {
                 rainParticles.SetActive(true);
