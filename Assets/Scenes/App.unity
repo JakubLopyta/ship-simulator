@@ -2800,8 +2800,8 @@ MonoBehaviour:
   m_Direction: 0
   m_MinValue: 0
   m_MaxValue: 359
-  m_WholeNumbers: 0
-  m_Value: 0
+  m_WholeNumbers: 1
+  m_Value: 159
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -4219,7 +4219,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   weather: {fileID: 1791320289}
-  timeLabel: {fileID: 0}
   sunLight: {fileID: 1595163391}
   timeMultiplier: 1
   rainEnabled: 0
@@ -4228,6 +4227,18 @@ MonoBehaviour:
   rainParticles: {fileID: 1892418454}
   thunderstormParticles: {fileID: 944782287}
   fogParticles: {fileID: 1864338365}
+  timeLabel: {fileID: 0}
+  wavesSizeLabel: {fileID: 82426807}
+  visibilityRangeLabel: {fileID: 467622171}
+  windLabel: {fileID: 130103820}
+  sunnyButton: {fileID: 1306559893}
+  rainyButton: {fileID: 464583759}
+  foggyButton: {fileID: 2130167540}
+  thunderstormButton: {fileID: 1716674607}
+  windSpeedSlider: {fileID: 1613932499}
+  windDirectionSlider: {fileID: 198214550}
+  wavesSizeSlider: {fileID: 1907074246}
+  visibilityRangeSlider: {fileID: 471297422}
   _rainIntensity: 58.7
   _fogDensity: 0
   _thunderstormIntensity: 1
@@ -5216,8 +5227,8 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 998234185}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 1}
+  m_AnchorMin: {x: 0.44289693, y: 0}
+  m_AnchorMax: {x: 0.44289693, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -6323,7 +6334,7 @@ RectTransform:
   m_Father: {fileID: 1391690488}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 1}
+  m_AnchorMax: {x: 0.44289693, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 10, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -12747,9 +12758,9 @@ MonoBehaviour:
   m_HandleRect: {fileID: 737548367}
   m_Direction: 0
   m_MinValue: 0
-  m_MaxValue: 1
-  m_WholeNumbers: 0
-  m_Value: 0
+  m_MaxValue: 5000
+  m_WholeNumbers: 1
+  m_Value: 2575
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -14979,8 +14990,8 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1254838564}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 1}
+  m_AnchorMin: {x: 0.5, y: 0}
+  m_AnchorMax: {x: 0.5, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -16988,8 +16999,8 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1279484586}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 1}
+  m_AnchorMin: {x: 0.515, y: 0}
+  m_AnchorMax: {x: 0.515, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -18344,7 +18355,7 @@ RectTransform:
   m_Father: {fileID: 1343618143}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 1}
+  m_AnchorMax: {x: 0.52, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 10, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -28259,7 +28270,7 @@ RectTransform:
   m_Father: {fileID: 1354321485}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 1}
+  m_AnchorMax: {x: 0.515, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 10, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -31112,7 +31123,7 @@ RectTransform:
   m_Father: {fileID: 1402651321}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 1}
+  m_AnchorMax: {x: 0.5, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 10, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -33695,8 +33706,8 @@ MonoBehaviour:
   m_Direction: 0
   m_MinValue: 0
   m_MaxValue: 50
-  m_WholeNumbers: 0
-  m_Value: 0
+  m_WholeNumbers: 1
+  m_Value: 26
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -47369,9 +47380,9 @@ MonoBehaviour:
   m_HandleRect: {fileID: 587344481}
   m_Direction: 0
   m_MinValue: 0
-  m_MaxValue: 1
-  m_WholeNumbers: 0
-  m_Value: 0
+  m_MaxValue: 10
+  m_WholeNumbers: 1
+  m_Value: 5
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -48005,8 +48016,8 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 364466769}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 1}
+  m_AnchorMin: {x: 0.52, y: 0}
+  m_AnchorMax: {x: 0.52, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
