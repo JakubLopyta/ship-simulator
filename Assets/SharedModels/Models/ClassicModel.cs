@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
+using UnityEngine;
 
 namespace Models.Models
 {
@@ -57,24 +58,29 @@ namespace Models.Models
             {
                 rotCog = (cogK * (cogsigmaC + ship.Rudder) + cogT * rotCog) / (1 + cogT);
                 ship.Cog += rotCog * 1;
-                ship.Hdg = ship.Cog; // nadpisuje ten wynik -> Hdg i Cog są cały czas takie same podczas ruchu statku
+                //ship.Hdg = ship.Cog; // nadpisuje ten wynik -> Hdg i Cog są cały czas takie same podczas ruchu statku
                 ship.Rot = rotCog;
             }
 ;
             double pozycja_stopnie = ship.PosY / 1852.0 / 60.0;
-            ship.PosY += 0.514444 * ship.Speed * 1 * Math.Cos(ship.Cog / 180 * Math.PI);    // 0.514444 - węzły -> m/s (oryginalny program działał co sekundę, w Unity co klatkę, więc statek porusza się bardzo szybko)
+            ship.PosY += Time.deltaTime * (0.514444 * ship.Speed * 1 * Math.Cos(ship.Cog / 180 * Math.PI));    // 0.514444 - węzły -> m/s (oryginalny program działał co sekundę, w Unity co klatkę, więc statek porusza się bardzo szybko)
             if (Math.Abs(ship.PosY) > 1852 * 60 * 90)
                 ship.PosY *= (-1);
             pozycja_stopnie += ship.PosY / 1852.0 / 60.0;
             pozycja_stopnie = pozycja_stopnie / 2.0;
-            ship.PosX += (0.514444 * ship.Speed * 1 * Math.Sin(ship.Cog / 180 * Math.PI) / Math.Cos(pozycja_stopnie * Math.PI / 180));
+            ship.PosX += Time.deltaTime * (0.514444 * ship.Speed * 1 * Math.Sin(ship.Cog / 180 * Math.PI) / Math.Cos(pozycja_stopnie * Math.PI / 180));
             if (Math.Abs(ship.PosX) > 1852 * 60 * 180)
                 ship.PosX *= (-1);
-            ship.Speed = ship.Speed * (1 - (1)) + (ship.Speed * inertia + ship.EnginePower * (1 - inertia) * vmax) * 1;
+            ship.Speed = (ship.Speed * inertia + ship.EnginePower * (1 - inertia) * vmax);
             ship.Rot = rotHdg;
         }
 
-        public void Dispose()
+		public Vector3 CalculateV3(Ship ship)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void Dispose()
         {
             ship = null;
         }
