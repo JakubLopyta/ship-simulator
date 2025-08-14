@@ -7,12 +7,11 @@ using System.Runtime.CompilerServices;
 using System.Xml;
 using TMPro;
 using Unity.VisualScripting;
-#if UNITY_EDITOR
 using UnityEditor.Timeline;
 using UnityEditor.UIElements;
-#endif
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.UIElements.Experimental;
 
 public class Ship : MonoBehaviour, INotifyPropertyChanged, IDisposable
 {
@@ -366,13 +365,30 @@ public class Ship : MonoBehaviour, INotifyPropertyChanged, IDisposable
 			}
 		}
 	}
+	[SerializeField] private double weight = 5e6;
+	public double Weight
+	{
+		get
+		{
+			return weight;
+		}
+		set
+		{
+			if (weight != value)
+			{
+				weight = value;
+				NotifyPropertyChanged();
+			}
+		}
+	}
 
 	[SerializeField] private double speed = 0;
 	public double Speed
 	{
 		get
 		{
-			return Math.Round(speed, 1);
+			//return Math.Round(speed, 1);
+			return speed;
 		}
 		set
 		{
@@ -561,15 +577,19 @@ public class Ship : MonoBehaviour, INotifyPropertyChanged, IDisposable
     // Start is called once before the first execution of Update after the MonoBehaviour is created
 
 	public bool simulationRunning = false;
+	public bool testModel = true;
 
-	
 
-    void Start()
-    {
-        
+	void Start()
+	{
 
-        Model = ModelsFactory.GetModel(null, ModelEnum.classic, this);
-
+		if (testModel)
+		{
+			Model = ModelsFactory.GetModel(null, ModelEnum.test, this);
+		}
+		else { 
+			Model = ModelsFactory.GetModel(null, ModelEnum.classic, this);
+		}
         
     }
 
@@ -578,22 +598,28 @@ public class Ship : MonoBehaviour, INotifyPropertyChanged, IDisposable
     {
 		if (simulationRunning)
 		{
-			Step();
-			transform.position = new Vector3((float)posX, 0f, (float)posY);
-			transform.rotation = Quaternion.Euler(0f, (float)Cog, 0f);
-			
+			Step();			
 		}
     }
 
     public void Step()
 	{
-		if (AutoPilot != null)
-		{
-			AutoPilot.Calculate();
+		if (testModel) {
+			transform.position += Model.CalculateV3(this);
+			transform.rotation = Quaternion.Euler(0f, (float)Cog, 0f);
 		}
-		if (Model != null)
+		else
 		{
-			Model.Calculate(this);
+			if (AutoPilot != null)
+			{
+				AutoPilot.Calculate();
+			}
+			if (Model != null)
+			{
+				Model.Calculate(this);
+			}
+			transform.position = new Vector3((float)posX, 0f, (float)posY);
+			transform.rotation = Quaternion.Euler(0f, (float)Cog, 0f);
 		}
 	}
 	public Ship()
@@ -609,7 +635,6 @@ public class Ship : MonoBehaviour, INotifyPropertyChanged, IDisposable
 		{
 			AutoPilot.PrepareAutopilot(this);
 		}
-
 
 
 		if (autopilotType == AutopilotEnums.classic && model == ModelEnum.classic)
