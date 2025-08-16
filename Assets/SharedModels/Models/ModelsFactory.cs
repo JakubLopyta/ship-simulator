@@ -30,7 +30,7 @@ namespace Models.Models
 					{
 						//Hardcoded from BM600DD1.xml model
 						//                      _hdgK,     _hdgsigmaC,   _hdgT,      _cogK,     _cogsigmaC,   _cogT,      _posX, _posY, _speed, _vmax, _inertia, _length, _width, _rudlpersec, _rudlmax, _ship
-						return new TestModel(0.090737d, -0.079667512d, 8.867580d, 0.090794d, -0.07099909d, 10.864230d, 0d, 0d, 0d, 20d, 0.982d, 70.7d, 9d, 4d, 40d, ship);
+						return new TestModel(0.090737d, -0.079667512d, 8.867580d, 0.090794d, -0.07099909d, 10.864230d, 0d, 0d, 0d, 20f, 0.982d, 70.7d, 9d, 4d, 40d, ship);
 					}
 					catch (Exception ex)
 					{
