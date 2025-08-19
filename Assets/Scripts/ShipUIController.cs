@@ -32,11 +32,13 @@ public class ShipUIController : MonoBehaviour
     public Button stopButton;
     public Button pauseButton;
     public Button returnButton;
+    public Button timePanelButton;
     public Button weatherButton;
     public Button adminPanelButton;
     public Button controlsButton;
 
     [Header("Switchable Panels")]
+    [SerializeField] private GameObject timeControlPanel;
     [SerializeField] private GameObject weatherControlPanel;
     [SerializeField] private GameObject shipControlPanel;
     [SerializeField] private GameObject adminControlPanel;
@@ -127,7 +129,7 @@ public class ShipUIController : MonoBehaviour
     {
         shipReference.simulationRunning = false;
         weatherReference.SimulationRunning = false;
-
+        PlayButtonPressed(shipReference.simulationRunning);
     }
     private void onStopBtnClick()
     {
@@ -135,12 +137,20 @@ public class ShipUIController : MonoBehaviour
         shipReference.PosY = 0;
         shipReference.simulationRunning = false;
         weatherReference.SimulationRunning = false;
-
+        PlayButtonPressed(shipReference.simulationRunning);
     }
     private void onPlayBtnClick()
     {
         shipReference.simulationRunning = true;
         weatherReference.SimulationRunning = true;
+        PlayButtonPressed(shipReference.simulationRunning);
+    }
+
+    public void PlayButtonPressed(bool simulationState)
+    {
+        ColorBlock colorBlock = playButton.colors;
+        colorBlock.normalColor = simulationState ? selectedButtonColor : translucentButtonColor;
+        playButton.colors = colorBlock;
     }
 
     private void OnRudderSliderChanged(float value)
@@ -173,6 +183,14 @@ public class ShipUIController : MonoBehaviour
             else if (value < 0) shipReference.EnginePower = 0;
             else shipReference.EnginePower = value / 100;
         }
+    }
+
+    public void ToggleTimeControlPanel()
+    {
+        timeControlPanel.SetActive(!timeControlPanel.activeSelf);
+        ColorBlock colorBlock = timePanelButton.colors;
+        colorBlock.normalColor = timeControlPanel.activeSelf ? selectedButtonColor : translucentButtonColor;
+        timePanelButton.colors = colorBlock;
     }
 
     public void ToggleWeatherControlPanel()
