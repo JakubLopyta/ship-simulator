@@ -1,11 +1,9 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Models.Models
 {
-    public interface IModel : IDisposable
+    public interface IModel
     {
-        void Calculate(Ship ship);
-        Vector3 CalculateV3(Ship ship);
+        Vector3 Calculate(Ship ship);
     }
 }

@@ -7,7 +7,6 @@ namespace Models.Enums
 {
     public enum ModelEnum
     {
-        classic,
         test,
         none
     }

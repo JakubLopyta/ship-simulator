@@ -81,10 +81,10 @@ public class ShipUIController : MonoBehaviour
         cogText.text = Math.Floor(shipReference.Cog).ToString() + "°";
         hdgText.text = Math.Floor(shipReference.Hdg).ToString() + "°";
         sogText.text = shipReference.Sog.ToString() + " m/s";
-        latitudeText.text = Math.Round((shipReference.PosX / 1852 / 60), 4).ToString("F4");
-        longitudeText.text = Math.Round((shipReference.PosY / 1852 / 60), 4).ToString("F4");
+        latitudeText.text = Math.Round(shipReference.LatitudeDeg, 4).ToString();
+        longitudeText.text = Math.Round(shipReference.LongitudeDeg, 4).ToString();
 
-        if (!isEditingEngine)
+		if (!isEditingEngine)
         {
             enginePowerField.text = (shipReference.EnginePower * 100).ToString("F0");
             enginePowerSlider.value = (float)(shipReference.EnginePower * 100);
@@ -120,8 +120,8 @@ public class ShipUIController : MonoBehaviour
 
     private void onReturnBtnClick()
     {
-        shipReference.PosX = 0;
-        shipReference.PosY = 0;
+        shipReference.transform.position = Vector3.zero;
+        shipReference.transform.rotation = Quaternion.identity;
     }
     private void onPauseBtnClick()
     {
@@ -131,9 +131,10 @@ public class ShipUIController : MonoBehaviour
     }
     private void onStopBtnClick()
     {
-        shipReference.PosX = 0;
-        shipReference.PosY = 0;
-        shipReference.simulationRunning = false;
+		shipReference.transform.position = Vector3.zero;
+		shipReference.transform.rotation = Quaternion.identity;
+
+		shipReference.simulationRunning = false;
         weatherReference.SimulationRunning = false;
 
     }

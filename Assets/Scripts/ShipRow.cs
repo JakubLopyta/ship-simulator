@@ -22,7 +22,7 @@ public class ShipRow : MonoBehaviour
         Ship ship = shipObj.GetComponent<Ship>();
         if (ship == null) return;
 
-        shipNameText.text = ship.Name;
+        shipNameText.text = ship.ShipName;
 
         // prefabName = nazwa prefabrykatu, bez "(Clone)" 
         string prefabName = shipObj.name.Replace("(Clone)", "").Trim();

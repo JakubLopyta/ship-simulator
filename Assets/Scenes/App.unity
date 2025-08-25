@@ -55972,6 +55972,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1767788720537874655, guid: ac55ad286a275be44b9e3179bbff7731, type: 3}
+      propertyPath: testModel
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2286310300656426555, guid: ac55ad286a275be44b9e3179bbff7731, type: 3}
       propertyPath: m_Name
       value: Statek
