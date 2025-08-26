@@ -1,7 +1,6 @@
 using System;
 using TMPro;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class ShipUIController : MonoBehaviour
@@ -45,7 +44,7 @@ public class ShipUIController : MonoBehaviour
     [SerializeField] private GameObject pauseMenu;
 
     private Color translucentButtonColor = new Color32(0, 0, 0, 0);
-    private Color selectedButtonColor = new Color32(107, 125, 197, 190);
+    private Color selectedButtonColor = new Color32(78, 101, 192, 190);
     private bool isEditingEngine = false;
     private bool isEditingRudder = false;
     private bool isPaused = false;
@@ -71,6 +70,12 @@ public class ShipUIController : MonoBehaviour
         RudderField.onEndEdit.AddListener(OnRudderChanged);
         RudderField.onSelect.AddListener((_) => isEditingRudder = true);
         RudderField.onDeselect.AddListener((_) => isEditingRudder = false);
+
+        timeControlPanel.SetActive(false);
+        weatherControlPanel.SetActive(false);
+        shipControlPanel.SetActive(false);
+        adminControlPanel.SetActive(false);
+        pauseMenu.SetActive(false);
     }
 
     // Update is called once per frame
@@ -227,10 +232,5 @@ public class ShipUIController : MonoBehaviour
     {
         isPaused = true;
         pauseMenu.SetActive(true);
-    }
-
-    public void ReturnToMenu()
-    {
-        SceneManager.LoadScene(0);
     }
 }
