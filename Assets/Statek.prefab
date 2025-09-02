@@ -28,13 +28,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1300554052721861524}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: 0.30070576, z: -0, w: 0.953717}
-  m_LocalPosition: {x: -1088, y: -667, z: 762}
-  m_LocalScale: {x: 500, y: 500, z: 500}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -250}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 35, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &293311231276641495
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -146,16 +146,4 @@ MonoBehaviour:
   rudlMax: 35
   modelMode: 1
   autopilotMode: 0
-  enginePowerSlider: {fileID: 0}
-  enginePowerField: {fileID: 0}
-  RudderSlider: {fileID: 0}
-  RudderField: {fileID: 0}
-  speedText: {fileID: 0}
-  rotText: {fileID: 0}
-  cogText: {fileID: 0}
-  hdgText: {fileID: 0}
-  sogText: {fileID: 0}
-  startButton: {fileID: 0}
-  pauseButton: {fileID: 0}
-  stopButton: {fileID: 0}
-  returnButton: {fileID: 0}
+  simulationRunning: 0
