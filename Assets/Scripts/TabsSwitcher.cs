@@ -15,8 +15,8 @@ public class SettingsPanelSwitcher : MonoBehaviour
 
     public string defaultTabName = "Instances";
 
-    public Color selectedColor = Color.white;
-    public Color32 defaultColor = new Color32(244, 244, 245, 255); // light gray
+    public Color32 selectedColor = new Color32(78, 101, 192, 190);
+    public Color32 defaultColor = new Color32(78, 101, 192, 0);
 
 
     void Start()
@@ -44,10 +44,7 @@ public class SettingsPanelSwitcher : MonoBehaviour
             // Update the Button's color block
             var colors = tab.button.colors;
             colors.normalColor = isSelected ? selectedColor : defaultColor;
-            colors.highlightedColor = isSelected ? selectedColor : defaultColor;
-            colors.pressedColor = isSelected ? selectedColor : defaultColor;
             colors.selectedColor = isSelected ? selectedColor : defaultColor;
-            colors.disabledColor = new Color(0.8f, 0.8f, 0.8f); // optional
             tab.button.colors = colors;
         }
     }

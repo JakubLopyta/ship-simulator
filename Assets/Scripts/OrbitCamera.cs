@@ -46,8 +46,8 @@ public class OrbitCamera : MonoBehaviour
     {
         if (target == null) return;
 
-        // Obracanie tylko jeśli trzymasz lewy przycisk myszy
-        if (Input.GetMouseButton(0))
+        // Obracanie tylko jeśli trzymasz prawy przycisk myszy
+        if (Input.GetMouseButton(1))
         {
             x += Input.GetAxis("Mouse X") * xSpeed * Time.deltaTime;
             y -= Input.GetAxis("Mouse Y") * ySpeed * Time.deltaTime;

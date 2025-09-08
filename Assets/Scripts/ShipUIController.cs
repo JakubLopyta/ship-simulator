@@ -1,7 +1,6 @@
 using System;
 using TMPro;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class ShipUIController : MonoBehaviour
@@ -32,18 +31,20 @@ public class ShipUIController : MonoBehaviour
     public Button stopButton;
     public Button pauseButton;
     public Button returnButton;
+    public Button timePanelButton;
     public Button weatherButton;
     public Button adminPanelButton;
     public Button controlsButton;
 
     [Header("Switchable Panels")]
+    [SerializeField] private GameObject timeControlPanel;
     [SerializeField] private GameObject weatherControlPanel;
     [SerializeField] private GameObject shipControlPanel;
     [SerializeField] private GameObject adminControlPanel;
     [SerializeField] private GameObject pauseMenu;
 
     private Color translucentButtonColor = new Color32(0, 0, 0, 0);
-    private Color selectedButtonColor = new Color32(107, 125, 197, 190);
+    private Color selectedButtonColor = new Color32(78, 101, 192, 190);
     private bool isEditingEngine = false;
     private bool isEditingRudder = false;
     private bool isPaused = false;
@@ -69,6 +70,12 @@ public class ShipUIController : MonoBehaviour
         RudderField.onEndEdit.AddListener(OnRudderChanged);
         RudderField.onSelect.AddListener((_) => isEditingRudder = true);
         RudderField.onDeselect.AddListener((_) => isEditingRudder = false);
+
+        timeControlPanel.SetActive(false);
+        weatherControlPanel.SetActive(false);
+        shipControlPanel.SetActive(false);
+        adminControlPanel.SetActive(false);
+        pauseMenu.SetActive(false);
     }
 
     // Update is called once per frame
@@ -127,7 +134,7 @@ public class ShipUIController : MonoBehaviour
     {
         shipReference.simulationRunning = false;
         weatherReference.SimulationRunning = false;
-
+        PlayButtonPressed(shipReference.simulationRunning);
     }
     private void onStopBtnClick()
     {
@@ -136,12 +143,20 @@ public class ShipUIController : MonoBehaviour
 
 		shipReference.simulationRunning = false;
         weatherReference.SimulationRunning = false;
-
+        PlayButtonPressed(shipReference.simulationRunning);
     }
     private void onPlayBtnClick()
     {
         shipReference.simulationRunning = true;
         weatherReference.SimulationRunning = true;
+        PlayButtonPressed(shipReference.simulationRunning);
+    }
+
+    public void PlayButtonPressed(bool simulationState)
+    {
+        ColorBlock colorBlock = playButton.colors;
+        colorBlock.normalColor = simulationState ? selectedButtonColor : translucentButtonColor;
+        playButton.colors = colorBlock;
     }
 
     private void OnRudderSliderChanged(float value)
@@ -174,6 +189,14 @@ public class ShipUIController : MonoBehaviour
             else if (value < 0) shipReference.EnginePower = 0;
             else shipReference.EnginePower = value / 100;
         }
+    }
+
+    public void ToggleTimeControlPanel()
+    {
+        timeControlPanel.SetActive(!timeControlPanel.activeSelf);
+        ColorBlock colorBlock = timePanelButton.colors;
+        colorBlock.normalColor = timeControlPanel.activeSelf ? selectedButtonColor : translucentButtonColor;
+        timePanelButton.colors = colorBlock;
     }
 
     public void ToggleWeatherControlPanel()
@@ -210,10 +233,5 @@ public class ShipUIController : MonoBehaviour
     {
         isPaused = true;
         pauseMenu.SetActive(true);
-    }
-
-    public void ReturnToMenu()
-    {
-        SceneManager.LoadScene(0);
     }
 }
