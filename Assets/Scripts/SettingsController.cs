@@ -10,7 +10,7 @@ public class SettingsController : MonoBehaviour
     [SerializeField] private List<GameObject> tabs;
     [SerializeField] private List<Button> buttons;
     private Color translucentButtonColor = new Color32(0, 0, 0, 0);
-    private Color selectedButtonColor = new Color32(78, 101, 192, 190);
+    private Color selectedButtonColor = new Color32(107, 125, 197, 190);
 
     [Header("Display")]
     [SerializeField] private TMP_Dropdown displayModeDropdown;

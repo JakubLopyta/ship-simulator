@@ -36,9 +36,6 @@ public class WeatherController : MonoBehaviour
     public Slider wavesSizeSlider;
     public Slider visibilityRangeSlider;
 
-    private Color translucentButtonColor = new Color32(0, 0, 0, 0);
-    private Color selectedButtonColor = new Color32(78, 101, 192, 190);
-
     public float rainIntensity
     {
         get
