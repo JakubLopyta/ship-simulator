@@ -1,64 +1,48 @@
 using Models.Models;
 using System;
-using Unity.Collections.LowLevel.Unsafe;
-using UnityEditor;
 using UnityEngine;
-using UnityEngine.UIElements;
-using UnityEngine.UIElements.Experimental;
-using static UnityEditor.PlayerSettings;
 
-public class TestModel : IModel, IDisposable
+public class TestModel : IModel
 {
-	public TestModel(double _hdgK, double _hdgsigmaC, double _hdgT, double _cogK, double _cogsigmaC, double _cogT,
-			double _posX, double _posY, double _speed, double _vmax, double _inertia, double _length, double _width, double _rudlpersec, double _rudlmax, Ship _ship)
+	public TestModel(float _vmax, double _length, double _width, Ship _ship)
 	{
-		hdgK = _hdgK;
-		hdgsigmaC = _hdgsigmaC;
-		hdgT = _hdgT;
-		cogK = _cogK;
-		cogsigmaC = _cogsigmaC;
-		cogT = _cogT;
 		vmax = _vmax;
-		inertia = _inertia;
-		rudlpersec = _rudlpersec;
 		ship = _ship;
 		ship.Length = _length;
 		ship.Width = _width;
-		ship.PosX = _posX;
-		ship.PosY = _posY;
-		ship.Speed = _speed;
-		ship.RudlMax = _rudlmax;
 	}
 
-	public Ship ship { get; set; }
-	public double hdgK { get; set; }
-	public double hdgsigmaC { get; set; }
-	public double hdgT { get; set; }
-	public double cogK { get; set; }
-	public double cogsigmaC { get; set; }
-	public double cogT { get; set; }
-	public double vmax { get; set; }
-	public double inertia { get; set; }
-	public double rudlpersec { get; set; }
-	public double rotHdg { get; set; } = 0;
-	public double rotCog { get; set; } = 0;
+	public Ship ship;
+	
+	// State
+	public float headingRad = 0f;    // 0=N, +pi/2=E
+	public float yawRate = 0f;       // rad/s
 
-	public Vector3 currentVector = Vector3.zero; // pr¹d morski
-	public Vector3 windVector = Vector3.zero;    // wiatr
-	[Range(0f, 1f)]
-	public float windEffect = 0.0f;              // podatnoœæ na wiatr
+	// User inputs
+	[Range(0, 1)] public float enginePower = 0f;
+	[Range(-35, 35)] public float rudderDeg = 0f;
 
-	public Vector3 CalculateV3(Ship ship)
+	// Tunning
+	public float vmax;					// m/s target top speed at full power, straight rudder
+	public float thrustForce = 5e5f;    // N at enginePower=1
+	public float rudderMax = 35f;		// deg
+	public float rudderDragK = 1.8f;    // extra drag multiplier for rudder angle^2 (1.0–3.0)
+	public float yawGain = 0.5f;        // how strongly rudder turns the ship
+	public float yawAccel = 5e-3f;      // rad/s^2, how fast yawRate reaches target rate
+
+	//Constants
+	const float R_earth = 6371000;		// meters, earth radius
+	const float EPS_COS = 1e-5f;        // avoid division by zero near poles
+
+	public Vector3 Calculate(Ship ship)
 	{
-		float mass = (float)ship.Weight;
+		float dt = Time.deltaTime;
+		float mass = Mathf.Clamp((float)ship.Weight, 1000f, 1000000000f);	// milion tonns
 		float enginePower = Mathf.Clamp01((float)ship.EnginePower);
 		float rudderDeg = Mathf.Clamp((float)ship.Rudder, -35f, 35f);
 
-		float vmax = 8f;           // m/s target top speed at full power, straight rudder
-		float thrustForce = 5e5f;  // engine thrust force in N at enginePower = 1
-		float rudderMax = 35f;     // deg
-		float rudderDragK = 1.8f;  // extra drag multiplier for rudder angle^2 (1.0–3.0)
 
+		// ---------- Acceleration - thrust and drag ----------
 		// Calculate drag so that: thrust ~= drag at vmax with straight rudder (vessel is not accelerating)
 		// dragForce0 (rudder=0) = thrustForce (at vmax)
 		// dragForce0 (rudder=0) = dragCoefficient0 * speed^2
@@ -76,39 +60,68 @@ public class TestModel : IModel, IDisposable
 		float actualThrustForce = thrustForce * enginePower;
 		float netForce = actualThrustForce - dragForce;    // N
 		float accel = netForce / mass;
-		v += accel * Time.deltaTime;
+		v += accel * dt;
 
 		// Prevent tiny float tails and negative creep when power is zero
 		if (enginePower <= 0.0001f && Mathf.Abs(v) < 0.01f)
 			v = 0f;
 		v = Mathf.Max(0f, v);
-		// Optional: hard cap above vmax so waves/turns don’t overshoot too far
-		// v = Mathf.Min(v, vmax * 1.2f);
 
 		ship.Speed = v;
 
 
-		// === ROTATION ===
-		/*
-		// Moment of Inertia for a cylinder --- 1/4(MR^2) + 1/12(ML^2)
-		float moi = (float)((ship.Weight * ship.Width / 2 * ship.Width / 2) / 4
-				   + (ship.Weight * ship.Length * ship.Length) / 12);
-		*/
+		// ---------- Yaw / turning dynamics ----------
+		// Simple empirical yaw model: desired yaw rate is proportional to rudder * (speed / length)
+		float rudderNorm = (float)(rudderDeg / rudderMax); // -1..1
+		float yawTarget = yawGain * rudderNorm * (v / Mathf.Max((float)ship.Length, 10f)); // rad/s
+		yawRate = Mathf.MoveTowards(yawRate, yawTarget, yawAccel * dt);
+		headingRad += yawRate * dt;		// update current heading
 
-		// Wektor jednostkowy w kierunku kursu
-		Vector3 course = Quaternion.Euler(0, (float)ship.Cog, 0) * Vector3.forward;
+		// Wrap heading to [-pi, pi] for stability
+		if (headingRad > Mathf.PI)
+			headingRad -= 2f * Mathf.PI;
+		else if (headingRad < -Mathf.PI)
+			headingRad += 2f * Mathf.PI;
 
-		return (course * (float)ship.Speed + currentVector + windEffect * windVector) * Time.deltaTime;
+		// ---------- Spherical Earth position update ----------
+		// Decompose ground speed into North/East components in meters/second.
+		float vNorth = v * Mathf.Cos(headingRad);  // 0 rad = North
+		float vEast = v * Mathf.Sin(headingRad);  // +pi/2 rad = East
+
+		// Convert to radians for geographic math
+		double lonRad = ship.LongitudeDeg * Mathf.Deg2Rad;
+		double latRad = ship.LatitudeDeg * Mathf.Deg2Rad;
+		double cosLat = Math.Cos(latRad);
+		double safeCos = Math.Max(EPS_COS, Math.Abs(cosLat)) * Math.Sign(cosLat);
+
+		// Integrate latitude and longitude
+		latRad += (vNorth / R_earth) * dt;
+		lonRad += (vEast / (R_earth * safeCos)) * dt;
+
+		// Clamp latitude to just shy of the poles; wrap longitude to [-pi, pi]
+		double maxLat = (90.0 - 1e-6) * Mathf.Deg2Rad;
+		if (latRad >= maxLat)
+		{
+			headingRad += Mathf.PI;
+			latRad -= 1e-3 * Mathf.Deg2Rad;
+		} else if (latRad <= -maxLat)
+		{
+			headingRad += Mathf.PI;
+			latRad += 1e-3 * Mathf.Deg2Rad;
+		}
+		lonRad = Math.IEEERemainder(lonRad, 2.0 * Math.PI); // wrap
+		ship.LongitudeDeg = lonRad * Mathf.Rad2Deg;
+		ship.LatitudeDeg = latRad * Mathf.Rad2Deg;
+
+		// Normalized vector in course direction
+		Vector3 course = Quaternion.Euler(0, Mathf.Rad2Deg * headingRad, 0) * Vector3.forward;
+
+		// For future development
+		ship.Cog = headingRad * Mathf.Rad2Deg;
+		ship.Hdg = headingRad * Mathf.Rad2Deg;
+		ship.Sog = ship.Speed;
+
+
+		return dt * v * course;
 	}
-
-	public void Calculate(Ship ship)
-	{
-		throw new NotImplementedException();
-	}
-
-	public void Dispose()
-	{
-		ship = null;
-	}
-
 }
