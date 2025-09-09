@@ -58,13 +58,11 @@ public class ShipSpawner : MonoBehaviour
         Ship ship = shipGO.GetComponent<Ship>();
         if (ship != null)
         {
-            ship.Name = shipName;
-            ship.CallSign = callSign;
+            ship.ShipName = shipName;
             ship.MMSI = mmsi;
 
-            ship.PosX = posX;
-            ship.PosY = posY;
-            ship.Hdg = heading;
+			ship.transform.position = new Vector3((float)posX, 0f, (float)posY);
+			ship.Hdg = heading;
         }
         else
         {

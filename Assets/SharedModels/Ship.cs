@@ -1,205 +1,30 @@
-using Models.Autopilots;
 using Models.Enums;
 using Models.Models;
 using System;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using System.Xml;
-using TMPro;
-using Unity.VisualScripting;
-#if UNITY_EDITOR
-using UnityEditor.Timeline;
-using UnityEditor.UIElements;
-#endif
 using UnityEngine;
-using UnityEngine.UI;
 
-public class Ship : MonoBehaviour, INotifyPropertyChanged, IDisposable
+public class Ship : MonoBehaviour
 {
 	#region properties
-	[SerializeField] private string name = string.Empty;
-	public string Name
+	[SerializeField] private string shipName = string.Empty;
+	public string ShipName
 	{
 		get
 		{
-			return name;
+			return shipName;
 		}
 		set
 		{
-			if (name != value)
+			if (shipName != value)
 			{
-				name = value;
-				NotifyPropertyChanged();
-			}
-		}
-	}
-	[SerializeField] private bool adminMode = true;
-	public bool AdminMode
-	{
-		get
-		{
-			return adminMode;
-		}
-		set
-		{
-			if (adminMode != value)
-			{
-				adminMode = value;
-				NotifyPropertyChanged();
-			}
-		}
-	}
-	[SerializeField] private bool isSelected = false;
-	public bool IsSelected
-	{
-		get
-		{
-			return isSelected;
-		}
-		set
-		{
-			if (isSelected != value)
-			{
-				isSelected = value;
-				NotifyPropertyChanged();
+				shipName = value;
 			}
 		}
 	}
 
-	[SerializeField] private double hdgRotation = 0;
-	public double HdgRotation
-	{
-		get
-		{
-			return 0 - hdgRotation;
-		}
-		set
-		{
-			if (isSelected == true)
-			{
-				hdgRotation = value;
-				NotifyPropertyChanged();
-			}
-			else
-			{
-				hdgRotation = 0;
-				NotifyPropertyChanged();
-			}
-		}
-	}
+	public double LatitudeDeg = 0;
+	public double LongitudeDeg = 0;
 
-	[SerializeField] private double posXRotation = 0;
-	public double PosXRotation
-	{
-		get
-		{
-			return posXRotation;
-		}
-		set
-		{
-			if (isSelected == true)
-			{
-				posXRotation = value;
-				NotifyPropertyChanged();
-			}
-			else
-			{
-				posXRotation = 0;
-				NotifyPropertyChanged();
-			}
-		}
-	}
-	
-	[SerializeField]
-	private double posYRotation = 0;
-	public double PosYRotation
-	{
-		get
-		{
-			return posYRotation;
-		}
-		set
-		{
-			if (isSelected == true)
-			{
-				posYRotation = value;
-				NotifyPropertyChanged();
-			}
-			else
-			{
-				posYRotation = 0;
-				NotifyPropertyChanged();
-			}
-		}
-	}
-
-	[SerializeField] private bool fromFile = false;
-	public bool FromFile
-	{
-		get
-		{
-			return fromFile;
-		}
-		set
-		{
-			if (fromFile != value)
-			{
-				fromFile = value;
-				NotifyPropertyChanged();
-			}
-		}
-	}
-
-	[SerializeField] private int status = 0;
-	public int Status
-	{
-		get
-		{
-			return status;
-		}
-		set
-		{
-			if (status != value)
-			{
-				status = value;
-				NotifyPropertyChanged();
-			}
-		}
-	}
-	
-	[SerializeField] private string userIp = string.Empty;
-	public string UserIp
-	{
-		get
-		{
-			return userIp;
-		}
-		set
-		{
-			if (userIp != value)
-			{
-				userIp = value;
-				NotifyPropertyChanged();
-			}
-		}
-	}
-
-	[SerializeField] private string callSign = string.Empty;
-	public string CallSign
-	{
-		get
-		{
-			return callSign;
-		}
-		set
-		{
-			if (callSign != value)
-			{
-				callSign = value;
-				NotifyPropertyChanged();
-			}
-		}
-	}
 
 	[SerializeField] private int mmsi;
 	public int MMSI
@@ -213,15 +38,9 @@ public class Ship : MonoBehaviour, INotifyPropertyChanged, IDisposable
 			if (mmsi != value)
 			{
 				mmsi = value;
-				NotifyPropertyChanged();
 			}
 		}
 	}
-
-	/*public ShipOwnerDatas shipOwnerData { get; set; }
-	public GeometricData geometridData { get; set; }
-	public ManeuveringParameters maneuveringParameters { get; set; }
-	public MachineData machineData { get; set; }*/
 
 	[SerializeField] private double hdg = 0;
 	public double Hdg
@@ -243,8 +62,6 @@ public class Ship : MonoBehaviour, INotifyPropertyChanged, IDisposable
 				{
 					hdg += 360;
 				}
-				HdgRotation = hdg;
-				NotifyPropertyChanged();
 			}
 		}
 	}
@@ -269,7 +86,6 @@ public class Ship : MonoBehaviour, INotifyPropertyChanged, IDisposable
 				{
 					cog += 360;
 				}
-				NotifyPropertyChanged();
 			}
 		}
 	}
@@ -286,7 +102,6 @@ public class Ship : MonoBehaviour, INotifyPropertyChanged, IDisposable
 			if (sog != value)
 			{
 				sog = value;
-				NotifyPropertyChanged();
 			}
 		}
 	}
@@ -303,7 +118,6 @@ public class Ship : MonoBehaviour, INotifyPropertyChanged, IDisposable
 			if (rot != value)
 			{
 				rot = value;
-				NotifyPropertyChanged();
 			}
 		}
 	}
@@ -319,16 +133,7 @@ public class Ship : MonoBehaviour, INotifyPropertyChanged, IDisposable
 		{
 			if (rudder != value)
 			{
-				if (value > RudlMax)
-				{
-					value = RudlMax;
-				}
-				else if (value < rudlMin)
-				{
-					value = rudlMin;
-				}
 				rudder = value;
-				NotifyPropertyChanged();
 			}
 		}
 	}
@@ -345,7 +150,6 @@ public class Ship : MonoBehaviour, INotifyPropertyChanged, IDisposable
 			if (width != value)
 			{
 				width = value;
-				NotifyPropertyChanged();
 			}
 		}
 	}
@@ -362,7 +166,21 @@ public class Ship : MonoBehaviour, INotifyPropertyChanged, IDisposable
 			if (length != value)
 			{
 				length = value;
-				NotifyPropertyChanged();
+			}
+		}
+	}
+	[SerializeField] private double weight = 5e6;
+	public double Weight
+	{
+		get
+		{
+			return weight;
+		}
+		set
+		{
+			if (weight != value)
+			{
+				weight = value;
 			}
 		}
 	}
@@ -372,7 +190,7 @@ public class Ship : MonoBehaviour, INotifyPropertyChanged, IDisposable
 	{
 		get
 		{
-			return Math.Round(speed, 1);
+			return speed;
 		}
 		set
 		{
@@ -380,45 +198,6 @@ public class Ship : MonoBehaviour, INotifyPropertyChanged, IDisposable
 			if (speed != value)
 			{
 				speed = value;
-				NotifyPropertyChanged();
-			}
-		}
-	}
-
-	[SerializeField] private double posY = 0;
-	public double PosY
-	{
-		get
-		{
-			return posY;
-		}
-		set
-		{
-			value = Math.Round(value, 10);
-			if (posY != value)
-			{
-				posY = value;
-				PosYRotation = PosY;
-				NotifyPropertyChanged();
-			}
-		}
-	}
-
-	[SerializeField] private double posX = 0;
-	public double PosX
-	{
-		get
-		{
-			return posX;
-		}
-		set
-		{
-			value = Math.Round(value, 10);
-			if (posX != value)
-			{
-				posX = value;
-				PosXRotation = value;
-				NotifyPropertyChanged();
 			}
 		}
 	}
@@ -439,35 +218,10 @@ public class Ship : MonoBehaviour, INotifyPropertyChanged, IDisposable
 			if (enginePower != value)
 			{
 				enginePower = value;
-				NotifyPropertyChanged();
 			}
 		}
 	}
 
-	[SerializeField] private double rudlMax = 35;
-	public double RudlMax
-	{
-		get
-		{
-			return rudlMax;
-		}
-		set
-		{
-			if (rudlMax != value)
-			{
-				rudlMax = value;
-				NotifyPropertyChanged();
-			}
-		}
-	}
-
-	double rudlMin
-	{
-		get
-		{
-			return RudlMax * (-1.0);
-		}
-	}
 
 	[SerializeField] private ModelEnum modelMode = ModelEnum.none;
 	public ModelEnum ModelMode {
@@ -480,7 +234,6 @@ public class Ship : MonoBehaviour, INotifyPropertyChanged, IDisposable
 			if (modelMode != value)
 			{
 				modelMode = value;
-				NotifyPropertyChanged();
 			}
 		}
 	}
@@ -496,14 +249,9 @@ public class Ship : MonoBehaviour, INotifyPropertyChanged, IDisposable
 			if (model != value)
 			{
 				model = value;
-				NotifyPropertyChanged();
-				if (model is ClassicModel && AutoPilot is ClassicAutopilot)
+				if (model is TestModel)
 				{
-					AutoPilot.SetAutopilotDefaultData((object)(model as ClassicModel).rudlpersec);
-				}
-				if (model is ClassicModel)
-				{
-					ModelMode = ModelEnum.classic;
+					ModelMode = ModelEnum.test;
 				}
 				else
 				{
@@ -512,64 +260,19 @@ public class Ship : MonoBehaviour, INotifyPropertyChanged, IDisposable
 			}
 		}
 	}
-	
-	[SerializeField] private AutopilotBase autoPilot = null;
-	public AutopilotBase AutoPilot
-	{
-		get
-		{
-			return autoPilot;
-		}
-		set
-		{
-			if (autoPilot != value)
-			{
-
-				autoPilot = value;
-				if (autoPilot != null)
-				{
-					autoPilot.PrepareAutopilot(this);
-				}
-				NotifyPropertyChanged();
-			}
-		}
-	}
-
-	[SerializeField] private AutopilotEnums autopilotMode;
-	public AutopilotEnums AutopilotMode
-	{
-		get
-		{
-			return autopilotMode;
-		}
-		set
-		{
-			if (autopilotMode != value)
-			{
-				autopilotMode = value;
-				AutoPilot = AutopilotFactory.GetAutopilot(autopilotMode);
-				if (model is ClassicModel && AutoPilot is ClassicAutopilot)
-				{
-					AutoPilot.SetAutopilotDefaultData((object)(model as ClassicModel).rudlpersec);
-				}
-				NotifyPropertyChanged();
-			}
-		}
-	}
 
     #endregion
     // Start is called once before the first execution of Update after the MonoBehaviour is created
 
 	public bool simulationRunning = false;
+	public bool testModel = true;
 
-	
 
-    void Start()
-    {
-        
+	void Start()
+	{
 
-        Model = ModelsFactory.GetModel(null, ModelEnum.classic, this);
-
+		if (testModel)
+			Model = ModelsFactory.GetModel(ModelEnum.test, this);
         
     }
 
@@ -578,63 +281,15 @@ public class Ship : MonoBehaviour, INotifyPropertyChanged, IDisposable
     {
 		if (simulationRunning)
 		{
-			Step();
-			transform.position = new Vector3((float)posX, 0f, (float)posY);
-			transform.rotation = Quaternion.Euler(0f, (float)Cog, 0f);
-			
+			Step();			
 		}
     }
 
     public void Step()
 	{
-		if (AutoPilot != null)
-		{
-			AutoPilot.Calculate();
+		if (testModel) {
+			transform.position += Model.Calculate(this);
+			transform.rotation = Quaternion.Euler(0f, (float)Cog, 0f);
 		}
-		if (Model != null)
-		{
-			Model.Calculate(this);
-		}
-	}
-	public Ship()
-	{
-
-	}
-	public Ship(string nrMmsi, AutopilotEnums autopilotType = AutopilotEnums.none, ModelEnum model = ModelEnum.none, XmlReader reader = null)
-	{
-		Model = ModelsFactory.GetModel(reader, model, this);
-		AutoPilot = AutopilotFactory.GetAutopilot(autopilotType);
-		AutopilotMode = autopilotType;
-		if (AutoPilot != null)
-		{
-			AutoPilot.PrepareAutopilot(this);
-		}
-
-
-
-		if (autopilotType == AutopilotEnums.classic && model == ModelEnum.classic)
-		{
-			AutoPilot.SetAutopilotDefaultData((object)(Model as ClassicModel).rudlpersec);
-		}
-		MMSI = Convert.ToInt32(nrMmsi);
-	}
-	public event PropertyChangedEventHandler PropertyChanged;
-
-	private void NotifyPropertyChanged([CallerMemberName] String propertyName = "")
-	{
-		if (PropertyChanged != null)
-		{
-			PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-		}
-	}
-
-	public string GetCurrentCoordinates()
-	{
-		return "Longitude: " + Math.Round((posX / 1852 / 60), 4).ToString("F4") + "   Latitude: " + Math.Round((posY / 1852 / 60), 4).ToString("F4");
-    }
-	public void Dispose()
-	{
-		AutoPilot.Dispose();
-		AutoPilot = null;
 	}
 }
