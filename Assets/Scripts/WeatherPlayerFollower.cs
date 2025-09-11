@@ -21,7 +21,7 @@ public class WeatherPlayerFollower : MonoBehaviour
                 if (fogParticles != null)
                     fogParticles.transform.position = playerPosition;
                 if (rainParticles != null)
-                    rainParticles.transform.position = playerPosition;
+                    rainParticles.transform.position = new Vector3(playerPosition.x, playerPosition.y + 5, playerPosition.z);
                 if (thunderstormParticles != null)
                     thunderstormParticles.transform.position = playerPosition;
             }

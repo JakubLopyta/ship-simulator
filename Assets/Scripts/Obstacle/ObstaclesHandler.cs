@@ -9,33 +9,36 @@ public class ObstaclesHandler : MonoBehaviour
     [SerializeField]
     public float spawnProximity = 100f;
     public GameObject obstaclePrefab;
+    public Sprite defaultSprite;
 
     public GameObject player;
 
-    private List<Obstacle> ObstaclesArray = new List<Obstacle>();
-    private List<Obstacle> visibleObstacles = new List<Obstacle>();
+    static public List<Obstacle> ObstaclesArray = new List<Obstacle>();
+    static public List<Obstacle> visibleObstacles = new List<Obstacle>();
 
     public Button addObstacleButton;
     public TMP_InputField obstacleNameField;
     public TMP_InputField xField;
     public TMP_InputField zField;
-
-    struct Obstacle
-    {
-        public float x;
-        public float z;
-        public string name;
-        public GameObject obstacleObject;
-    }
-
+    
     public void AddObstacle()
     {
         string name = string.IsNullOrEmpty(obstacleNameField.text) ? "New Obstacle" : obstacleNameField.text;
-        float x = float.Parse(xField.text);
-        float z = float.Parse(zField.text);
+        float x = 0; 
+        float z = 0;
 
-        GameObject newObstacleObject = Instantiate(obstaclePrefab, new Vector3(x, -0.5f, z), Quaternion.identity);
-        Obstacle newObstacle = new Obstacle { x = x, z = z, name = name, obstacleObject = newObstacleObject };
+        float.TryParse(xField.text, out x);
+        float.TryParse(zField.text, out z);
+
+        GameObject newObstacleObject = Instantiate(obstaclePrefab, new Vector3(x, 0f, z), Quaternion.identity);
+
+        Obstacle newObstacle = newObstacleObject.AddComponent<Obstacle>();
+        newObstacle.gameObject.tag = "Obstacle";
+        newObstacle.x = x;
+        newObstacle.z = z;
+        newObstacle.obstacleName = name;
+        newObstacle.sprite = defaultSprite;
+        newObstacle.obstacleObject = newObstacleObject;
 
         ObstaclesArray.Add(newObstacle);
     }
