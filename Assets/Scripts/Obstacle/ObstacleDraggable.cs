@@ -2,11 +2,8 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 
 
-public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerEnterHandler, IPointerExitHandler
+public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
-    public Texture2D cursorTexture;
-    public CursorMode cursorMode = CursorMode.Auto;
-    public Vector2 hotspot = Vector2.zero;
     public Sprite obstacleSprite;
 
 
@@ -14,14 +11,6 @@ public class Draggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDra
     public GameObject prefab;
     public GameObject draggedObject;
 
-    public void OnPointerEnter(PointerEventData eventData)
-    {
-        Cursor.SetCursor(cursorTexture, hotspot, cursorMode);
-    }
-    public void OnPointerExit(PointerEventData eventData)
-    {
-        Cursor.SetCursor(null, Vector2.zero, cursorMode);
-    }
     // Implement required interface methods
     public void OnBeginDrag(PointerEventData eventData)
     {

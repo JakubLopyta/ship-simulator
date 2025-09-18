@@ -45,6 +45,7 @@ public class ShipUIController : MonoBehaviour
 
     private Color translucentButtonColor = new Color32(0, 0, 0, 0);
     private Color selectedButtonColor = new Color32(78, 101, 192, 190);
+
     private bool isEditingEngine = false;
     private bool isEditingRudder = false;
     private bool isPaused = false;
@@ -200,8 +201,15 @@ public class ShipUIController : MonoBehaviour
     }
 
     public void ToggleWeatherControlPanel()
-    {
+    {       
         weatherControlPanel.SetActive(!weatherControlPanel.activeSelf);
+
+        if (!shipControlPanel.activeSelf) 
+        {         
+            weatherControlPanel.GetComponent<RectTransform>().anchoredPosition = new Vector2(-275,-615);
+        }
+        else weatherControlPanel.GetComponent<RectTransform>().anchoredPosition = new Vector2(-815, -615);
+
         ColorBlock colorBlock = weatherButton.colors;
         colorBlock.normalColor = weatherControlPanel.activeSelf ? selectedButtonColor : translucentButtonColor;
         weatherButton.colors = colorBlock;
@@ -210,6 +218,16 @@ public class ShipUIController : MonoBehaviour
     public void ToggleShipControlPanel()
     {
         shipControlPanel.SetActive(!shipControlPanel.activeSelf);
+
+        if (!shipControlPanel.activeSelf && weatherControlPanel.activeSelf)
+        {
+            weatherControlPanel.GetComponent<RectTransform>().anchoredPosition = new Vector2(-275,-615);
+        }
+        if (shipControlPanel.activeSelf && weatherControlPanel.activeSelf)
+        {
+            weatherControlPanel.GetComponent<RectTransform>().anchoredPosition = new Vector2(-815, -615);
+        }
+
         ColorBlock colorBlock = controlsButton.colors;
         colorBlock.normalColor = shipControlPanel.activeSelf ? selectedButtonColor : translucentButtonColor;
         controlsButton.colors = colorBlock;
