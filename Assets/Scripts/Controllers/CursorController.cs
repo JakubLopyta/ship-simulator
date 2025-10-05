@@ -19,14 +19,19 @@ namespace ShipSimulator.CustomCursor
         [SerializeField] private Vector2 grabHotSpot = new Vector2(22, 18);
         [SerializeField] private Vector2 textHotSpot = new Vector2(31, 30);
 
-        public static CursorController instance { get; private set; }
+        private bool isCursorLocked = false;
+
+        public static CursorController instance {
+            get; 
+            private set; 
+        }
 
         private void Awake()
         {
             if (instance == null)
             {
                 instance = this;
-                //DontDestroyOnLoad(gameObject);
+                DontDestroyOnLoad(gameObject);
             }
             else Destroy(gameObject);
         }
@@ -36,8 +41,25 @@ namespace ShipSimulator.CustomCursor
             Cursor.SetCursor(cursorDefault, defaultHotSpot, CursorMode.Auto);
         }
 
+        public void LockCursor()
+        {
+            if (!isCursorLocked)
+            {
+                isCursorLocked = true;
+            }
+        }
+
+        public void UnlockCursor()
+        {
+            if (isCursorLocked)
+            {
+                isCursorLocked = false;
+            }
+        }
+
         public void SetType(CursorType type)
         {
+            if (!isCursorLocked)
             switch (type)
             {
                 case CursorType.Default:

@@ -611,6 +611,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cursorType: 1
+  isGrabbable: 1
 --- !u!1 &33921301
 GameObject:
   m_ObjectHideFlags: 0
@@ -1482,6 +1483,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cursorType: 1
+  isGrabbable: 0
 --- !u!1 &82426805
 GameObject:
   m_ObjectHideFlags: 0
@@ -1931,6 +1933,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cursorType: 1
+  isGrabbable: 0
 --- !u!1 &98751960
 GameObject:
   m_ObjectHideFlags: 0
@@ -3184,6 +3187,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cursorType: 1
+  isGrabbable: 1
 --- !u!1 &198286509
 GameObject:
   m_ObjectHideFlags: 0
@@ -3312,6 +3316,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cursorType: 1
+  isGrabbable: 1
 --- !u!114 &201041417
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4217,6 +4222,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cursorType: 1
+  isGrabbable: 0
 --- !u!1 &232289323
 GameObject:
   m_ObjectHideFlags: 0
@@ -5153,7 +5159,7 @@ GameObject:
   - component: {fileID: 294302702}
   - component: {fileID: 294302705}
   m_Layer: 0
-  m_Name: MainCanvas
+  m_Name: StaticCanvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -12793,6 +12799,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cursorType: 1
+  isGrabbable: 0
 --- !u!1 &455685717
 GameObject:
   m_ObjectHideFlags: 0
@@ -13241,6 +13248,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cursorType: 1
+  isGrabbable: 0
 --- !u!1 &467622169
 GameObject:
   m_ObjectHideFlags: 0
@@ -13617,6 +13625,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cursorType: 1
+  isGrabbable: 1
 --- !u!1 &471579952
 GameObject:
   m_ObjectHideFlags: 0
@@ -15584,6 +15593,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cursorType: 1
+  isGrabbable: 0
 --- !u!1 &579360077
 GameObject:
   m_ObjectHideFlags: 0
@@ -15776,6 +15786,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cursorType: 1
+  isGrabbable: 1
 --- !u!1 &587344480
 GameObject:
   m_ObjectHideFlags: 0
@@ -16428,6 +16439,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cursorType: 1
+  isGrabbable: 0
 --- !u!1 &612503293
 GameObject:
   m_ObjectHideFlags: 0
@@ -17061,6 +17073,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cursorType: 1
+  isGrabbable: 0
 --- !u!1 &677720588
 GameObject:
   m_ObjectHideFlags: 0
@@ -18173,6 +18186,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cursorType: 3
+  isGrabbable: 0
 --- !u!1 &783060189
 GameObject:
   m_ObjectHideFlags: 0
@@ -19382,6 +19396,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cursorType: 1
+  isGrabbable: 0
 --- !u!1 &837424642
 GameObject:
   m_ObjectHideFlags: 0
@@ -25129,6 +25144,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cursorType: 1
+  isGrabbable: 1
 --- !u!114 &959422313
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -27499,6 +27515,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cursorType: 1
+  isGrabbable: 0
 --- !u!1 &1112930488
 GameObject:
   m_ObjectHideFlags: 0
@@ -27646,6 +27663,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cursorType: 1
+  isGrabbable: 0
 --- !u!1 &1119264562
 GameObject:
   m_ObjectHideFlags: 0
@@ -28937,6 +28955,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cursorType: 1
+  isGrabbable: 1
 --- !u!114 &1218367580
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -29235,6 +29254,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cursorType: 1
+  isGrabbable: 0
 --- !u!1 &1233894398
 GameObject:
   m_ObjectHideFlags: 0
@@ -29370,6 +29390,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cursorType: 1
+  isGrabbable: 0
 --- !u!1 &1235117165
 GameObject:
   m_ObjectHideFlags: 0
@@ -29710,6 +29731,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cursorType: 3
+  isGrabbable: 0
 --- !u!1 &1245204817
 GameObject:
   m_ObjectHideFlags: 0
@@ -30471,6 +30493,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cursorType: 1
+  isGrabbable: 1
 --- !u!1 &1291178777
 GameObject:
   m_ObjectHideFlags: 0
@@ -30881,6 +30904,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cursorType: 1
+  isGrabbable: 0
 --- !u!1 &1311293313
 GameObject:
   m_ObjectHideFlags: 0
@@ -31091,6 +31115,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cursorType: 1
+  isGrabbable: 0
 --- !u!1 &1333739933
 GameObject:
   m_ObjectHideFlags: 0
@@ -31710,7 +31735,7 @@ MonoBehaviour:
   windowCanvasGroup: {fileID: 1032434673}
   windowButton: {fileID: 0}
   openDirection: 1
-  closeDirection: 0
+  closeDirection: 1
   distanceToAnimate: {x: 100, y: 100}
   easingCurve:
     serializedVersion: 2
@@ -32624,6 +32649,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cursorType: 1
+  isGrabbable: 0
 --- !u!1 &1466316428
 GameObject:
   m_ObjectHideFlags: 0
@@ -32759,6 +32785,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cursorType: 1
+  isGrabbable: 0
 --- !u!1 &1470525399
 GameObject:
   m_ObjectHideFlags: 0
@@ -34350,6 +34377,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cursorType: 1
+  isGrabbable: 0
 --- !u!1 &1568433017
 GameObject:
   m_ObjectHideFlags: 0
@@ -34686,6 +34714,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cursorType: 1
+  isGrabbable: 1
 --- !u!114 &1580628009
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -35372,6 +35401,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cursorType: 1
+  isGrabbable: 0
 --- !u!1 &1607601099
 GameObject:
   m_ObjectHideFlags: 0
@@ -35528,6 +35558,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cursorType: 1
+  isGrabbable: 1
 --- !u!1 &1614222573
 GameObject:
   m_ObjectHideFlags: 0
@@ -36849,6 +36880,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cursorType: 1
+  isGrabbable: 0
 --- !u!1 &1669254721
 GameObject:
   m_ObjectHideFlags: 0
@@ -37461,6 +37493,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cursorType: 1
+  isGrabbable: 0
 --- !u!1 &1727693838
 GameObject:
   m_ObjectHideFlags: 0
@@ -37904,6 +37937,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cursorType: 1
+  isGrabbable: 0
 --- !u!114 &1737951455
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -38592,6 +38626,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cursorType: 1
+  isGrabbable: 0
 --- !u!1 &1773413182
 GameObject:
   m_ObjectHideFlags: 0
@@ -38850,15 +38885,6 @@ MonoBehaviour:
   stopButton: {fileID: 232259292}
   pauseButton: {fileID: 1233894402}
   returnButton: {fileID: 1466316430}
-  timePanelButton: {fileID: 1465877737}
-  weatherButton: {fileID: 835412682}
-  adminPanelButton: {fileID: 660102396}
-  controlsButton: {fileID: 601598760}
-  timeControlPanel: {fileID: 1590176841}
-  weatherControlPanel: {fileID: 814951104}
-  shipControlPanel: {fileID: 1994439049}
-  adminControlPanel: {fileID: 2017125187}
-  pauseMenu: {fileID: 1032434667}
 --- !u!4 &1775614177
 Transform:
   m_ObjectHideFlags: 0
@@ -39172,6 +39198,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cursorType: 1
+  isGrabbable: 1
 --- !u!1 &1791320288
 GameObject:
   m_ObjectHideFlags: 0
@@ -39416,6 +39443,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cursorType: 1
+  isGrabbable: 1
 --- !u!1 &1808581154
 GameObject:
   m_ObjectHideFlags: 0
@@ -39626,6 +39654,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cursorType: 1
+  isGrabbable: 0
 --- !u!1 &1826605160
 GameObject:
   m_ObjectHideFlags: 0
@@ -40689,6 +40718,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cursorType: 1
+  isGrabbable: 0
 --- !u!1 &1864338365
 GameObject:
   m_ObjectHideFlags: 0
@@ -50758,6 +50788,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cursorType: 1
+  isGrabbable: 1
 --- !u!1 &1914560472
 GameObject:
   m_ObjectHideFlags: 0
@@ -50957,6 +50988,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cursorType: 1
+  isGrabbable: 0
 --- !u!1 &1930369316
 GameObject:
   m_ObjectHideFlags: 0
@@ -51525,6 +51557,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cursorType: 1
+  isGrabbable: 1
 --- !u!1 &1970765758
 GameObject:
   m_ObjectHideFlags: 0
@@ -58496,6 +58529,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cursorType: 1
+  isGrabbable: 0
 --- !u!1 &2088689363
 GameObject:
   m_ObjectHideFlags: 0
@@ -59373,6 +59407,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cursorType: 1
+  isGrabbable: 0
 --- !u!1 &2140507388
 GameObject:
   m_ObjectHideFlags: 0
