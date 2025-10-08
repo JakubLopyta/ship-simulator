@@ -170,6 +170,11 @@ public class SettingsController : MonoBehaviour
         PlayerPrefs.SetInt("vSync", QualitySettings.vSyncCount);
     }
 
+    public void ToggleAnimations(bool animations)
+    {
+        PlayerPrefs.SetInt("animations", animations ? 1 : 0);
+    }
+
     public void SetVolume(float volume)
     {
         AudioListener.volume = volume;

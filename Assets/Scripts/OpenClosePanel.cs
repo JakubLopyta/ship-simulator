@@ -60,6 +60,8 @@ public class OpenClosePanel : MonoBehaviour
         {
             window.SetActive(false);
         }
+
+        disableAnimation = PlayerPrefs.GetInt("animations", 0) == 0;
     }
 
     private void InitializeOffsetPositions()
