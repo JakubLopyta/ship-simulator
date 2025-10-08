@@ -287,9 +287,9 @@ public class Ship : MonoBehaviour
 
     public void Step()
 	{
-		if (testModel) {
-			transform.position += Model.Calculate(this);
-			transform.rotation = Quaternion.Euler(0f, (float)Cog, 0f);
+		if (testModel)
+		{
+			Model.Calculate(this);
 		}
 	}
 }

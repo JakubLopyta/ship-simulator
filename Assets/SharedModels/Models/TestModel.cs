@@ -34,13 +34,14 @@ public class TestModel : IModel
 	const float R_earth = 6371000;		// meters, earth radius
 	const float EPS_COS = 1e-5f;        // avoid division by zero near poles
 
-	public Vector3 Calculate(Ship ship)
+	public MercatorMapperWGS84 MercatorMapper = GameObject.Find("MercatorMapperWGS84").GetComponent<MercatorMapperWGS84>();
+	public void Calculate(Ship ship)
 	{
 		float dt = Time.deltaTime;
-		float mass = Mathf.Clamp((float)ship.Weight, 1000f, 1000000000f);	// milion tonns
+		float mass = Mathf.Clamp((float)ship.Weight, 1000f, 1000000000f);	// minimum one tonne, maximum milion tonns
 		float enginePower = Mathf.Clamp01((float)ship.EnginePower);
 		float rudderDeg = Mathf.Clamp((float)ship.Rudder, -35f, 35f);
-
+		
 
 		// ---------- Acceleration - thrust and drag ----------
 		// Calculate drag so that: thrust ~= drag at vmax with straight rudder (vessel is not accelerating)
@@ -83,6 +84,7 @@ public class TestModel : IModel
 		else if (headingRad < -Mathf.PI)
 			headingRad += 2f * Mathf.PI;
 
+
 		// ---------- Spherical Earth position update ----------
 		// Decompose ground speed into North/East components in meters/second.
 		float vNorth = v * Mathf.Cos(headingRad);  // 0 rad = North
@@ -113,15 +115,25 @@ public class TestModel : IModel
 		ship.LongitudeDeg = lonRad * Mathf.Rad2Deg;
 		ship.LatitudeDeg = latRad * Mathf.Rad2Deg;
 
-		// Normalized vector in course direction
-		Vector3 course = Quaternion.Euler(0, Mathf.Rad2Deg * headingRad, 0) * Vector3.forward;
 
-		// For future development
+		// --------- Update ship position ----------
+		// Cog and Hdg are temporarily the same
 		ship.Cog = headingRad * Mathf.Rad2Deg;
-		ship.Hdg = headingRad * Mathf.Rad2Deg;
+		ship.Hdg = ship.Cog;
 		ship.Sog = ship.Speed;
 
+		Vector3 unityPos = MercatorMapper.LatLonToWorldPosition(ship.LatitudeDeg, ship.LongitudeDeg);
 
-		return dt * v * course;
+	/* -- Mercator scale compensation --
+        When projected onto the Mercator map without compensation, the further from the pole,
+        the more units in Unity the objects travels despite the constant speed
+        1 meter (on ellipsoid) -> 1/cos(lat) on Unity map
+    */
+/*		double mercatorScale = Math.Cos(latRad);
+		unityPos.x *= (float)mercatorScale;
+		unityPos.z *= (float)mercatorScale;
+*/
+		ship.transform.position = unityPos;
+		ship.transform.rotation = Quaternion.Euler(0f, (float)ship.Cog, 0f);
 	}
 }
