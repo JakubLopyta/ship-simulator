@@ -11,6 +11,9 @@ public class PreferencesController : MonoBehaviour
     [Header("Vsync Setting")]
     [SerializeField] private Toggle vsyncToggle;
 
+    [Header("UI Animation Setting")]
+    [SerializeField] private Toggle animationsToggle;
+
     [Header("Volume Setting")]
     [SerializeField] private TMP_Text volumeTextValue;
     [SerializeField] private Slider volumeSlider;
@@ -32,6 +35,20 @@ public class PreferencesController : MonoBehaviour
                 {
                     QualitySettings.vSyncCount = 0;
                     vsyncToggle.isOn = false;
+                }
+            }
+
+            if (PlayerPrefs.HasKey("animations"))
+            {
+                int animations = PlayerPrefs.GetInt("animations");
+
+                if(animations == 1)
+                {
+                    animationsToggle.isOn = true;
+                }
+                else
+                {
+                    animationsToggle.isOn = false;
                 }
             }
 

@@ -31,24 +31,12 @@ public class ShipUIController : MonoBehaviour
     public Button stopButton;
     public Button pauseButton;
     public Button returnButton;
-    public Button timePanelButton;
-    public Button weatherButton;
-    public Button adminPanelButton;
-    public Button controlsButton;
-
-    [Header("Switchable Panels")]
-    [SerializeField] private GameObject timeControlPanel;
-    [SerializeField] private GameObject weatherControlPanel;
-    [SerializeField] private GameObject shipControlPanel;
-    [SerializeField] private GameObject adminControlPanel;
-    [SerializeField] private GameObject pauseMenu;
 
     private Color translucentButtonColor = new Color32(0, 0, 0, 0);
     private Color selectedButtonColor = new Color32(78, 101, 192, 190);
 
     private bool isEditingEngine = false;
     private bool isEditingRudder = false;
-    private bool isPaused = false;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -71,12 +59,6 @@ public class ShipUIController : MonoBehaviour
         RudderField.onEndEdit.AddListener(OnRudderChanged);
         RudderField.onSelect.AddListener((_) => isEditingRudder = true);
         RudderField.onDeselect.AddListener((_) => isEditingRudder = false);
-
-        timeControlPanel.SetActive(false);
-        weatherControlPanel.SetActive(false);
-        shipControlPanel.SetActive(false);
-        adminControlPanel.SetActive(false);
-        pauseMenu.SetActive(false);
     }
 
     // Update is called once per frame
@@ -102,18 +84,6 @@ public class ShipUIController : MonoBehaviour
         {
             RudderField.text = shipReference.Rudder.ToString("F1");
             RudderSlider.value = (float)shipReference.Rudder;
-        }
-
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            if (isPaused)
-            {
-                Resume();
-            }
-            else
-            {
-                Pause();
-            }
         }
     }
     public void SetSelectedShip(Ship newShip)
@@ -190,66 +160,5 @@ public class ShipUIController : MonoBehaviour
             else if (value < 0) shipReference.EnginePower = 0;
             else shipReference.EnginePower = value / 100;
         }
-    }
-
-    public void ToggleTimeControlPanel()
-    {
-        timeControlPanel.SetActive(!timeControlPanel.activeSelf);
-        ColorBlock colorBlock = timePanelButton.colors;
-        colorBlock.normalColor = timeControlPanel.activeSelf ? selectedButtonColor : translucentButtonColor;
-        timePanelButton.colors = colorBlock;
-    }
-
-    public void ToggleWeatherControlPanel()
-    {       
-        weatherControlPanel.SetActive(!weatherControlPanel.activeSelf);
-
-        if (!shipControlPanel.activeSelf) 
-        {         
-            weatherControlPanel.GetComponent<RectTransform>().anchoredPosition = new Vector2(-275,-615);
-        }
-        else weatherControlPanel.GetComponent<RectTransform>().anchoredPosition = new Vector2(-815, -615);
-
-        ColorBlock colorBlock = weatherButton.colors;
-        colorBlock.normalColor = weatherControlPanel.activeSelf ? selectedButtonColor : translucentButtonColor;
-        weatherButton.colors = colorBlock;
-    }
-
-    public void ToggleShipControlPanel()
-    {
-        shipControlPanel.SetActive(!shipControlPanel.activeSelf);
-
-        if (!shipControlPanel.activeSelf && weatherControlPanel.activeSelf)
-        {
-            weatherControlPanel.GetComponent<RectTransform>().anchoredPosition = new Vector2(-275,-615);
-        }
-        if (shipControlPanel.activeSelf && weatherControlPanel.activeSelf)
-        {
-            weatherControlPanel.GetComponent<RectTransform>().anchoredPosition = new Vector2(-815, -615);
-        }
-
-        ColorBlock colorBlock = controlsButton.colors;
-        colorBlock.normalColor = shipControlPanel.activeSelf ? selectedButtonColor : translucentButtonColor;
-        controlsButton.colors = colorBlock;
-    }
-
-    public void ToggleAdminControlPanel()
-    {
-        adminControlPanel.SetActive(!adminControlPanel.activeSelf);
-        ColorBlock colorBlock = adminPanelButton.colors;
-        colorBlock.normalColor = adminControlPanel.activeSelf ? selectedButtonColor : translucentButtonColor;
-        adminPanelButton.colors = colorBlock;
-    }
-
-    public void Resume()
-    {
-        isPaused = false;
-        pauseMenu.SetActive(false);
-    }
-
-    public void Pause()
-    {
-        isPaused = true;
-        pauseMenu.SetActive(true);
     }
 }
