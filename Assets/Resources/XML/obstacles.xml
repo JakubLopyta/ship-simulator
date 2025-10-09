@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+	<!--Ten XML odpowiada za przeszkody jakie użytkownik ma do wybrania w menu Add Obstacle-->
+	<Obstacles>
+		<!--Wzór
+		<Obstacle ID = "buoy"> id przeszkody - na razie nie używane
+			<Title>buoy</Title> nazwa przeszkody
+			<Image>
+				BuoyV2 - umieszczamy ją w /Resources/Sprites/Obstacles/{nazwa przeszkody.png} - IGNORUJEMY ROZSZERZENIE PLIKU!
+			</Image>
+			<Prefab>buoy</Prefab> - nazwa prefaba, umieszczamy go w /Resources/Prefabs/Obstacles/{nazwa prefaba}
+		</Obstacle>-->
+		<Obstacle ID = "buoy">
+			<Title>Buoy</Title>
+			<Image>
+				BuoyV2
+			</Image>
+			<Prefab>buoy</Prefab>
+		</Obstacle>
+		<Obstacle ID = "rock">
+			<Title>Rock</Title>
+			<Image>
+				therock
+			</Image>
+			<Prefab>rock1</Prefab>
+		</Obstacle>
+	</Obstacles> 
+	  

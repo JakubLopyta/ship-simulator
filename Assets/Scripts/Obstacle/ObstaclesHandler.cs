@@ -16,32 +16,6 @@ public class ObstaclesHandler : MonoBehaviour
     static public List<Obstacle> ObstaclesArray = new List<Obstacle>();
     static public List<Obstacle> visibleObstacles = new List<Obstacle>();
 
-    public Button addObstacleButton;
-    public TMP_InputField obstacleNameField;
-    public TMP_InputField xField;
-    public TMP_InputField zField;
-    
-    public void AddObstacle()
-    {
-        string name = string.IsNullOrEmpty(obstacleNameField.text) ? "New Obstacle" : obstacleNameField.text;
-        float x = 0; 
-        float z = 0;
-
-        float.TryParse(xField.text, out x);
-        float.TryParse(zField.text, out z);
-
-        GameObject newObstacleObject = Instantiate(obstaclePrefab, new Vector3(x, 0f, z), Quaternion.identity);
-
-        Obstacle newObstacle = newObstacleObject.AddComponent<Obstacle>();
-        newObstacle.gameObject.tag = "Obstacle";
-        newObstacle.x = x;
-        newObstacle.z = z;
-        newObstacle.obstacleName = name;
-        newObstacle.sprite = defaultSprite;
-        newObstacle.obstacleObject = newObstacleObject;
-
-        ObstaclesArray.Add(newObstacle);
-    }
 
     public void checkObstaclesProximity()
     {
@@ -62,11 +36,6 @@ public class ObstaclesHandler : MonoBehaviour
         }
     }
 
-    private void Start()
-    {
-        Button addObButton = addObstacleButton.GetComponent<Button>();
-        addObButton.onClick.AddListener(AddObstacle);
-    }
 
     private void Update()
     {

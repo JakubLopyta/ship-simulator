@@ -3,13 +3,13 @@ using NUnit.Framework;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-
 public class ObstaclesListGenerator : MonoBehaviour
 {
     public Transform obstaclesPanel;
     public GameObject obstacleEntryPrefab;
     private List<GameObject> currentEntries = new List<GameObject>();
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+
+
     void Start()
     {
         updateObstacleList();
