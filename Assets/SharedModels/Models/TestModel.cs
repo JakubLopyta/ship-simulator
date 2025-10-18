@@ -30,11 +30,8 @@ public class TestModel : IModel
 	public float yawGain = 0.5f;        // how strongly rudder turns the ship
 	public float yawAccel = 5e-3f;      // rad/s^2, how fast yawRate reaches target rate
 
-	//Constants
-	const float R_earth = 6371000;		// meters, earth radius
-	const float EPS_COS = 1e-5f;        // avoid division by zero near poles
-
-	public MercatorMapperWGS84 MercatorMapper = GameObject.Find("MercatorMapperWGS84").GetComponent<MercatorMapperWGS84>();
+	// TEMPORARY
+	public double height = 0;
 	public void Calculate(Ship ship)
 	{
 		float dt = Time.deltaTime;
@@ -86,35 +83,20 @@ public class TestModel : IModel
 
 
 		// ---------- Spherical Earth position update ----------
+		double ecef_x, ecef_y, ecef_z = 0f;
+		GpsUtils.GeodeticToEcef(ship.LatitudeDeg, ship.LongitudeDeg, height, out ecef_x, out ecef_y, out ecef_z);
+		double xEast, yNorth, zUp;
+
+		// TODO: ORIGIN POINT
+		GpsUtils.EcefToEnu(ecef_x, ecef_y, ecef_z, 0, 0 ,0, out xEast, out yNorth, out zUp);
+				
 		// Decompose ground speed into North/East components in meters/second.
 		float vNorth = v * Mathf.Cos(headingRad);  // 0 rad = North
 		float vEast = v * Mathf.Sin(headingRad);  // +pi/2 rad = East
-
-		// Convert to radians for geographic math
-		double lonRad = ship.LongitudeDeg * Mathf.Deg2Rad;
-		double latRad = ship.LatitudeDeg * Mathf.Deg2Rad;
-		double cosLat = Math.Cos(latRad);
-		double safeCos = Math.Max(EPS_COS, Math.Abs(cosLat)) * Math.Sign(cosLat);
-
-		// Integrate latitude and longitude
-		latRad += (vNorth / R_earth) * dt;
-		lonRad += (vEast / (R_earth * safeCos)) * dt;
-
-		// Clamp latitude to just shy of the poles; wrap longitude to [-pi, pi]
-		double maxLat = (90.0 - 1e-6) * Mathf.Deg2Rad;
-		if (latRad >= maxLat)
-		{
-			headingRad += Mathf.PI;
-			latRad -= 1e-3 * Mathf.Deg2Rad;
-		} else if (latRad <= -maxLat)
-		{
-			headingRad += Mathf.PI;
-			latRad += 1e-3 * Mathf.Deg2Rad;
-		}
-		lonRad = Math.IEEERemainder(lonRad, 2.0 * Math.PI); // wrap
-		ship.LongitudeDeg = lonRad * Mathf.Rad2Deg;
-		ship.LatitudeDeg = latRad * Mathf.Rad2Deg;
-
+		
+		xEast += vEast * dt;
+		yNorth += vNorth * dt;
+		
 
 		// --------- Update ship position ----------
 		// Cog and Hdg are temporarily the same
@@ -122,18 +104,12 @@ public class TestModel : IModel
 		ship.Hdg = ship.Cog;
 		ship.Sog = ship.Speed;
 
-		Vector3 unityPos = MercatorMapper.LatLonToWorldPosition(ship.LatitudeDeg, ship.LongitudeDeg);
+		Vector3 unityPos = new Vector3((float)xEast, (float)zUp, (float)yNorth);
 
-	/* -- Mercator scale compensation --
-        When projected onto the Mercator map without compensation, the further from the pole,
-        the more units in Unity the objects travels despite the constant speed
-        1 meter (on ellipsoid) -> 1/cos(lat) on Unity map
-    */
-/*		double mercatorScale = Math.Cos(latRad);
-		unityPos.x *= (float)mercatorScale;
-		unityPos.z *= (float)mercatorScale;
-*/
 		ship.transform.position = unityPos;
 		ship.transform.rotation = Quaternion.Euler(0f, (float)ship.Cog, 0f);
+
+		GpsUtils.EnuToEcef(xEast, yNorth, zUp, 0, 0, 0, out ecef_x, out ecef_y, out ecef_z);
+		GpsUtils.EcefToGeodetic(ecef_x, ecef_y, ecef_z, out ship.LatitudeDeg, out ship.LongitudeDeg, out height);
 	}
 }
