@@ -4,6 +4,6 @@ namespace Models.Models
 {
     public interface IModel
     {
-        void Calculate(Ship ship);
+        void Calculate();
     }
 }

@@ -4,11 +4,6 @@
 // Compared to spherical Mercator, this uses the semi-major axis of WGS84 (a = 6378137 m)
 // and the eccentricity e = sqrt(f * (2 - f)), where f = 1/298.257223563.
 // This is the same projection as used in most web mapping systems (Google, OSM).
-//
-// Usage:
-// 1) Attach MercatorMapperWGS84 to a GameObject.
-// 2) Set the geographic center in inspector.
-// 3) Use LatLonToWorldPosition to convert coordinates.
 
 
 // WORKS CORRECTLY ONLY TO +-85 DEGREES OF LATITUDE

@@ -154,7 +154,7 @@ public class ShipUIController : MonoBehaviour
     private void OnEnginePowerFieldChanged(string text)
     {
 
-        if (double.TryParse(text, out double value))
+        if (float.TryParse(text, out float value))
         {
             if (value > 100) shipReference.EnginePower = value / 100;
             else if (value < 0) shipReference.EnginePower = 0;

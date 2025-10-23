@@ -6,6 +6,8 @@ using UnityEngine;
 public class Ship : MonoBehaviour
 {
 	#region properties
+
+	// Identification
 	[SerializeField] private string shipName = string.Empty;
 	public string ShipName
 	{
@@ -21,10 +23,6 @@ public class Ship : MonoBehaviour
 			}
 		}
 	}
-
-	public double LatitudeDeg = 0;
-	public double LongitudeDeg = 0;
-
 
 	[SerializeField] private int mmsi;
 	public int MMSI
@@ -42,6 +40,74 @@ public class Ship : MonoBehaviour
 		}
 	}
 
+	// Parameters
+	[SerializeField] private float width = 10;
+	public float Width
+	{
+		get
+		{
+			return width;
+		}
+		set
+		{
+			if (width != value)
+			{
+				width = value;
+			}
+		}
+	}
+
+	[SerializeField] private float length = 100;
+	public float Length
+	{
+		get
+		{
+			return length;
+		}
+		set
+		{
+			if (length != value)
+			{
+				length = value;
+			}
+		}
+	}
+
+	[SerializeField] private uint weight = 5000000;
+	public uint Weight
+	{
+		get
+		{
+			return weight;
+		}
+		set
+		{
+			if (weight != value)
+			{
+				weight = value;
+			}
+		}
+	}
+
+	[SerializeField] private float vmax = 8;
+	public float Vmax
+	{
+		get
+		{
+			return vmax;
+		}
+		set
+		{
+			if (vmax != value)
+			{
+				vmax = value;
+			}
+		}
+	}
+
+	// State
+	public double LatitudeDeg = 0;
+	public double LongitudeDeg = 0;
 	[SerializeField] private double hdg = 0;
 	public double Hdg
 	{
@@ -138,52 +204,7 @@ public class Ship : MonoBehaviour
 		}
 	}
 
-	[SerializeField] private double width = 10;
-	public double Width
-	{
-		get
-		{
-			return width;
-		}
-		set
-		{
-			if (width != value)
-			{
-				width = value;
-			}
-		}
-	}
-
-	[SerializeField] private double length = 100;
-	public double Length
-	{
-		get
-		{
-			return length;
-		}
-		set
-		{
-			if (length != value)
-			{
-				length = value;
-			}
-		}
-	}
-	[SerializeField] private double weight = 5e6;
-	public double Weight
-	{
-		get
-		{
-			return weight;
-		}
-		set
-		{
-			if (weight != value)
-			{
-				weight = value;
-			}
-		}
-	}
+	
 
 	[SerializeField] private double speed = 0;
 	public double Speed
@@ -202,8 +223,8 @@ public class Ship : MonoBehaviour
 		}
 	}
 
-	[SerializeField] private double enginePower = 0;
-	public double EnginePower
+	[SerializeField] private float enginePower = 0;
+	public float EnginePower
 	{
 		get
 		{
@@ -222,7 +243,7 @@ public class Ship : MonoBehaviour
 		}
 	}
 
-
+	//Model
 	[SerializeField] private ModelEnum modelMode = ModelEnum.none;
 	public ModelEnum ModelMode {
 		get
@@ -261,19 +282,14 @@ public class Ship : MonoBehaviour
 		}
 	}
 
-    #endregion
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-
-	public bool simulationRunning = false;
 	public bool testModel = true;
-
+	public bool simulationRunning = false;
+	#endregion
 
 	void Start()
 	{
-
 		if (testModel)
 			Model = ModelsFactory.GetModel(ModelEnum.test, this);
-        
     }
 
 
@@ -281,7 +297,7 @@ public class Ship : MonoBehaviour
     {
 		if (simulationRunning)
 		{
-			Step();			
+			Step();
 		}
     }
 
@@ -289,7 +305,7 @@ public class Ship : MonoBehaviour
 	{
 		if (testModel)
 		{
-			Model.Calculate(this);
+			Model.Calculate();
 		}
 	}
 }
