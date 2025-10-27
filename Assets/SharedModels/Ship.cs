@@ -6,7 +6,7 @@ using UnityEngine;
 public class Ship : MonoBehaviour
 {
 	#region properties
-
+	
 	// Identification
 	[SerializeField] private string shipName = string.Empty;
 	public string ShipName
@@ -108,6 +108,11 @@ public class Ship : MonoBehaviour
 	// State
 	public double LatitudeDeg = 0;
 	public double LongitudeDeg = 0;
+	public double EcefX;
+	public double EcefY;
+	public double EcefZ;
+
+
 	[SerializeField] private double hdg = 0;
 	public double Hdg
 	{
@@ -288,9 +293,18 @@ public class Ship : MonoBehaviour
 
 	void Start()
 	{
+		CoordinatesConversion.GeodeticToEcef(
+			LatitudeDeg, LongitudeDeg, 0,
+			out EcefX, out EcefY, out EcefZ);
+
+		if (OriginManager.Instance == null)
+			Debug.Log("Ship: OriginManager not found");
+		else
+			OriginManager.Instance.Initialize(this);
+
 		if (testModel)
 			Model = ModelsFactory.GetModel(ModelEnum.test, this);
-    }
+	}
 
 
     void Update()

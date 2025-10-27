@@ -85,12 +85,20 @@ public class TestModel : IModel
 
 
 		// ---------- Spherical Earth position update ----------
-		double ecef_x, ecef_y, ecef_z;
-		CoordinatesConversion.GeodeticToEcef(ship.LatitudeDeg, ship.LongitudeDeg, height, out ecef_x, out ecef_y, out ecef_z);
+		OriginManager manager = OriginManager.Instance;
+		if(manager == null) return;
 
-		// TODO: ORIGIN POINT
 		double xEast, yNorth, zUp;
-		CoordinatesConversion.EcefToEnu(ecef_x, ecef_y, ecef_z, 0, 0 ,0, out xEast, out yNorth, out zUp);
+		CoordinatesConversion.EcefToEnu(
+			ship.EcefX,
+			ship.EcefY,
+			ship.EcefZ,
+			manager.OriginLatitude,
+			manager.OriginLongitude,
+			manager.OriginHeight,
+			out xEast,
+			out yNorth,
+			out zUp);
 				
 		// Decompose ground speed into North/East components in meters/second.
 		float vNorth = v * Mathf.Cos(headingRad);  // 0 rad = North
@@ -110,8 +118,22 @@ public class TestModel : IModel
 		Vector3 unityPos = new Vector3((float)xEast, (float)zUp, (float)yNorth);
 		Quaternion unityRotation = Quaternion.Euler(0f, (float)ship.Cog, 0f);
 		ship.transform.SetPositionAndRotation(unityPos, unityRotation);
-
-		CoordinatesConversion.EnuToEcef(xEast, yNorth, zUp, 0, 0, 0, out ecef_x, out ecef_y, out ecef_z);
-		CoordinatesConversion.EcefToGeodetic(ecef_x, ecef_y, ecef_z, out ship.LatitudeDeg, out ship.LongitudeDeg, out height);
+		CoordinatesConversion.EnuToEcef(
+			xEast,
+			yNorth,
+			zUp,
+			manager.OriginLatitude,
+			manager.OriginLongitude,
+			manager.OriginHeight,
+			out ship.EcefX,
+			out ship.EcefY,
+			out ship.EcefZ);
+		CoordinatesConversion.EcefToGeodetic(
+			ship.EcefX,
+			ship.EcefY,
+			ship.EcefZ,
+			out ship.LatitudeDeg,
+			out ship.LongitudeDeg,
+			out height);
 	}
 }
