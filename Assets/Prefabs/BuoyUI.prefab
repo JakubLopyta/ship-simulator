@@ -90,7 +90,7 @@ GameObject:
   - component: {fileID: 1521324814106818032}
   - component: {fileID: 6837495044451203367}
   m_Layer: 0
-  m_Name: Buoy
+  m_Name: BuoyUI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -167,6 +167,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cursorType: 1
+  isGrabbable: 0
 --- !u!114 &1521324814106818032
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -224,5 +225,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   obstacleSprite: {fileID: 21300000, guid: 165aceffa964103438c2a4b36dc7bd70, type: 3}
+  obstacleName: 
   prefab: {fileID: 413019090298195879, guid: 5f7978c07cb0db14194d5edd707a7418, type: 3}
   draggedObject: {fileID: 0}
+  obstaclesParent: {fileID: 0}

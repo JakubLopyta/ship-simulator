@@ -3,6 +3,7 @@ using System.Collections;
 using TMPro;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using System;
 
 public class WeatherController : MonoBehaviour
 {
@@ -52,9 +53,6 @@ public class WeatherController : MonoBehaviour
     public Slider thunderstormIntensitySlider;
     public Slider fogIntensitySlider;
     public Slider timeScaleSlider;
-
-    private Color translucentButtonColor = new Color32(0, 0, 0, 0);
-    private Color selectedButtonColor = new Color32(78, 101, 192, 190);
 
     public float rainIntensity
     {
@@ -115,6 +113,14 @@ public class WeatherController : MonoBehaviour
     [Range(0, 1)]
     private float _thunderstormIntensity = 0.0f;
 
+    public static event Action<bool> OnRain;
+    public static event Action<bool> OnThunderstorm;
+    public static event Action<bool> OnFog;
+
+    private bool previousRainState;
+    private bool previousThunderstormState;
+    private bool previousFogState;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {  
@@ -123,7 +129,7 @@ public class WeatherController : MonoBehaviour
        {
            weather.SetClear();
        });
-         Button rainyBtn = rainyButton.GetComponent<Button>();
+        Button rainyBtn = rainyButton.GetComponent<Button>();
          rainyBtn.onClick.AddListener(() =>
             {
                 weather.SetRain();
@@ -208,6 +214,14 @@ public class WeatherController : MonoBehaviour
             }
         });
 
+        // Push initial weather state to subscribers and keep event dispatch edge-triggered.
+        previousRainState = weather.IsRaining || rainEnabled;
+        previousThunderstormState = weather.IsStorm || thunderstormEnabled;
+        previousFogState = weather.IsFog || fogEnabled;
+        OnRain?.Invoke(previousRainState);
+        OnThunderstorm?.Invoke(previousThunderstormState);
+        OnFog?.Invoke(previousFogState);
+
         StartCoroutine(UpdateEverySecond());
     }
 
@@ -226,29 +240,28 @@ public class WeatherController : MonoBehaviour
                     timeLabel.text = weather.GetTimeAsString();
                 }
                 
-            if (weather.IsRaining || rainEnabled)
+            bool isRainActive = weather.IsRaining || rainEnabled;
+            bool isThunderstormActive = weather.IsStorm || thunderstormEnabled;
+            bool isFogActive = weather.IsFog || fogEnabled;
+
+            rainParticles.SetActive(isRainActive);
+            thunderstormParticles.SetActive(isThunderstormActive);
+            fogParticles.SetActive(isFogActive);
+
+            if (isRainActive != previousRainState)
             {
-                rainParticles.SetActive(true);
+                previousRainState = isRainActive;
+                OnRain?.Invoke(isRainActive);
             }
-            else
+            if (isThunderstormActive != previousThunderstormState)
             {
-                rainParticles.SetActive(false);
+                previousThunderstormState = isThunderstormActive;
+                OnThunderstorm?.Invoke(isThunderstormActive);
             }
-            if (weather.IsStorm || thunderstormEnabled)
+            if (isFogActive != previousFogState)
             {
-                thunderstormParticles.SetActive(true);
-            }
-            else
-            {
-                thunderstormParticles.SetActive(false);
-            }
-            if (weather.IsFog || fogEnabled)
-            {
-                fogParticles.SetActive(true);
-            }
-            else
-            {
-                fogParticles.SetActive(false);
+                previousFogState = isFogActive;
+                OnFog?.Invoke(isFogActive);
             }
             yield return new WaitForSeconds(1);
         }
@@ -321,5 +334,3 @@ public class WeatherController : MonoBehaviour
         RenderSettings.fogDensity = 0.005f;
     }
 }
-
-

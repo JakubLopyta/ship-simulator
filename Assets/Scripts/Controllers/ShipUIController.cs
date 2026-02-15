@@ -38,17 +38,19 @@ public class ShipUIController : MonoBehaviour
     private bool isEditingEngine = false;
     private bool isEditingRudder = false;
 
+    public static event Action<float> OnEnginePowerChanged;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         Button playBtn = playButton.GetComponent<Button>();
-        playBtn.onClick.AddListener(onPlayBtnClick);
+        playBtn.onClick.AddListener(OnPlayButtonClick);
         Button stopBtn = stopButton.GetComponent<Button>();
-        stopBtn.onClick.AddListener(onStopBtnClick);
+        stopBtn.onClick.AddListener(OnStopButtonClick);
         Button pauseBtn = pauseButton.GetComponent<Button>();
-        pauseBtn.onClick.AddListener(onPauseBtnClick);
+        pauseBtn.onClick.AddListener(OnPauseButtonClick);
         Button returnBtn = returnButton.GetComponent<Button>();
-        returnBtn.onClick.AddListener(onReturnBtnClick);
+        returnBtn.onClick.AddListener(OnReturnButtonClick);
 
         enginePowerSlider.onValueChanged.AddListener(OnEnginePowerSliderChanged);
         enginePowerField.onEndEdit.AddListener(OnEnginePowerFieldChanged);
@@ -60,6 +62,22 @@ public class ShipUIController : MonoBehaviour
         RudderField.onSelect.AddListener((_) => isEditingRudder = true);
         RudderField.onDeselect.AddListener((_) => isEditingRudder = false);
     }
+    void OnDestroy()
+    {
+        stopButton.onClick.RemoveListener(OnStopButtonClick);
+        pauseButton.onClick.RemoveListener(OnStopButtonClick);
+        returnButton.onClick.RemoveListener(OnStopButtonClick);
+
+        enginePowerSlider.onValueChanged.RemoveListener(OnEnginePowerSliderChanged);
+        enginePowerField.onEndEdit.RemoveListener(OnEnginePowerFieldChanged);
+        enginePowerField.onSelect.RemoveAllListeners();
+        enginePowerField.onDeselect.RemoveAllListeners();
+
+        RudderSlider.onValueChanged.RemoveListener(OnRudderSliderChanged);
+        RudderField.onEndEdit.RemoveListener(OnRudderChanged);
+        RudderField.onSelect.RemoveAllListeners();
+        RudderField.onDeselect.RemoveAllListeners();
+    }
 
     // Update is called once per frame
     void Update()
@@ -67,9 +85,9 @@ public class ShipUIController : MonoBehaviour
         if (shipReference == null) return;
 
         speedText.text = shipReference.Speed.ToString() + " m/s";
-        rotText.text = Math.Floor(shipReference.Rot).ToString() + "°/s";
-        cogText.text = Math.Floor(shipReference.Cog).ToString() + "°";
-        hdgText.text = Math.Floor(shipReference.Hdg).ToString() + "°";
+        rotText.text = Math.Floor(shipReference.Rot).ToString() + "ï¿½/s";
+        cogText.text = Math.Floor(shipReference.Cog).ToString() + "ï¿½";
+        hdgText.text = Math.Floor(shipReference.Hdg).ToString() + "ï¿½";
         sogText.text = shipReference.Sog.ToString() + " m/s";
         latitudeText.text = Math.Round(shipReference.LatitudeDeg, 4).ToString();
         longitudeText.text = Math.Round(shipReference.LongitudeDeg, 4).ToString();
@@ -96,18 +114,18 @@ public class ShipUIController : MonoBehaviour
         }
     }
 
-    private void onReturnBtnClick()
+    private void OnReturnButtonClick()
     {
         shipReference.transform.position = Vector3.zero;
         shipReference.transform.rotation = Quaternion.identity;
     }
-    private void onPauseBtnClick()
+    private void OnPauseButtonClick()
     {
         shipReference.simulationRunning = false;
         weatherReference.SimulationRunning = false;
         PlayButtonPressed(shipReference.simulationRunning);
     }
-    private void onStopBtnClick()
+    private void OnStopButtonClick()
     {
 		shipReference.transform.position = Vector3.zero;
 		shipReference.transform.rotation = Quaternion.identity;
@@ -116,7 +134,7 @@ public class ShipUIController : MonoBehaviour
         weatherReference.SimulationRunning = false;
         PlayButtonPressed(shipReference.simulationRunning);
     }
-    private void onPlayBtnClick()
+    private void OnPlayButtonClick()
     {
         shipReference.simulationRunning = true;
         weatherReference.SimulationRunning = true;
@@ -147,18 +165,22 @@ public class ShipUIController : MonoBehaviour
 
     private void OnEnginePowerSliderChanged(float value)
     {
-
-        shipReference.EnginePower = value / 100f;
+        float newValue = value / 100f;
+        shipReference.EnginePower = newValue;
+        OnEnginePowerChanged?.Invoke(newValue);
     }
 
     private void OnEnginePowerFieldChanged(string text)
     {
 
-        if (double.TryParse(text, out double value))
+        if (float.TryParse(text, out float value))
         {
-            if (value > 100) shipReference.EnginePower = value / 100;
-            else if (value < 0) shipReference.EnginePower = 0;
-            else shipReference.EnginePower = value / 100;
+            float newValue = 0;
+            if (value > 100) newValue = value / 100f;
+            else if (value < 0) newValue = 0;
+            else newValue = value / 100f;
+            shipReference.EnginePower = newValue;
+            OnEnginePowerChanged?.Invoke(newValue);
         }
     }
 }
