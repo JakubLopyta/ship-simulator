@@ -108,6 +108,7 @@ public class Ship : MonoBehaviour
 	// State
 	public double LatitudeDeg = 0;
 	public double LongitudeDeg = 0;
+	public double Height = 0;
 	public double EcefX;
 	public double EcefY;
 	public double EcefZ;
@@ -294,7 +295,7 @@ public class Ship : MonoBehaviour
 	void Start()
 	{
 		CoordinatesConversion.GeodeticToEcef(
-			LatitudeDeg, LongitudeDeg, 0,
+			LatitudeDeg, LongitudeDeg, Height,
 			out EcefX, out EcefY, out EcefZ);
 
 		if (OriginManager.Instance == null)

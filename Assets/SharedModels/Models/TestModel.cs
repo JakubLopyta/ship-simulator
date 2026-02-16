@@ -30,8 +30,6 @@ public class TestModel : IModel
 	public float yawGain = 0.5f;        // how strongly rudder turns the ship
 	public float yawAccel = 5e-3f;      // rad/s^2, how fast yawRate reaches target rate
 
-	// TEMPORARY FOR GEODETIC
-	public double height = 0;
 	public void Calculate()
 	{
 		float dt = Time.deltaTime;
@@ -134,6 +132,6 @@ public class TestModel : IModel
 			ship.EcefZ,
 			out ship.LatitudeDeg,
 			out ship.LongitudeDeg,
-			out height);
+			out ship.Height);
 	}
 }

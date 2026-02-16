@@ -49,7 +49,7 @@ public class OriginManager : MonoBehaviour
 
 		playerShip = player;
 		// Set the initial origin to the player's starting position
-		SetOrigin(playerShip.LatitudeDeg, playerShip.LongitudeDeg, 0);
+		SetOrigin(playerShip.LatitudeDeg, playerShip.LongitudeDeg, playerShip.Height);
 		isInitialized = true;
 		Debug.Log("EnuOriginManager initialized and origin set.");
 
@@ -65,8 +65,7 @@ public class OriginManager : MonoBehaviour
 		if (localShip == null) return;
 
 		// 1. Set the new origin to the player's current true (Geodetic) position
-		SetOrigin(localShip.LatitudeDeg, localShip.LongitudeDeg, 0); // Using 0 for height
-		Debug.Log($"Origin recentered to: {OriginLatitude}, {OriginLongitude}");
+		SetOrigin(localShip.LatitudeDeg, localShip.LongitudeDeg, localShip.Height);
 
 		// 2. Reposition all ships relative to the new origin
 		Ship[] allShips = FindObjectsByType<Ship>(FindObjectsSortMode.None);
@@ -79,6 +78,9 @@ public class OriginManager : MonoBehaviour
 			// Set the ship's transform position in Unity space
 			ship.transform.position = new Vector3((float)xEast, (float)zUp, (float)yNorth);
 		}
+
+		Debug.Log($"Recentered origin to: {OriginLatitude}; {OriginLongitude}\n" +
+			$"Updated position of {allShips.Length} ships");
 	}
 
 	/// <summary>
