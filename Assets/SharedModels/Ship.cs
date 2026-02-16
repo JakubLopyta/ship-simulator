@@ -308,7 +308,7 @@ public class Ship : MonoBehaviour
 	}
 
 
-    void Update()
+    void FixedUpdate()
     {
 		if (simulationRunning)
 		{
