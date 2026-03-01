@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/Plugins.meta
 guid: 407c3984c8fed432aad2a40f221eca34
+========
+guid: ea8a9cf80455149f5a81f26981ccbf2c
+>>>>>>>> clean_up:Assets/Plugins/Borodar.meta
 folderAsset: yes
 DefaultImporter:
   externalObjects: {}

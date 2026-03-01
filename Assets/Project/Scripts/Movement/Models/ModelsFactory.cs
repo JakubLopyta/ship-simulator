@@ -9,8 +9,7 @@ namespace Models.Models
             switch (modelType)
             {
 				case ModelEnum.test:
-					//public TestModel(float _vmax, double _length, double _width, Ship _ship)
-					return new TestModel(8f, 70d, 10d, ship);
+					return new TestModel(ship);
 			}
             return null;
         }
