@@ -1,21 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
-namespace Models.Enums
+public enum ModelEnum
 {
-    public enum ModelEnum
-    {
-        test,
-        none
-    }
+    test,
+    nomoto1stOrder,
+    nomoto2ndOrder,
+    none
+}
 
-    public class ModelEnumProvider
+public class ModelEnumProvider
+{
+    public static List<String> GetStrings()
     {
-        public static List<String> GetStrings()
-        {
-            return Enum.GetNames(typeof(ModelEnum)).ToList();
-        }
+        return Enum.GetNames(typeof(ModelEnum)).ToList();
     }
 }
