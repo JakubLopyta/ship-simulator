@@ -14,7 +14,10 @@ namespace Models.Models
 				case ModelEnum.nomoto1stOrder:
 					throw new NotImplementedException();
 				case ModelEnum.nomoto2ndOrder:
-					throw new NotImplementedException();
+					var nomoto = ship.gameObject.AddComponent<Nomoto2ndOrderModel>();
+					float[] nomotoParams = ParamNomoto.GetParameters2ndOrder(shipType);
+					nomoto.SetNomotoParameters(nomotoParams[0], nomotoParams[1], nomotoParams[2], nomotoParams[3]);
+					return nomoto;
 				case ModelEnum.test:
 					throw new NotImplementedException();
 				default:
