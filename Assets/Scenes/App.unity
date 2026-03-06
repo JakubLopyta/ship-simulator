@@ -59048,8 +59048,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6753455a806786f4dad836cc2cd4579d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GridVisualizer
-  gridSize: 100
-  cellSize: 10
+  gridSize: 20
+  cellSize: 100
   gridColor: {r: 0.57652366, g: 0.049839694, b: 0.754717, a: 0.3}
   followTransform: 1
 --- !u!1 &2100023656

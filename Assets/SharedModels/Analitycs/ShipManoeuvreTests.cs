@@ -1,6 +1,13 @@
 using System.Collections;
 using UnityEngine;
 
+/// <summary>
+/// Script for testing ship's manoeuvrability according to IMO MSC.137(76) resolution.
+/// <br></br>
+/// Attach script to Ship game object and use context menu in editor to perform the tests.
+/// <br></br>
+/// Test are <b>vulnerable to origin point recentering</b>, adjust recenter threshold to avoid distorted results.
+/// </summary>
 [RequireComponent(typeof(Ship))]
 public class ShipManoeuvreTests : MonoBehaviour
 {
@@ -13,6 +20,8 @@ public class ShipManoeuvreTests : MonoBehaviour
 	{
 		Ship = GetComponent<Ship>();
 	}
+	[ContextMenu("Turning circle manoeuvre")]
+	public void RunTurningCircle() => StartTurningCircleTest();
 
 	[ContextMenu("Zig-Zag test/10°-10°")]
 	public void RunZigZag10() => StartZigZagTest(10);
@@ -20,22 +29,78 @@ public class ShipManoeuvreTests : MonoBehaviour
 	[ContextMenu("Zig-Zag test/20°-20°")]
 	public void RunZigZag20() => StartZigZagTest(20);
 
+	private void StartTurningCircleTest()
+	{
+		StopAllCoroutines();
+		StartCoroutine(TurningCircleCoroutine());
+	}
+	// Fix wrong angle read when in (0,0) starting point
+	private IEnumerator TurningCircleCoroutine()
+	{
+		Ship.ResetState(Mathf.Min(Ship.Vmax, ShipStartingSpeed));
+		Ship.EnginePower = 1;
+
+		float L = Ship.Length;
+		float V = (float)Ship.Speed;
+		float rudderMax = (float)Ship.RudderMax;
+
+		if (V < 0.1f || Ship.Rot != 0)
+		{
+			Debug.LogError("Ship's velocity is too small or ship's yaw rate is not 0.");
+			yield break;
+		}
+
+		Vector3 startPos = transform.position;
+		float startHdg = (float)Ship.Hdg;
+
+		Debug.Log($"<color=cyan>--- STARTING TURNING CIRCLE MANOEUVRE ---</color>\n" +
+				  $"Heading: {startHdg}°, speed: {V:F2}m/s");
+		
+		// Rudder order
+		Ship.Rudder = (double)rudderMax;
+
+		// wait until heading changes 90 deg
+		yield return new WaitUntil(() => Mathf.DeltaAngle(startHdg, (float)Ship.Hdg) >= 90 );
+
+		// Calculate advance
+		float angleAdv = Vector3.Angle(startPos, transform.position);
+		float distanceAdv = Vector3.Distance(startPos, transform.position);
+		float advance = Mathf.Abs(Mathf.Cos(angleAdv * Mathf.Deg2Rad) * distanceAdv);
+
+		startHdg += 90; // used because Mathf.DeltaAngle returns -180:180 deg
+		// wait until heading changes 180 deg
+		yield return new WaitUntil(() => Mathf.Abs(Mathf.DeltaAngle(startHdg, (float)Ship.Hdg)) >= 90);
+
+		// Calculate tactical diameter
+		float angleTD = Vector3.Angle(startPos, transform.position);
+		float distanceTD = Vector3.Distance(startPos, transform.position);
+		float tacticalDiameter = Mathf.Abs(Mathf.Sin(angleTD * Mathf.Deg2Rad) * distanceTD);
+
+		string resultMsg = $"<color=cyan>--- TURNING CIRCLE MANOEUVRE RESULTS ---</color>\n";
+		resultMsg += $"Angle: {angleAdv}; Distance: {distanceAdv:F2}; Advance: {advance:F2}m\n";
+		resultMsg += $"Angle: {angleTD}; Distance: {distanceTD:F2}; Tactical diameter: {tacticalDiameter:F2}m\n";
+		Debug.Log(resultMsg);
+
+
+
+	}
+
 	public void StartZigZagTest(int angleDeg)
 	{
 		StopAllCoroutines();
 		StartCoroutine(ZigZagCoroutine(angleDeg));
 	}
-
 	private IEnumerator ZigZagCoroutine(int angleDeg)
 	{
 		Ship.ResetState(Mathf.Min(Ship.Vmax, ShipStartingSpeed));
+		Ship.EnginePower = 1;
 
 		float L = Ship.Length;
 		float V = (float)Ship.Speed;
 
-		if (V < 0.1f)
+		if (V < 0.1f || Ship.Rot != 0)
 		{
-			Debug.LogError("Ship's velocity is too small");
+			Debug.LogError("Ship's velocity is too small or ship's yaw rate is not 0.");
 			yield break;
 		}
 
@@ -43,37 +108,37 @@ public class ShipManoeuvreTests : MonoBehaviour
         float maxFirstOvershoot = 0f;
 		float maxSecondOvershoot = 0f;
 
-		// 2. Wyliczenie dopuszczalnych limitów wg rezolucji IMO MSC.137(76)
+		// Overshoot limits evaluation
 		if (angleDeg == 10)
 		{
-			// Limity dla pierwszego kąta przeregulowania (10°/10°)
+			// First overshoot angle (10°/10°)
 			if (LoV < 10f) maxFirstOvershoot = 10f;
             else if (LoV >= 30f) maxFirstOvershoot = 20f;
             else maxFirstOvershoot = 5f + 0.5f * LoV;
 
-			// Limity dla drugiego kąta przeregulowania (10°/10°)
+			// Second overshoot angle (10°/10°)
 			if (LoV < 10f) maxSecondOvershoot = 25f;
 			else if (LoV >= 30f) maxSecondOvershoot = 40f;
 			else maxSecondOvershoot = 17.5f + 0.75f * LoV;
         }
 		else if (angleDeg == 20)
 		{
-			// Limit dla pierwszego kąta przeregulowania (20°/20°)
+			// First overshoot angle (20°/20°)
 			maxFirstOvershoot = 25f;
         }
 
 		float startHdg = (float)Ship.Hdg;
 		float currentDev = 0f;
 
-		Debug.Log($"<color=cyan>--- START TESTU ZIG-ZAG {angleDeg}°/{angleDeg}° ---</color>\n" +
-				  $"Współczynnik L/V = {LoV:F2} s (L={L}m, V={V:F2}m/s)");
+		Debug.Log($"<color=cyan>--- STARTING ZIG-ZAG {angleDeg}°/{angleDeg}° TEST ---</color>\n" +
+				  $"L/V = {LoV:F2} s (L={L}m, V={V:F2}m/s)");
 
-		// --- FAZA 1: Pierwsze przełożenie steru ---
-		Ship.Rudder  = angleDeg;
+		// --- First execute ---
+		Ship.Rudder = angleDeg;
         
         yield return new WaitUntil(() => Mathf.DeltaAngle(startHdg, (float)Ship.Hdg) >= angleDeg);
 
-		// --- FAZA 2: Drugie przełożenie steru i pomiar pierwszego przeregulowania ---
+		// --- Second execute and measurement of first overshot angle ---
 		Ship.Rudder = -angleDeg;
         float peakFirstDeviation = angleDeg;
 
@@ -86,8 +151,8 @@ public class ShipManoeuvreTests : MonoBehaviour
 
 		float firstOvershoot = peakFirstDeviation - angleDeg;
 
-        // --- FAZA 3: Trzecie przełożenie steru i pomiar drugiego przeregulowania ---
-        Ship.Rudder = angleDeg;
+		// --- Third execute and measurement of second overshot angle ---
+		Ship.Rudder = angleDeg;
         float peakSecondDeviation = -angleDeg;
 
 		while ((currentDev = Mathf.DeltaAngle(startHdg, (float)Ship.Hdg)) < angleDeg)
@@ -99,25 +164,25 @@ public class ShipManoeuvreTests : MonoBehaviour
 
 		float secondOvershoot = Mathf.Abs(peakSecondDeviation) - angleDeg;
 
-        // --- ZAKOŃCZENIE TESTU ---
+        // --- Test closure ---
         Ship.Rudder = 0;
 
-		// Prezentacja wyników
-		string resultMsg = $"<color=cyan>--- WYNIKI TESTU ZIG-ZAG {angleDeg}°/{angleDeg}° ---</color>\n";
+		// Results presentation
+		string resultMsg = $"<color=cyan>--- ZIG-ZAG {angleDeg}°/{angleDeg}° RESULTS ---</color>\n";
 
-		resultMsg += $"<b>Pierwszy kąt przeregulowania:</b> {firstOvershoot:F2}° ";
+		resultMsg += $"<b>First overshoot angle:</b> {firstOvershoot:F2}° ";
 		if (maxFirstOvershoot > 0)
 		{
 			bool passed = firstOvershoot <= maxFirstOvershoot;
-			resultMsg += passed ? $"<color=green>(Zaliczony, limit: {maxFirstOvershoot:F2}°)</color>\n" : $"<color=red>(Niezaliczony, limit: {maxFirstOvershoot:F2}°)</color>\n";
+			resultMsg += passed ? $"<color=green>(Passed, limit: {maxFirstOvershoot:F2}°)</color>\n" : $"<color=red>(Failed (ship's manoeuvrability unsatisfactory), limit: {maxFirstOvershoot:F2}°)</color>\n";
 		}
 		else resultMsg += "\n";
 
-		resultMsg += $"<b>Drugi kąt przeregulowania:</b> {secondOvershoot:F2}° ";
+		resultMsg += $"<b>Second overshoot angle:</b> {secondOvershoot:F2}° ";
 		if (angleDeg == 10)
 		{
 			bool passed = secondOvershoot <= maxSecondOvershoot;
-			resultMsg += passed ? $"<color=green>(Zaliczony, limit: {maxSecondOvershoot:F2}°)</color>" : $"<color=red>(Niezaliczony, limit: {maxSecondOvershoot:F2}°)</color>";
+			resultMsg += passed ? $"<color=green>(Passed, limit: {maxSecondOvershoot:F2}°)</color>\n" : $"<color=red>(Failed (ship's manoeuvrability unsatisfactory), limit: {maxSecondOvershoot:F2}°)</color>\n";
 		}
 
 		Debug.Log(resultMsg);
