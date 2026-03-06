@@ -62,8 +62,6 @@ public class Nomoto2ndOrderModel: MonoBehaviour, IModel
 	/// </summary>
 	public void Calculate()
 	{
-		Debug.Log(Ship.Hdg + " " + Ship.Cog);
-
 		float dt = Time.fixedDeltaTime;
 		rudderDeg = Mathf.Clamp((float)Ship.Rudder, -35f, 35f);
 		currentRudderAngle = rudderDeg * Mathf.Deg2Rad;

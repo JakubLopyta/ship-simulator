@@ -111,7 +111,7 @@ public class Ship : MonoBehaviour
 			vmax = value;
 		}
 	}
-	private float rudderMax = 35f; // [deg]
+	[SerializeField] private float rudderMax = 35f; // [deg]
 	public float RudderMax
 	{
 		get => rudderMax;
@@ -219,7 +219,7 @@ public class Ship : MonoBehaviour
 		{
 			value = Mathf.Clamp((float)value, -RudderMax, RudderMax);
 			if (rudder == value) return;
-			Rudder = value;
+			rudder = value;
 		}
 	}
 	#endregion
