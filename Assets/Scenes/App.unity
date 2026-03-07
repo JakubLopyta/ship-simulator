@@ -31588,7 +31588,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::OriginManager
   playerShip: {fileID: 0}
-  recenterThreshold: 1000
+  recenterThreshold: 10000
 --- !u!1 &1391690487
 GameObject:
   m_ObjectHideFlags: 0
@@ -45697,7 +45697,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e281eae906cb2a54982ede66e43d5a30, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  TimeMultiplier: 1
+  TimeMultiplier: 10
 --- !u!1 &1884659652
 GameObject:
   m_ObjectHideFlags: 0
@@ -59941,6 +59941,10 @@ PrefabInstance:
     - target: {fileID: 1509070597320148097, guid: ac55ad286a275be44b9e3179bbff7731, type: 3}
       propertyPath: m_ConstrainProportionsScale
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1767788720537874655, guid: ac55ad286a275be44b9e3179bbff7731, type: 3}
+      propertyPath: length
+      value: 290
       objectReference: {fileID: 0}
     - target: {fileID: 1767788720537874655, guid: ac55ad286a275be44b9e3179bbff7731, type: 3}
       propertyPath: ShipType

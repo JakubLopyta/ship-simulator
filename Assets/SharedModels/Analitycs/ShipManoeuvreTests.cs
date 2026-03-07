@@ -34,7 +34,6 @@ public class ShipManoeuvreTests : MonoBehaviour
 		StopAllCoroutines();
 		StartCoroutine(TurningCircleCoroutine());
 	}
-	// Fix wrong angle read when in (0,0) starting point
 	private IEnumerator TurningCircleCoroutine()
 	{
 		Ship.ResetState(Mathf.Min(Ship.Vmax, ShipStartingSpeed));
@@ -50,7 +49,11 @@ public class ShipManoeuvreTests : MonoBehaviour
 			yield break;
 		}
 
+		if (transform.position == Vector3.zero) // DeltaAngle returns wrong results with Vector3.zero position
+			yield return new WaitUntil(() => transform.position != Vector3.zero);
+
 		Vector3 startPos = transform.position;
+		Vector3 startAngle = transform.forward;
 		float startHdg = (float)Ship.Hdg;
 
 		Debug.Log($"<color=cyan>--- STARTING TURNING CIRCLE MANOEUVRE ---</color>\n" +
@@ -60,19 +63,21 @@ public class ShipManoeuvreTests : MonoBehaviour
 		Ship.Rudder = (double)rudderMax;
 
 		// wait until heading changes 90 deg
+		Debug.Log("Waiting for 90 deg heading deviation...");
 		yield return new WaitUntil(() => Mathf.DeltaAngle(startHdg, (float)Ship.Hdg) >= 90 );
 
 		// Calculate advance
-		float angleAdv = Vector3.Angle(startPos, transform.position);
+		float angleAdv = Vector3.Angle(startAngle, transform.position - startPos);
 		float distanceAdv = Vector3.Distance(startPos, transform.position);
 		float advance = Mathf.Abs(Mathf.Cos(angleAdv * Mathf.Deg2Rad) * distanceAdv);
 
 		startHdg += 90; // used because Mathf.DeltaAngle returns -180:180 deg
 		// wait until heading changes 180 deg
+		Debug.Log("Waiting for 180 deg heading deviation...");
 		yield return new WaitUntil(() => Mathf.Abs(Mathf.DeltaAngle(startHdg, (float)Ship.Hdg)) >= 90);
 
 		// Calculate tactical diameter
-		float angleTD = Vector3.Angle(startPos, transform.position);
+		float angleTD = Vector3.Angle(startAngle, transform.position - startPos);
 		float distanceTD = Vector3.Distance(startPos, transform.position);
 		float tacticalDiameter = Mathf.Abs(Mathf.Sin(angleTD * Mathf.Deg2Rad) * distanceTD);
 

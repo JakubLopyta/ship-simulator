@@ -286,8 +286,8 @@ public class Ship : MonoBehaviour
 
 	public void ResetState(float speed = 0)
 	{
-		Model.ResetState();
 		Rudder = 0;
+		Model.ResetState();
 		Speed = speed;
 	} 
 }
