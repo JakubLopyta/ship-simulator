@@ -26,15 +26,6 @@ public class ShipUIController : MonoBehaviour
     public TextMeshProUGUI latitudeText;
     public TextMeshProUGUI longitudeText;
 
-    [Header("Buttons")]
-    public Button playButton;
-    public Button stopButton;
-    public Button pauseButton;
-    public Button returnButton;
-
-    private Color translucentButtonColor = new Color32(0, 0, 0, 0);
-    private Color selectedButtonColor = new Color32(78, 101, 192, 190);
-
     private bool isEditingEngine = false;
     private bool isEditingRudder = false;
 
@@ -43,15 +34,6 @@ public class ShipUIController : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        Button playBtn = playButton.GetComponent<Button>();
-        playBtn.onClick.AddListener(OnPlayButtonClick);
-        Button stopBtn = stopButton.GetComponent<Button>();
-        stopBtn.onClick.AddListener(OnStopButtonClick);
-        Button pauseBtn = pauseButton.GetComponent<Button>();
-        pauseBtn.onClick.AddListener(OnPauseButtonClick);
-        Button returnBtn = returnButton.GetComponent<Button>();
-        returnBtn.onClick.AddListener(OnReturnButtonClick);
-
         enginePowerSlider.onValueChanged.AddListener(OnEnginePowerSliderChanged);
         enginePowerField.onEndEdit.AddListener(OnEnginePowerFieldChanged);
         enginePowerField.onSelect.AddListener((_) => isEditingEngine = true);
@@ -64,10 +46,6 @@ public class ShipUIController : MonoBehaviour
     }
     void OnDestroy()
     {
-        stopButton.onClick.RemoveListener(OnStopButtonClick);
-        pauseButton.onClick.RemoveListener(OnStopButtonClick);
-        returnButton.onClick.RemoveListener(OnStopButtonClick);
-
         enginePowerSlider.onValueChanged.RemoveListener(OnEnginePowerSliderChanged);
         enginePowerField.onEndEdit.RemoveListener(OnEnginePowerFieldChanged);
         enginePowerField.onSelect.RemoveAllListeners();
@@ -112,40 +90,6 @@ public class ShipUIController : MonoBehaviour
         {
             orbitCamera.SetTarget(newShip.transform);
         }
-    }
-
-    private void OnReturnButtonClick()
-    {
-        shipReference.transform.position = Vector3.zero;
-        shipReference.transform.rotation = Quaternion.identity;
-    }
-    private void OnPauseButtonClick()
-    {
-        shipReference.simulationRunning = false;
-        weatherReference.SimulationRunning = false;
-        PlayButtonPressed(shipReference.simulationRunning);
-    }
-    private void OnStopButtonClick()
-    {
-		shipReference.transform.position = Vector3.zero;
-		shipReference.transform.rotation = Quaternion.identity;
-
-		shipReference.simulationRunning = false;
-        weatherReference.SimulationRunning = false;
-        PlayButtonPressed(shipReference.simulationRunning);
-    }
-    private void OnPlayButtonClick()
-    {
-        shipReference.simulationRunning = true;
-        weatherReference.SimulationRunning = true;
-        PlayButtonPressed(shipReference.simulationRunning);
-    }
-
-    public void PlayButtonPressed(bool simulationState)
-    {
-        ColorBlock colorBlock = playButton.colors;
-        colorBlock.normalColor = simulationState ? selectedButtonColor : translucentButtonColor;
-        playButton.colors = colorBlock;
     }
 
     private void OnRudderSliderChanged(float value)

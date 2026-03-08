@@ -1246,7 +1246,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 82356780}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1801515701}
+        m_TargetAssemblyTypeName: UIController, Assembly-CSharp
+        m_MethodName: ChangeTime
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 60
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &82356780
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2658,7 +2670,19 @@ MonoBehaviour:
   m_Value: 159
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1801515701}
+        m_TargetAssemblyTypeName: UIController, Assembly-CSharp
+        m_MethodName: ChangeWindDirection
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &198214551
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2849,10 +2873,22 @@ MonoBehaviour:
   m_MinValue: 0
   m_MaxValue: 100
   m_WholeNumbers: 1
-  m_Value: 0
+  m_Value: 100
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1801515701}
+        m_TargetAssemblyTypeName: UIController, Assembly-CSharp
+        m_MethodName: ChangeRainIntensity
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &203902195
 GameObject:
   m_ObjectHideFlags: 0
@@ -3818,92 +3854,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 245015688}
   m_CullTransparentMesh: 1
---- !u!1 &262839491
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 262839493}
-  - component: {fileID: 262839492}
-  m_Layer: 0
-  m_Name: WeatherUIController
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &262839492
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 262839491}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 692d6f9771133cc4c8e73c9a99cd7487, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  weather: {fileID: 1791320289}
-  sunLight: {fileID: 1595163391}
-  rainEnabled: 0
-  thunderstormEnabled: 0
-  fogEnabled: 0
-  timeMultiplier: 1
-  rainParticles: {fileID: 1892418454}
-  thunderstormParticles: {fileID: 944782287}
-  fogParticles: {fileID: 1864338365}
-  timeLabels:
-  - {fileID: 1970765760}
-  - {fileID: 135878247}
-  timeMultiplierLabels:
-  - {fileID: 1551172040}
-  - {fileID: 1446552436}
-  wavesSizeLabel: {fileID: 82426807}
-  visibilityRangeLabel: {fileID: 467622171}
-  windLabel: {fileID: 130103820}
-  thunderstormIntensityLabel: {fileID: 1884659654}
-  rainIntensityLabel: {fileID: 313808760}
-  fogIntensityLabel: {fileID: 1273344390}
-  addMinuteButton: {fileID: 1864134214}
-  removeMinuteButton: {fileID: 1765873220}
-  addHourButton: {fileID: 82356779}
-  removeHourButton: {fileID: 447409048}
-  addSecondButton: {fileID: 1232305834}
-  removeSecondButton: {fileID: 1813862009}
-  sunnyButton: {fileID: 1306559893}
-  rainyButton: {fileID: 464583759}
-  foggyButton: {fileID: 2130167540}
-  thunderstormButton: {fileID: 1716674607}
-  windSpeedSlider: {fileID: 1613932499}
-  windDirectionSlider: {fileID: 198214550}
-  wavesSizeSlider: {fileID: 1907074246}
-  visibilityRangeSlider: {fileID: 471297422}
-  rainIntensitySlider: {fileID: 201041417}
-  thunderstormIntensitySlider: {fileID: 1580628009}
-  fogIntensitySlider: {fileID: 959422313}
-  timeScaleSlider: {fileID: 1287104688}
-  _rainIntensity: 42.5
-  _fogDensity: 17.8
-  _thunderstormIntensity: 0.559
---- !u!4 &262839493
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 262839491}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0.092750564, y: -0.5783232, z: 0.06640287, w: 0.8077935}
-  m_LocalPosition: {x: 618.1465, y: 1463.3912, z: 1530.1383}
-  m_LocalScale: {x: 2.1145382, y: 2.1145377, z: 2.1145377}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 294302701}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &272956640
 GameObject:
   m_ObjectHideFlags: 0
@@ -4329,7 +4279,7 @@ RectTransform:
   - {fileID: 1032434668}
   - {fileID: 244704213}
   - {fileID: 1775614177}
-  - {fileID: 262839493}
+  - {fileID: 1801515702}
   m_Father: {fileID: 1633863017}
   m_LocalEulerAnglesHint: {x: 0, y: -251.763, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -11632,7 +11582,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 447409049}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1801515701}
+        m_TargetAssemblyTypeName: UIController, Assembly-CSharp
+        m_MethodName: ChangeTime
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: -60
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &447409049
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12082,7 +12044,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 464583760}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1801515701}
+        m_TargetAssemblyTypeName: UIController, Assembly-CSharp
+        m_MethodName: ChangeWeatherState
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 2
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &464583760
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12496,10 +12470,22 @@ MonoBehaviour:
   m_MinValue: 0
   m_MaxValue: 5000
   m_WholeNumbers: 1
-  m_Value: 2575
+  m_Value: 159
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1801515701}
+        m_TargetAssemblyTypeName: UIController, Assembly-CSharp
+        m_MethodName: ChangeVisibilityRange
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &471297423
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -22119,10 +22105,22 @@ MonoBehaviour:
   m_MinValue: 0
   m_MaxValue: 100
   m_WholeNumbers: 1
-  m_Value: 0
+  m_Value: 100
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1801515701}
+        m_TargetAssemblyTypeName: UIController, Assembly-CSharp
+        m_MethodName: ChangeFogIntensity
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &965324689
 GameObject:
   m_ObjectHideFlags: 0
@@ -25324,7 +25322,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1232305835}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1801515701}
+        m_TargetAssemblyTypeName: UIController, Assembly-CSharp
+        m_MethodName: ChangeTime
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1232305835
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -26845,7 +26855,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1306559894}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1801515701}
+        m_TargetAssemblyTypeName: UIController, Assembly-CSharp
+        m_MethodName: ChangeWeatherState
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1306559894
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -30536,10 +30558,22 @@ MonoBehaviour:
   m_MinValue: 0
   m_MaxValue: 100
   m_WholeNumbers: 1
-  m_Value: 0
+  m_Value: 100
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1801515701}
+        m_TargetAssemblyTypeName: UIController, Assembly-CSharp
+        m_MethodName: ChangeThunderstormIntensity
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &1590176841
 GameObject:
   m_ObjectHideFlags: 0
@@ -31081,10 +31115,22 @@ MonoBehaviour:
   m_MinValue: 0
   m_MaxValue: 50
   m_WholeNumbers: 1
-  m_Value: 26
+  m_Value: 50
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1801515701}
+        m_TargetAssemblyTypeName: UIController, Assembly-CSharp
+        m_MethodName: ChangeWindSpeed
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1613932500
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -32668,7 +32714,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1716674608}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1801515701}
+        m_TargetAssemblyTypeName: UIController, Assembly-CSharp
+        m_MethodName: ChangeWeatherState
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 3
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1716674608
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -33562,7 +33620,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1765873221}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1801515701}
+        m_TargetAssemblyTypeName: UIController, Assembly-CSharp
+        m_MethodName: ChangeTime
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: -1
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1765873221
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -34068,7 +34138,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7f021e6e7ab7920448547afa2a260425, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sunLight: {fileID: 1595163391}
+  rainParticles: {fileID: 1892418454}
+  thunderstormParticles: {fileID: 944782287}
+  fogParticles: {fileID: 1864338365}
+  rainEnabled: 0
+  thunderstormEnabled: 0
+  fogEnabled: 0
   SimulationRunning: 0
+  _rainIntensity: 0
+  _fogDensity: 0
+  _thunderstormIntensity: 0
 --- !u!4 &1791320290
 Transform:
   m_ObjectHideFlags: 0
@@ -34283,6 +34363,60 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cursorType: 1
   isGrabbable: 1
+--- !u!1 &1801515700
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1801515702}
+  - component: {fileID: 1801515701}
+  m_Layer: 0
+  m_Name: WeatherUIController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1801515701
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1801515700}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d974f3302fbfb4f48958f9e919f31959, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
+  timeLabelList:
+  - {fileID: 1970765760}
+  - {fileID: 135878247}
+  timeMultiplierLabelList: []
+  wavesSizeLabel: {fileID: 82426807}
+  visibilityRangeLabel: {fileID: 467622171}
+  windLabel: {fileID: 130103820}
+  thunderstormIntensityLabel: {fileID: 1884659654}
+  rainIntensityLabel: {fileID: 313808760}
+  fogIntensityLabel: {fileID: 1273344390}
+--- !u!4 &1801515702
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1801515700}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0.0000000037252903, w: 1}
+  m_LocalPosition: {x: -1920, y: -1080, z: 0.00042724615}
+  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 294302701}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1808581154
 GameObject:
   m_ObjectHideFlags: 0
@@ -34441,7 +34575,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1813862010}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1801515701}
+        m_TargetAssemblyTypeName: UIController, Assembly-CSharp
+        m_MethodName: ChangeTime
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1813862010
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -34956,7 +35102,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1864134215}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1801515701}
+        m_TargetAssemblyTypeName: UIController, Assembly-CSharp
+        m_MethodName: ChangeTime
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 1
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1864134215
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -44911,10 +45069,22 @@ MonoBehaviour:
   m_MinValue: 0
   m_MaxValue: 10
   m_WholeNumbers: 1
-  m_Value: 5
+  m_Value: 10
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1801515701}
+        m_TargetAssemblyTypeName: UIController, Assembly-CSharp
+        m_MethodName: ChangeWaveSize
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1907074247
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -52576,7 +52746,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2130167541}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1801515701}
+        m_TargetAssemblyTypeName: UIController, Assembly-CSharp
+        m_MethodName: ChangeWeatherState
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 1
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &2130167541
 MonoBehaviour:
   m_ObjectHideFlags: 0
