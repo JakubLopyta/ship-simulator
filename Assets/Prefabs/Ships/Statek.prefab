@@ -88,8 +88,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   length: 100
-  displacement: 20000000
+  displacement: 20000
   vmax: 8
+  rudderMax: 35
   LatitudeDeg: 0
   LongitudeDeg: 0
   Height: 0
@@ -102,6 +103,7 @@ MonoBehaviour:
   rot: 0
   speed: 0
   enginePower: 0
+  rudderTarget: 0
   rudder: 0
   modelMode: 2
   simulationRunning: 1

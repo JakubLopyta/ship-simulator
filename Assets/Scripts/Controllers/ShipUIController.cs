@@ -95,13 +95,13 @@ public class ShipUIController : MonoBehaviour
 		if (!isEditingEngine)
         {
             enginePowerField.text = (shipReference.EnginePower * 100).ToString("F0");
-            enginePowerSlider.value = (float)(shipReference.EnginePower * 100);
+            enginePowerSlider.value = (shipReference.EnginePower * 100);
         }
 
         if (!isEditingRudder)
         {
-            RudderField.text = shipReference.Rudder.ToString("F1");
-            RudderSlider.value = (float)shipReference.Rudder;
+            RudderField.text = shipReference.RudderTarget.ToString("F1");
+            RudderSlider.value = shipReference.RudderTarget;
         }
     }
     public void SetSelectedShip(Ship newShip)
@@ -151,15 +151,15 @@ public class ShipUIController : MonoBehaviour
     private void OnRudderSliderChanged(float value)
     {
 
-        shipReference.Rudder = value;
+        shipReference.RudderTarget = value;
     }
 
     private void OnRudderChanged(string text)
     {
 
-        if (double.TryParse(text, out double value))
+        if (float.TryParse(text, out float value))
         {
-            shipReference.Rudder = value;
+            shipReference.RudderTarget = value;
         }
     }
 

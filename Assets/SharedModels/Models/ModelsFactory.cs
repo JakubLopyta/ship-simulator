@@ -19,7 +19,7 @@ namespace Models.Models
 					nomoto.SetNomotoParameters(nomotoParams[0], nomotoParams[1], nomotoParams[2], nomotoParams[3]);
 					return nomoto;
 				case ModelEnum.test:
-					throw new NotImplementedException();
+					return ship.gameObject.AddComponent<TestModel>();
 				default:
 					return null;
 					

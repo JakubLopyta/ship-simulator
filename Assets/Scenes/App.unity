@@ -59951,6 +59951,10 @@ PrefabInstance:
       value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 1767788720537874655, guid: ac55ad286a275be44b9e3179bbff7731, type: 3}
+      propertyPath: modelMode
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1767788720537874655, guid: ac55ad286a275be44b9e3179bbff7731, type: 3}
       propertyPath: m_EditorClassIdentifier
       value: Assembly-CSharp::Ship
       objectReference: {fileID: 0}

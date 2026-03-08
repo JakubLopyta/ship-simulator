@@ -1,4 +1,5 @@
 ﻿using Models.Models;
+using System;
 using UnityEngine;
 
 /// <summary>
@@ -15,30 +16,27 @@ public class Nomoto2ndOrderModel: MonoBehaviour, IModel
 	[SerializeField] private float K = 0.05f;
 
 	// Kinematic state variables
-	private float YawRate = 0f;			// r [rad/s]
-	private float YawAccel = 0f;		// r_dot [rad/s^2]
-	private float HeadingRad = 0f;      // psi [rad]
+	private double YawRate = 0f;			// r [rad/s]
+	private double YawAccel = 0f;		// r_dot [rad/s^2]
+	private double HeadingRad = 0f;      // psi [rad]
 
 	// User inputs
 	private float enginePower = 0f;
 	private float rudderTarget = 0f;
 
 	// Memory of previous rudder to calculate derivative
-	private float currentRudderDeg;
-	private float currentRudderRad;
-	private float previousRudderAngle = 0f;
+	private double currentRudderDeg;
+	private double currentRudderRad;
+	private double previousRudderAngle = 0f;
 	private bool isFirstUpdate = true;
 
-	// temp for surge calculations
+	// Surge tuning
 	[Space(10)]
 	[SerializeField] private float vmax;            // m/s
-	[SerializeField] private uint mass;				// kg
+	[SerializeField] private float mass;			// kg
 	[SerializeField] private float thrustForce;     // N at enginePower=1
 	[SerializeField] private float rudderMax;		// deg
 	[SerializeField] private float rudderDragK;     // extra drag multiplier for rudder angle^2 (1.0-3.0)
-
-	[Space(10)]
-	[SerializeField] private bool ManualRudderRateCalculation;
 
 	void Awake()
 	{
@@ -47,7 +45,7 @@ public class Nomoto2ndOrderModel: MonoBehaviour, IModel
 	void OnEnable()
 	{
 		vmax = Ship.Vmax;
-		mass = Ship.Displacement;
+		mass = Mathf.Max(1, Ship.Displacement * 1000);  // scale from t to kg
 		thrustForce = 5e5f;
 		rudderMax = Ship.RudderMax;
 		rudderDragK = 1.8f;
@@ -63,55 +61,49 @@ public class Nomoto2ndOrderModel: MonoBehaviour, IModel
 	public void Calculate()
 	{
 		float dt = Time.fixedDeltaTime;
-		rudderTarget = Mathf.Clamp((float)Ship.Rudder, -35f, 35f);
-		mass = (uint)Mathf.Clamp(Ship.Displacement, 1000, 1000000000);   // minimum one tonne, maximum milion tonns
+		rudderTarget = Ship.RudderTarget;
 		enginePower = Ship.EnginePower;
-		float v = (float)Ship.Speed;
+		double v = Ship.Speed;
 		float l = Ship.Length;
 		
 
 		#region Nomoto2ndOrder
 		// Switch to dimensional parameters
-		float safeV = Mathf.Max(v, 0.5f);
-		float K_dim = K * safeV / l;
-		float lov = l / safeV;
-		float T1_dim = T1 * lov;
-		float T2_dim = T2 * lov;
-		float T3_dim = T3 * lov;
+		double safeV = Math.Max(v, 0.5);
+		double K_dim = K * safeV / l;
+		double lov = l / safeV;
+		double T1_dim = T1 * lov;
+		double T2_dim = T2 * lov;
+		double T3_dim = T3 * lov;
 
-		// TESTING - rudder deflection rate
-		if (ManualRudderRateCalculation)
-			currentRudderDeg = Mathf.MoveTowardsAngle(currentRudderDeg, rudderTarget, 2.6f * dt);
-		else
-			currentRudderDeg = rudderTarget;
+		// Limit rudder deflection rate
+		currentRudderDeg = Mathf.MoveTowardsAngle((float)currentRudderDeg, rudderTarget, 2.6f * dt);
+		currentRudderRad = currentRudderDeg * Math.PI / 180;
 
-		currentRudderRad = currentRudderDeg * Mathf.Deg2Rad;
-
-		// Obliczenie pochodnej wychylenia steru (delta_dot)
-		float delta_dot = 0f;
+		// Rudder deflection derivative calculation (delta_dot)
+		double delta_dot = 0f;
 		if (isFirstUpdate)
 			isFirstUpdate = false;
 		else
 			delta_dot = (currentRudderRad - previousRudderAngle) / dt;
 
-		// Przygotowanie mianowników
-		float T1T2 = T1_dim * T2_dim;
-		float T1plusT2 = T1_dim + T2_dim;
+		// Preparing denominators
+		double T1T2 = T1_dim * T2_dim;
+		double T1plusT2 = T1_dim + T2_dim;
 
-		// Obliczenie drugiej pochodnej prędkości kątowej (r_dot_dot)
 		// r_dot_dot = [ K*(delta + T3*delta_dot) - (T1+T2)*r_dot - r ] / (T1*T2)
-		float term1 = K_dim * (currentRudderRad + T3_dim * delta_dot);
-		float term2 = T1plusT2 * YawAccel;
-		float term3 = YawRate;
+		double term1 = K_dim * (currentRudderRad + T3_dim * delta_dot);
+		double term2 = T1plusT2 * YawAccel;
+		double term3 = YawRate;
 
-		float r_dot_dot = (term1 - term2 - term3) / T1T2;
+		double r_dot_dot = (term1 - term2 - term3) / T1T2;
 
 		// Semi implicit Euler (Euler-Cromer) - sequential variable updating
 		YawAccel += r_dot_dot * dt;
 		YawRate += YawAccel * dt;
 		HeadingRad += YawRate * dt;
 
-		// Zapamiętanie kąta steru do obliczenia delta_dot w następnym kroku
+		// Saving rudder angle to calculate delta_dot in next simulation step
 		previousRudderAngle = currentRudderRad;
 		#endregion
 
@@ -124,21 +116,21 @@ public class Nomoto2ndOrderModel: MonoBehaviour, IModel
 		float dragCoefficient0 = (vmax != 0f) ? (thrustForce / (vmax * vmax)) : 0f;
 
 		// Rudder-induced drag
-		float rudderFrac = Mathf.Abs(currentRudderDeg) / rudderMax;
-		float dragCoefficient = dragCoefficient0 * (1f + rudderDragK * rudderFrac * rudderFrac);
+		double rudderFrac = Math.Abs(currentRudderDeg) / rudderMax;
+		double dragCoefficient = dragCoefficient0 * (1 + rudderDragK * rudderFrac * rudderFrac);
 
 		// Speed drag
-		float dragForce = dragCoefficient * v * v * Mathf.Sign(v);  // frictional resistance proportional to v^2
+		double dragForce = dragCoefficient * v * v * Math.Sign(v);  // frictional resistance proportional to v^2
 
 		float actualThrustForce = thrustForce * enginePower;
-		float netForce = actualThrustForce - dragForce;    // N
-		float accel = netForce / mass;
+		double netForce = actualThrustForce - dragForce;    // N
+		double accel = netForce / mass;
 		v += accel * dt;
 
-		// Prevent tiny float tails and negative creep when power is zero
-		if (enginePower <= 0.0001f && Mathf.Abs(v) < 0.01f)
+		// Prevent tiny tails and negative creep when power is zero
+		if (enginePower <= 0.0001 && Math.Abs(v) < 0.01)
 			v = 0f;
-		v = Mathf.Max(0f, v);
+		v = Math.Max(0, v);
 
 		Ship.Speed = v;
 		#endregion
@@ -161,17 +153,17 @@ public class Nomoto2ndOrderModel: MonoBehaviour, IModel
 			out zUp);
 
 		// Decompose ground speed into North/East components in meters/second.
-		float vNorth = v * Mathf.Cos(HeadingRad);  // 0 rad = North
-		float vEast = v * Mathf.Sin(HeadingRad);  // +pi/2 rad = East
+		double vNorth = v * Math.Cos(HeadingRad);  // 0 rad = North
+		double vEast = v * Math.Sin(HeadingRad);  // +pi/2 rad = East
 
 		xEast += vEast * dt;
 		yNorth += vNorth * dt;
 
 		// --------- Update ship state ----------
 		// Cog and Hdg are temporarily the same
-		Ship.Cog = HeadingRad * Mathf.Rad2Deg;
+		Ship.Cog = HeadingRad * 180 / Math.PI;
 		Ship.Hdg = Ship.Cog;
-		Ship.Rot = YawRate * Mathf.Rad2Deg;
+		Ship.Rot = YawRate * 180 / Math.PI;
 		Ship.Sog = Ship.Speed;
 
 		Vector3 unityPos = new Vector3((float)xEast, (float)zUp, (float)yNorth);
@@ -208,9 +200,9 @@ public class Nomoto2ndOrderModel: MonoBehaviour, IModel
 	[ContextMenu("Reset state")]
 	public void ResetState()
 	{
-		YawRate = 0f;
-		YawAccel = 0f;
-		previousRudderAngle = 0f;
+		YawRate = 0;
+		YawAccel = 0;
+		previousRudderAngle = 0;
 		isFirstUpdate = true;
 
 		Ship.Speed = 0;

@@ -2,22 +2,17 @@ using Models.Models;
 using System;
 using UnityEngine;
 
-public class TestModel : IModel
+public class TestModel : MonoBehaviour, IModel
 {
-	public TestModel(Ship _ship)
-	{
-		Ship = _ship;
-	}
-
 	// Ship parameters
 	public Ship Ship;
 	public float vmax;              // m/s target top speed at full power, straight rudder
 	public float length;
-	public uint mass;
+	public float mass;	// kg
 
 	// State
-	public float HeadingRad = 0f;    // 0=N, +pi/2=E
-	public float YawRate = 0f;       // rad/s
+	public double HeadingRad = 0f;    // 0=N, +pi/2=E
+	public double YawRate = 0f;       // rad/s
 
 	// User inputs
 	[Range(0, 1)] public float enginePower = 0f;
@@ -30,14 +25,28 @@ public class TestModel : IModel
 	public float yawGain = 0.5f;        // how strongly rudder turns the ship
 	public float YawAccel = 5e-3f;      // rad/s^2, how fast yawRate reaches target rate
 
+	void Awake()
+	{
+		Ship = GetComponent<Ship>();
+	}
+	void OnEnable()
+	{
+		vmax = Ship.Vmax;
+		mass = Mathf.Max(1, Ship.Displacement * 1000);  // scale from t to kg
+		thrustForce = 5e5f;
+		rudderMax = Ship.RudderMax;
+		rudderDragK = 1.8f;
+	}
+	private void FixedUpdate()
+	{
+		Calculate();
+	}
 	public void Calculate()
 	{
 		float dt = Time.deltaTime;
-		vmax = Ship.Vmax;
-		mass = (uint)Mathf.Clamp(Ship.Displacement, 1000, 1000000000);   // minimum one tonne, maximum milion tonns
 		length = Ship.Length;
 		enginePower = Ship.EnginePower;
-		rudderDeg = Mathf.Clamp((float)Ship.Rudder, -35f, 35f);
+		rudderDeg = Ship.RudderTarget;
 		
 
 		// ---------- Acceleration - thrust and drag ----------
@@ -48,38 +57,38 @@ public class TestModel : IModel
 		float dragCoefficient0 = (vmax != 0f) ? (thrustForce / (vmax * vmax)) : 0f;
 
 		// Rudder-induced drag
-		float rudderFrac = Mathf.Abs(rudderDeg) / rudderMax;
-		float dragCoefficient = dragCoefficient0 * (1f + rudderDragK * rudderFrac * rudderFrac);
+		double rudderFrac = Mathf.Abs(rudderDeg) / rudderMax;
+		double dragCoefficient = dragCoefficient0 * (1 + rudderDragK * rudderFrac * rudderFrac);
 
 		// Speed drag
-		float v = (float)Ship.Speed;
-		float dragForce = dragCoefficient * v * v * Mathf.Sign(v);	// frictional resistance proportional to v^2
+		double v = Ship.Speed;
+		double dragForce = dragCoefficient * v * v * Math.Sign(v);	// frictional resistance proportional to v^2
 
 		float actualThrustForce = thrustForce * enginePower;
-		float netForce = actualThrustForce - dragForce;    // N
-		float accel = netForce / mass;
+		double netForce = actualThrustForce - dragForce;    // N
+		double accel = netForce / mass;
 		v += accel * dt;
 
 		// Prevent tiny float tails and negative creep when power is zero
-		if (enginePower <= 0.0001f && Mathf.Abs(v) < 0.01f)
+		if (enginePower <= 0.0001 && Math.Abs(v) < 0.01)
 			v = 0f;
-		v = Mathf.Max(0f, v);
+		v = Math.Max(0, v);
 
 		Ship.Speed = v;
 
 
 		// ---------- Yaw / turning dynamics ----------
 		// Simple empirical yaw model: desired yaw rate is proportional to rudder * (speed / length)
-		float rudderNorm = (float)(rudderDeg / rudderMax); // -1..1
-		float yawTarget = yawGain * rudderNorm * (v / Mathf.Max(length, 10f)); // rad/s
-		YawRate = Mathf.MoveTowards(YawRate, yawTarget, YawAccel * dt);
+		float rudderNorm = rudderDeg / rudderMax; // -1..1
+		float yawTarget = yawGain * rudderNorm * ((float)v / Mathf.Max(length, 10f)); // rad/s
+		YawRate = Mathf.MoveTowards((float)YawRate, yawTarget, YawAccel * dt);
 		HeadingRad += YawRate * dt;		// update current heading
 
 		// Wrap heading to [-pi, pi] for stability
-		if (HeadingRad > Mathf.PI)
-			HeadingRad -= 2f * Mathf.PI;
-		else if (HeadingRad < -Mathf.PI)
-			HeadingRad += 2f * Mathf.PI;
+		if (HeadingRad > Math.PI)
+			HeadingRad -= 2 * Math.PI;
+		else if (HeadingRad < -Math.PI)
+			HeadingRad += 2 * Math.PI;
 
 
 		// ---------- Spherical Earth position update ----------
@@ -99,8 +108,8 @@ public class TestModel : IModel
 			out zUp);
 				
 		// Decompose ground speed into North/East components in meters/second.
-		float vNorth = v * Mathf.Cos(HeadingRad);  // 0 rad = North
-		float vEast = v * Mathf.Sin(HeadingRad);  // +pi/2 rad = East
+		double vNorth = v * Math.Cos(HeadingRad);  // 0 rad = North
+		double vEast = v * Math.Sin(HeadingRad);  // +pi/2 rad = East
 		
 		xEast += vEast * dt;
 		yNorth += vNorth * dt;
@@ -108,9 +117,9 @@ public class TestModel : IModel
 
 		// --------- Update ship state ----------
 		// Cog and Hdg are temporarily the same
-		Ship.Cog = HeadingRad * Mathf.Rad2Deg;
+		Ship.Cog = HeadingRad * 180 / Math.PI;
 		Ship.Hdg = Ship.Cog;
-		Ship.Rot = YawRate * Mathf.Rad2Deg;
+		Ship.Rot = YawRate * 180 / Math.PI;
 		Ship.Sog = Ship.Speed;
 
 		Vector3 unityPos = new Vector3((float)xEast, (float)zUp, (float)yNorth);
@@ -139,8 +148,7 @@ public class TestModel : IModel
 	public void ResetState()
 	{
 		Ship.Speed = 0;
-		YawRate = 0f;
-		YawAccel = 0f;
-		HeadingRad = 0f;
+		YawRate = 0;
+		HeadingRad = 0;
 	}
 }

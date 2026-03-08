@@ -60,7 +60,7 @@ public class ShipManoeuvreTests : MonoBehaviour
 				  $"Heading: {startHdg}°, speed: {V:F2}m/s");
 		
 		// Rudder order
-		Ship.Rudder = (double)rudderMax;
+		Ship.RudderTarget = rudderMax;
 
 		// wait until heading changes 90 deg
 		Debug.Log("Waiting for 90 deg heading deviation...");
@@ -81,13 +81,13 @@ public class ShipManoeuvreTests : MonoBehaviour
 		float distanceTD = Vector3.Distance(startPos, transform.position);
 		float tacticalDiameter = Mathf.Abs(Mathf.Sin(angleTD * Mathf.Deg2Rad) * distanceTD);
 
+		//Results presentation
 		string resultMsg = $"<color=cyan>--- TURNING CIRCLE MANOEUVRE RESULTS ---</color>\n";
-		resultMsg += $"Angle: {angleAdv}; Distance: {distanceAdv:F2}; Advance: {advance:F2}m\n";
-		resultMsg += $"Angle: {angleTD}; Distance: {distanceTD:F2}; Tactical diameter: {tacticalDiameter:F2}m\n";
+		resultMsg += $"<b>Advance:</b> {advance:F2}m, <b>Tactical diameter: </b> {tacticalDiameter:F2}m\n\n";
+		resultMsg += $"DEBUG\n";
+		resultMsg += $"Angle ADV: {angleAdv}; Distance ADV: {distanceAdv:F2}m\n";
+		resultMsg += $"Angle TD: {angleTD}; Distance TD: {distanceTD:F2}m\n";
 		Debug.Log(resultMsg);
-
-
-
 	}
 
 	public void StartZigZagTest(int angleDeg)
@@ -139,12 +139,12 @@ public class ShipManoeuvreTests : MonoBehaviour
 				  $"L/V = {LoV:F2} s (L={L}m, V={V:F2}m/s)");
 
 		// --- First execute ---
-		Ship.Rudder = angleDeg;
+		Ship.RudderTarget = angleDeg;
         
         yield return new WaitUntil(() => Mathf.DeltaAngle(startHdg, (float)Ship.Hdg) >= angleDeg);
 
 		// --- Second execute and measurement of first overshot angle ---
-		Ship.Rudder = -angleDeg;
+		Ship.RudderTarget = -angleDeg;
         float peakFirstDeviation = angleDeg;
 
 		while ((currentDev = Mathf.DeltaAngle(startHdg, (float)Ship.Hdg)) > -angleDeg)
@@ -157,7 +157,7 @@ public class ShipManoeuvreTests : MonoBehaviour
 		float firstOvershoot = peakFirstDeviation - angleDeg;
 
 		// --- Third execute and measurement of second overshot angle ---
-		Ship.Rudder = angleDeg;
+		Ship.RudderTarget = angleDeg;
         float peakSecondDeviation = -angleDeg;
 
 		while ((currentDev = Mathf.DeltaAngle(startHdg, (float)Ship.Hdg)) < angleDeg)
@@ -170,7 +170,7 @@ public class ShipManoeuvreTests : MonoBehaviour
 		float secondOvershoot = Mathf.Abs(peakSecondDeviation) - angleDeg;
 
         // --- Test closure ---
-        Ship.Rudder = 0;
+        Ship.RudderTarget = 0;
 
 		// Results presentation
 		string resultMsg = $"<color=cyan>--- ZIG-ZAG {angleDeg}°/{angleDeg}° RESULTS ---</color>\n";
@@ -179,16 +179,17 @@ public class ShipManoeuvreTests : MonoBehaviour
 		if (maxFirstOvershoot > 0)
 		{
 			bool passed = firstOvershoot <= maxFirstOvershoot;
-			resultMsg += passed ? $"<color=green>(Passed, limit: {maxFirstOvershoot:F2}°)</color>\n" : $"<color=red>(Failed (ship's manoeuvrability unsatisfactory), limit: {maxFirstOvershoot:F2}°)</color>\n";
+			resultMsg += passed ? $"<color=green>(Passed, limit: {maxFirstOvershoot:F2}°)</color>" : $"<color=red>(Failed (ship's manoeuvrability unsatisfactory), limit: {maxFirstOvershoot:F2}°)</color>";
 		}
-		else resultMsg += "\n";
+		resultMsg += "\n";
 
 		resultMsg += $"<b>Second overshoot angle:</b> {secondOvershoot:F2}° ";
 		if (angleDeg == 10)
 		{
 			bool passed = secondOvershoot <= maxSecondOvershoot;
-			resultMsg += passed ? $"<color=green>(Passed, limit: {maxSecondOvershoot:F2}°)</color>\n" : $"<color=red>(Failed (ship's manoeuvrability unsatisfactory), limit: {maxSecondOvershoot:F2}°)</color>\n";
+			resultMsg += passed ? $"<color=green>(Passed, limit: {maxSecondOvershoot:F2}°)</color>" : $"<color=red>(Failed (ship's manoeuvrability unsatisfactory), limit: {maxSecondOvershoot:F2}°)</color>";
 		}
+		resultMsg += "\n";
 
 		Debug.Log(resultMsg);
 	}

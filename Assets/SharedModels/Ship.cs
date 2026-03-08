@@ -87,7 +87,7 @@ public class Ship : MonoBehaviour
 		}
 	}
 
-	[SerializeField] private uint displacement = (uint)20e6; // weight of ship [kg]
+	[SerializeField] private uint displacement = 20000; // weight of ship [t]
 	public uint Displacement
 	{
 		get => displacement;
@@ -119,6 +119,16 @@ public class Ship : MonoBehaviour
 		{
 			if(rudderMax == value) return;
 			rudderMax = value;
+		}
+	}
+	private float rudderDeflectionRate = 2.6f; // [deg/s]
+	public float RudderDeflectionRate
+	{
+		get => rudderDeflectionRate;
+		set
+		{
+			if (rudderDeflectionRate == value) return;
+			rudderDeflectionRate = value;
 		}
 	}
 	#endregion
@@ -193,7 +203,6 @@ public class Ship : MonoBehaviour
 		get => speed;
 		set
 		{
-
 			if (speed == value) return;
 			speed = value;
 		}
@@ -211,10 +220,23 @@ public class Ship : MonoBehaviour
 		}
 	}
 
-	[SerializeField] [Range(-35,35)] private double rudder = 0;
-	public double Rudder
+	[SerializeField] [Tooltip("Rudder set by user")] [Range(-35,35)]
+	private float rudderTarget = 0;
+	public float RudderTarget
 	{
-		get => Math.Round(rudder, 2);
+		get => rudderTarget;
+		set
+		{
+			value = Mathf.Clamp((float)value, -RudderMax, RudderMax);
+			if (rudderTarget == value) return;
+			rudderTarget = value;
+		}
+	}
+	[SerializeField] [Tooltip("Actual rudder deflection in this moment")]
+	private float rudder = 0;
+	public float Rudder
+	{
+		get => rudder;
 		set
 		{
 			value = Mathf.Clamp((float)value, -RudderMax, RudderMax);
@@ -276,17 +298,20 @@ public class Ship : MonoBehaviour
 		switch (ModelMode)
 		{
 			case ModelEnum.nomoto1stOrder:
-				Model = ModelsFactory.GetModel(this, ShipType, ModelEnum.nomoto1stOrder);
+				Model = ModelsFactory.GetModel(this, ShipType, ModelMode);
 				break;
 			case ModelEnum.nomoto2ndOrder:
-				Model = ModelsFactory.GetModel(this, ShipType, ModelEnum.nomoto2ndOrder);
+				Model = ModelsFactory.GetModel(this, ShipType, ModelMode);
+				break;
+			case ModelEnum.test:
+				Model = ModelsFactory.GetModel(this, ShipType, ModelMode);
 				break;
 		}
 	}
 
 	public void ResetState(float speed = 0)
 	{
-		Rudder = 0;
+		RudderTarget = 0;
 		Model.ResetState();
 		Speed = speed;
 	} 
