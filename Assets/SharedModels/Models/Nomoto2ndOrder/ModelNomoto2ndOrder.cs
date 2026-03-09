@@ -202,12 +202,10 @@ public class Nomoto2ndOrderModel: MonoBehaviour, IModel
 	{
 		YawRate = 0;
 		YawAccel = 0;
+		currentRudderDeg = 0;
 		previousRudderAngle = 0;
 		isFirstUpdate = true;
-
-		Ship.Speed = 0;
 		Ship.Sog = Ship.Speed;
 		Ship.Rot = YawRate;
-		Calculate();
 	}
 }

@@ -147,8 +147,8 @@ public class TestModel : MonoBehaviour, IModel
 	[ContextMenu("Reset state")]
 	public void ResetState()
 	{
-		Ship.Speed = 0;
 		YawRate = 0;
-		HeadingRad = 0;
+		Ship.Rot = YawRate;
+		Ship.Sog = Ship.Speed;
 	}
 }
