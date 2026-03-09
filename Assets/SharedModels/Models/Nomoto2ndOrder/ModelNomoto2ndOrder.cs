@@ -15,28 +15,38 @@ public class Nomoto2ndOrderModel: MonoBehaviour, IModel
 	[SerializeField] private float T3 = 4f;
 	[SerializeField] private float K = 0.05f;
 
-	// Kinematic state variables
-	private double YawRate = 0f;			// r [rad/s]
-	private double YawAccel = 0f;		// r_dot [rad/s^2]
-	private double HeadingRad = 0f;      // psi [rad]
+	[Header("Ship parameters")]
+	[Tooltip("Target top speed at full power, straight rudder. Expressed in m/s")]
+	[SerializeField] private double vmax;
+	[Tooltip("Infuluences only surge dynamics. Expressed in kg")]
+	[SerializeField] private double mass;
+	[Tooltip("Expressed in m")]
+	[SerializeField] private double length;
+
+	[Header("State")]
+	[Tooltip("Expressed in rad/s")]
+	[SerializeField] private double YawRate = 0;		// r
+	[Tooltip("Expressed in rad/s^2")]
+	[SerializeField] private double YawAccel = 0;		// r_dot
+	[SerializeField] private double HeadingRad = 0;	// psi
+
+	[SerializeField] private double currentRudderDeg;
+	[SerializeField] private double currentRudderRad;
+	private double previousRudderAngle = 0; // Memory of previous rudder to calculate derivative
+	private bool isFirstUpdate = true;
+
+	// Surge tuning
+	[Header("Surge tuning")]
+	[Tooltip("N at enginePower = 1")]
+	[SerializeField] private double thrustForce;
+	[Tooltip("Maximum rudder deviation in deg")]
+	[SerializeField] private double rudderMax;
+	[Tooltip("Extra drag multiplier for rudder angle^2 (1.0-3.0)")]
+	[SerializeField] private double rudderDragK;
 
 	// User inputs
 	private float enginePower = 0f;
 	private float rudderTarget = 0f;
-
-	// Memory of previous rudder to calculate derivative
-	private double currentRudderDeg;
-	private double currentRudderRad;
-	private double previousRudderAngle = 0f;
-	private bool isFirstUpdate = true;
-
-	// Surge tuning
-	[Space(10)]
-	[SerializeField] private float vmax;            // m/s
-	[SerializeField] private float mass;			// kg
-	[SerializeField] private float thrustForce;     // N at enginePower=1
-	[SerializeField] private float rudderMax;		// deg
-	[SerializeField] private float rudderDragK;     // extra drag multiplier for rudder angle^2 (1.0-3.0)
 
 	void Awake()
 	{
@@ -44,11 +54,12 @@ public class Nomoto2ndOrderModel: MonoBehaviour, IModel
 	}
 	void OnEnable()
 	{
+		length = Ship.Length;
 		vmax = Ship.Vmax;
-		mass = Mathf.Max(1, Ship.Displacement * 1000);  // scale from t to kg
-		thrustForce = 5e5f;
+		mass = Math.Max(1, Ship.Displacement * 1000);  // scale from t to kg
+		thrustForce = 5e5;
 		rudderMax = Ship.RudderMax;
-		rudderDragK = 1.8f;
+		rudderDragK = 1.8;
 	}
 	void FixedUpdate()
 	{
@@ -63,15 +74,13 @@ public class Nomoto2ndOrderModel: MonoBehaviour, IModel
 		float dt = Time.fixedDeltaTime;
 		rudderTarget = Ship.RudderTarget;
 		enginePower = Ship.EnginePower;
-		double v = Ship.Speed;
-		float l = Ship.Length;
-		
+		double v = Ship.Speed;		
 
 		#region Nomoto2ndOrder
 		// Switch to dimensional parameters
 		double safeV = Math.Max(v, 0.5);
-		double K_dim = K * safeV / l;
-		double lov = l / safeV;
+		double K_dim = K * safeV / length;
+		double lov = length / safeV;
 		double T1_dim = T1 * lov;
 		double T2_dim = T2 * lov;
 		double T3_dim = T3 * lov;
@@ -81,7 +90,7 @@ public class Nomoto2ndOrderModel: MonoBehaviour, IModel
 		currentRudderRad = currentRudderDeg * Math.PI / 180;
 
 		// Rudder deflection derivative calculation (delta_dot)
-		double delta_dot = 0f;
+		double delta_dot = 0;
 		if (isFirstUpdate)
 			isFirstUpdate = false;
 		else
@@ -107,13 +116,12 @@ public class Nomoto2ndOrderModel: MonoBehaviour, IModel
 		previousRudderAngle = currentRudderRad;
 		#endregion
 
-
 		#region Acceleration - thrust and drag
 		// Calculate drag so that: thrust ~= drag at vmax with straight rudder (vessel is not accelerating)
 		// dragForce0 (rudder=0) = thrustForce (at vmax)
 		// dragForce0 (rudder=0) = dragCoefficient0 * speed^2
 		// dragCoefficient0 * speed^2 = thrustForce  -->  dragCoefficient0 = thrustForce / speed^2
-		float dragCoefficient0 = (vmax != 0f) ? (thrustForce / (vmax * vmax)) : 0f;
+		double dragCoefficient0 = (vmax != 0) ? (thrustForce / (vmax * vmax)) : 0;
 
 		// Rudder-induced drag
 		double rudderFrac = Math.Abs(currentRudderDeg) / rudderMax;
@@ -122,7 +130,7 @@ public class Nomoto2ndOrderModel: MonoBehaviour, IModel
 		// Speed drag
 		double dragForce = dragCoefficient * v * v * Math.Sign(v);  // frictional resistance proportional to v^2
 
-		float actualThrustForce = thrustForce * enginePower;
+		double actualThrustForce = thrustForce * enginePower;
 		double netForce = actualThrustForce - dragForce;    // N
 		double accel = netForce / mass;
 		v += accel * dt;

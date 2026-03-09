@@ -4,26 +4,41 @@ using UnityEngine;
 
 public class TestModel : MonoBehaviour, IModel
 {
-	// Ship parameters
-	public Ship Ship;
-	public float vmax;              // m/s target top speed at full power, straight rudder
-	public float length;
-	public float mass;	// kg
+	private Ship Ship;
 
-	// State
-	public double HeadingRad = 0f;    // 0=N, +pi/2=E
-	public double YawRate = 0f;       // rad/s
+	[Header("Ship parameters")]
+	[Tooltip("Target top speed at full power, straight rudder. Expressed in m/s")]
+	[SerializeField] private double vmax;
+	[Tooltip("Infuluences only surge dynamics. Expressed in kg")]
+	[SerializeField] private double mass;
+	[Tooltip("Expressed in m")]
+	[SerializeField] private double length;
+
+	[Header("State")]
+	[Tooltip("(-pi:pi) 0 -> North, +pi/2 -> East")]
+	[SerializeField] private double HeadingRad = 0;
+	[SerializeField] private double YawRateRad = 0;
+	[SerializeField] private double currentRudderDeg;
+
+	[Header("Surge tuning")]
+	[Tooltip("N at enginePower = 1")]
+	[SerializeField] private double thrustForce = 5e5;
+	[Tooltip("Extra drag multiplier for rudder angle^2 (1.0-3.0)")]
+	[SerializeField] private double rudderDragK = 1.8;    
+	
+	[Header("Yaw tuning")]
+	[Tooltip("How strongly rudder turns the ship")]
+	[SerializeField] private double yawGain = 0.5;
+	[Tooltip("How fast yawRate reaches target rate in rad/s^2")]
+	[SerializeField] private double YawAccel = 5e-3;
+
+	[Space(10)]
+	[Tooltip("Maximum rudder deviation in deg")]
+	[SerializeField] private double rudderMax = 35;
 
 	// User inputs
-	[Range(0, 1)] public float enginePower = 0f;
-	[Range(-35, 35)] public float rudderDeg = 0f;
-
-	// Tunning
-	public float thrustForce = 5e5f;    // N at enginePower=1
-	public float rudderMax = 35f;		// deg
-	public float rudderDragK = 1.8f;    // extra drag multiplier for rudder angle^2 (1.0-3.0)
-	public float yawGain = 0.5f;        // how strongly rudder turns the ship
-	public float YawAccel = 5e-3f;      // rad/s^2, how fast yawRate reaches target rate
+	private float enginePower = 0f;
+	private float rudderTarget = 0f;
 
 	void Awake()
 	{
@@ -31,11 +46,12 @@ public class TestModel : MonoBehaviour, IModel
 	}
 	void OnEnable()
 	{
+		length = Ship.Length;
 		vmax = Ship.Vmax;
-		mass = Mathf.Max(1, Ship.Displacement * 1000);  // scale from t to kg
-		thrustForce = 5e5f;
+		mass = Math.Max(1, Ship.Displacement * 1000);  // scale from t to kg
+		thrustForce = 5e5;
 		rudderMax = Ship.RudderMax;
-		rudderDragK = 1.8f;
+		rudderDragK = 1.8;
 	}
 	private void FixedUpdate()
 	{
@@ -44,27 +60,42 @@ public class TestModel : MonoBehaviour, IModel
 	public void Calculate()
 	{
 		float dt = Time.deltaTime;
-		length = Ship.Length;
 		enginePower = Ship.EnginePower;
-		rudderDeg = Ship.RudderTarget;
-		
+		rudderTarget = Ship.RudderTarget;
+		double v = Ship.Speed;
 
-		// ---------- Acceleration - thrust and drag ----------
+		#region Yaw / turning dynamics 
+		// Simple empirical yaw model: desired yaw rate is proportional to rudder * (speed / length)
+		// Limit rudder deflection rate
+		currentRudderDeg = Mathf.MoveTowardsAngle((float)currentRudderDeg, rudderTarget, 2.6f * dt);
+
+		double rudderNorm = currentRudderDeg / rudderMax; // -1..1
+		double yawTarget = yawGain * rudderNorm * (v / Math.Max(length, 10)); // rad/s
+		YawRateRad = Mathf.MoveTowards((float)YawRateRad, (float)yawTarget, (float)(YawAccel * dt));
+		HeadingRad += YawRateRad * dt;		// update current heading
+
+		// Wrap heading to [-pi, pi] for stability
+		if (HeadingRad > Math.PI)
+			HeadingRad -= 2 * Math.PI;
+		else if (HeadingRad < -Math.PI)
+			HeadingRad += 2 * Math.PI;
+		#endregion
+
+		#region Acceleration - thrust and drag
 		// Calculate drag so that: thrust ~= drag at vmax with straight rudder (vessel is not accelerating)
 		// dragForce0 (rudder=0) = thrustForce (at vmax)
 		// dragForce0 (rudder=0) = dragCoefficient0 * speed^2
 		// dragCoefficient0 * speed^2 = thrustForce  -->  dragCoefficient0 = thrustForce / speed^2
-		float dragCoefficient0 = (vmax != 0f) ? (thrustForce / (vmax * vmax)) : 0f;
+		double dragCoefficient0 = (vmax != 0) ? (thrustForce / (vmax * vmax)) : 0;
 
 		// Rudder-induced drag
-		double rudderFrac = Mathf.Abs(rudderDeg) / rudderMax;
+		double rudderFrac = Math.Abs(rudderNorm);
 		double dragCoefficient = dragCoefficient0 * (1 + rudderDragK * rudderFrac * rudderFrac);
 
 		// Speed drag
-		double v = Ship.Speed;
-		double dragForce = dragCoefficient * v * v * Math.Sign(v);	// frictional resistance proportional to v^2
+		double dragForce = dragCoefficient * v * v * Math.Sign(v);  // frictional resistance proportional to v^2
 
-		float actualThrustForce = thrustForce * enginePower;
+		double actualThrustForce = thrustForce * enginePower;
 		double netForce = actualThrustForce - dragForce;    // N
 		double accel = netForce / mass;
 		v += accel * dt;
@@ -75,23 +106,9 @@ public class TestModel : MonoBehaviour, IModel
 		v = Math.Max(0, v);
 
 		Ship.Speed = v;
+		#endregion
 
-
-		// ---------- Yaw / turning dynamics ----------
-		// Simple empirical yaw model: desired yaw rate is proportional to rudder * (speed / length)
-		float rudderNorm = rudderDeg / rudderMax; // -1..1
-		float yawTarget = yawGain * rudderNorm * ((float)v / Mathf.Max(length, 10f)); // rad/s
-		YawRate = Mathf.MoveTowards((float)YawRate, yawTarget, YawAccel * dt);
-		HeadingRad += YawRate * dt;		// update current heading
-
-		// Wrap heading to [-pi, pi] for stability
-		if (HeadingRad > Math.PI)
-			HeadingRad -= 2 * Math.PI;
-		else if (HeadingRad < -Math.PI)
-			HeadingRad += 2 * Math.PI;
-
-
-		// ---------- Spherical Earth position update ----------
+		#region Spherical Earth position update
 		OriginManager manager = OriginManager.Instance;
 		if(manager == null) return;
 
@@ -113,13 +130,13 @@ public class TestModel : MonoBehaviour, IModel
 		
 		xEast += vEast * dt;
 		yNorth += vNorth * dt;
-		
+		#endregion
 
-		// --------- Update ship state ----------
+		#region Ship state update
 		// Cog and Hdg are temporarily the same
 		Ship.Cog = HeadingRad * 180 / Math.PI;
 		Ship.Hdg = Ship.Cog;
-		Ship.Rot = YawRate * 180 / Math.PI;
+		Ship.Rot = YawRateRad * 180 / Math.PI;
 		Ship.Sog = Ship.Speed;
 
 		Vector3 unityPos = new Vector3((float)xEast, (float)zUp, (float)yNorth);
@@ -142,13 +159,14 @@ public class TestModel : MonoBehaviour, IModel
 			out Ship.LatitudeDeg,
 			out Ship.LongitudeDeg,
 			out Ship.Height);
+		#endregion
 	}
 
 	[ContextMenu("Reset state")]
 	public void ResetState()
 	{
-		YawRate = 0;
-		Ship.Rot = YawRate;
+		YawRateRad = 0;
+		Ship.Rot = YawRateRad;
 		Ship.Sog = Ship.Speed;
 	}
 }
