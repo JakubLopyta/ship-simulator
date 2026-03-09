@@ -118,7 +118,7 @@ public class Ship : MonoBehaviour
 		set
 		{
 			if(rudderMax == value) return;
-			rudderMax = value;
+			rudderMax = Mathf.Abs(value);
 		}
 	}
 	private float rudderDeflectionRate = 2.6f; // [deg/s]
