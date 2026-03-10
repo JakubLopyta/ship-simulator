@@ -3620,7 +3620,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 232259293}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1466197742}
+        m_TargetAssemblyTypeName: ToolbarUIController, Assembly-CSharp
+        m_MethodName: OnStopButtonPressed
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &232259293
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4280,6 +4292,7 @@ RectTransform:
   - {fileID: 244704213}
   - {fileID: 1775614177}
   - {fileID: 1801515702}
+  - {fileID: 1466197741}
   m_Father: {fileID: 1633863017}
   m_LocalEulerAnglesHint: {x: 0, y: -251.763, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -13989,7 +14002,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 569657691}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1466197742}
+        m_TargetAssemblyTypeName: ToolbarUIController, Assembly-CSharp
+        m_MethodName: OnZoomOutPressed
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &569657691
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -25508,7 +25533,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1233894400}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1466197742}
+        m_TargetAssemblyTypeName: ToolbarUIController, Assembly-CSharp
+        m_MethodName: OnPauseButtonPressed
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1233894403
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -28669,6 +28706,61 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cursorType: 1
   isGrabbable: 0
+--- !u!1 &1466197740
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1466197741}
+  - component: {fileID: 1466197742}
+  m_Layer: 0
+  m_Name: ToolbarUIController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1466197741
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1466197740}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 294302701}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1466197742
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1466197740}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 78a4f8f193b2149b08d1996246c6c4e7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
+  playButton: {fileID: 2086060908}
+  pauseButton: {fileID: 1233894402}
+  stopButton: {fileID: 232259292}
+  restartButton: {fileID: 1466316430}
+  zoomInButton: {fileID: 1920637351}
+  zoomOutButton: {fileID: 569657690}
+  moveButton: {fileID: 1663498814}
 --- !u!1 &1466316428
 GameObject:
   m_ObjectHideFlags: 0
@@ -28752,7 +28844,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1466316431}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1466197742}
+        m_TargetAssemblyTypeName: ToolbarUIController, Assembly-CSharp
+        m_MethodName: OnRestartButtonPressed
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1466316431
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -32099,7 +32203,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1663498815}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1466197742}
+        m_TargetAssemblyTypeName: ToolbarUIController, Assembly-CSharp
+        m_MethodName: OnMovePressed
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1663498815
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -33940,10 +34056,6 @@ MonoBehaviour:
   sogText: {fileID: 1507650194}
   latitudeText: {fileID: 420627663}
   longitudeText: {fileID: 1640650038}
-  playButton: {fileID: 2086060908}
-  stopButton: {fileID: 232259292}
-  pauseButton: {fileID: 1233894402}
-  returnButton: {fileID: 1466316430}
 --- !u!4 &1775614177
 Transform:
   m_ObjectHideFlags: 0
@@ -45246,7 +45358,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1920637352}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1466197742}
+        m_TargetAssemblyTypeName: ToolbarUIController, Assembly-CSharp
+        m_MethodName: OnZoomInPressed
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1920637352
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -52091,7 +52215,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2086060906}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1466197742}
+        m_TargetAssemblyTypeName: ToolbarUIController, Assembly-CSharp
+        m_MethodName: OnPlayButtonPressed
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &2086060909
 MonoBehaviour:
   m_ObjectHideFlags: 0
