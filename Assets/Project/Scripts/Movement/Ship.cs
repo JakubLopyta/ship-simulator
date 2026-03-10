@@ -1,296 +1,288 @@
-using Models.Enums;
 using Models.Models;
 using System;
 using UnityEngine;
 
 public class Ship : MonoBehaviour
 {
-	#region properties
-	
-	// Identification
-	[SerializeField] private string shipName = string.Empty;
+	#region Properties
+
+	#region Identification
+	private string shipName = string.Empty;
 	public string ShipName
 	{
-		get
-		{
-			return shipName;
-		}
+		get => shipName;
 		set
 		{
-			if (shipName != value)
-			{
-				shipName = value;
-			}
+			if (shipName == value) return;
+			shipName = value;
 		}
 	}
 
-	[SerializeField] private int mmsi;
+	private int mmsi;
 	public int MMSI
 	{
-		get
-		{
-			return mmsi;
-		}
+		get => mmsi;
 		set
 		{
-			if (mmsi != value)
-			{
-				mmsi = value;
-			}
+			if (mmsi == value) return;
+			mmsi = value;
 		}
 	}
 
-	// Parameters
-	[SerializeField] private float width = 10;
-	public float Width
+	private string callSign;
+	public string CallSign
 	{
-		get
-		{
-			return width;
-		}
+		get => callSign;
 		set
 		{
-			if (width != value)
-			{
-				width = value;
-			}
+			if (callSign == value) return;
+			callSign = value;
+		}
+	}
+	#endregion
+
+	#region Geometric data
+	[Header("Geometric data")]
+	private float breadth = 10; // width, also "beam" [m]
+	public float Breadth
+	{
+		get => breadth;
+		set
+		{
+			if (breadth == value) return;
+			breadth = value;
 		}
 	}
 
-	[SerializeField] private float length = 100;
+	[SerializeField] private float length = 100; // [m]
 	public float Length
 	{
-		get
-		{
-			return length;
-		}
+		get => length;
 		set
 		{
-			if (length != value)
-			{
-				length = value;
-			}
+			if (length == value) return;
+			length = value;
 		}
 	}
 
-	[SerializeField] private uint weight = 5000000;
-	public uint Weight
+	private float draft = 8; // also "draught" [m]
+	public float Draft
 	{
-		get
-		{
-			return weight;
-		}
+		get => draft;
 		set
 		{
-			if (weight != value)
-			{
-				weight = value;
-			}
+			if (draft == value) return;
+			draft = value;
 		}
 	}
 
-	[SerializeField] private float vmax = 8;
+	private float blockCoefficient = 0.75f; // 0-1
+	public float BlockCoefficient
+	{
+		get => blockCoefficient;
+		set
+		{
+			if (blockCoefficient == value) return;
+			blockCoefficient = value;
+		}
+	}
+
+	[SerializeField] private uint displacement = 20000; // weight of ship [t]
+	public uint Displacement
+	{
+		get => displacement;
+		set
+		{
+			if (displacement == value) return;
+			displacement = value;
+		}
+	}
+	#endregion
+
+	#region Other parameters
+	[Header("Other parameters")]
+	[SerializeField] private float vmax = 8; // [m/s]
 	public float Vmax
 	{
-		get
-		{
-			return vmax;
-		}
+		get => vmax;
 		set
 		{
-			if (vmax != value)
-			{
-				vmax = value;
-			}
+			if (vmax == value) return;
+			vmax = value;
 		}
 	}
+	[SerializeField] private float rudderMax = 35f; // [deg]
+	public float RudderMax
+	{
+		get => rudderMax;
+		set
+		{
+			if(rudderMax == value) return;
+			rudderMax = Mathf.Abs(value);
+		}
+	}
+	private float rudderDeflectionRate = 2.6f; // [deg/s]
+	public float RudderDeflectionRate
+	{
+		get => rudderDeflectionRate;
+		set
+		{
+			if (rudderDeflectionRate == value) return;
+			rudderDeflectionRate = value;
+		}
+	}
+	#endregion
 
-	// State
+	#region Coordinates
+	[Header("Coordinates")]
 	public double LatitudeDeg = 0;
 	public double LongitudeDeg = 0;
 	public double Height = 0;
 	public double EcefX;
 	public double EcefY;
 	public double EcefZ;
+	#endregion
 
-
-	[SerializeField] private double hdg = 0;
+	#region State
+	[Header("State")]
+	[SerializeField] [Range(0,360)] private double hdg = 0;
 	public double Hdg
 	{
-		get
-		{
-			return Math.Round(hdg, 2);
-		}
+		get => hdg;
 		set
 		{
-			if (hdg != value)
-			{
-				hdg = value;
-				while (hdg >= 360.0)
-				{
-					hdg -= 360.0;
-				}
-				while (hdg < 0)
-				{
-					hdg += 360;
-				}
-			}
+			if (hdg == value) return;
+			hdg = value;
+			while (hdg >= 360.0)
+				hdg -= 360.0;
+			while (hdg < 0.0)
+				hdg += 360.0;
 		}
 	}
 
-	[SerializeField] private double cog = 0;
+	[SerializeField] [Range(0,360)] private double cog = 0;
 	public double Cog
 	{
-		get
-		{
-			return Math.Round(cog, 2);
-		}
+		get => cog;
 		set
 		{
-			if (cog != value)
-			{
-				cog = value;
-				while (cog >= 360.0)
-				{
-					cog -= 360.0;
-				}
-				while (cog < 0)
-				{
-					cog += 360;
-				}
-			}
+			if (cog == value) return;
+			cog = value;
+			while (cog >= 360.0)
+				cog -= 360.0;
+			while (cog < 0)
+				cog += 360;
 		}
 	}
 
 	[SerializeField] private double sog = 0;
 	public double Sog
 	{
-		get
-		{
-			return Math.Round(sog, 1);
-		}
+		get => sog;
 		set
 		{
-			if (sog != value)
-			{
-				sog = value;
-			}
+			if (sog == value) return;
+			sog = value;
 		}
 	}
 
 	[SerializeField] private double rot = 0;
 	public double Rot
 	{
-		get
-		{
-			return rot;
-		}
+		get => rot;
 		set
 		{
-			if (rot != value)
-			{
-				rot = value;
-			}
+			if (rot == value) return;
+			rot = value;
 		}
 	}
-
-	[SerializeField] private double rudder = 0;
-	public double Rudder
-	{
-		get
-		{
-			return Math.Round(rudder, 2);
-		}
-		set
-		{
-			if (rudder != value)
-			{
-				rudder = value;
-			}
-		}
-	}
-
-	
 
 	[SerializeField] private double speed = 0;
 	public double Speed
 	{
-		get
-		{
-			return speed;
-		}
+		get => speed;
 		set
 		{
-
-			if (speed != value)
-			{
-				speed = value;
-			}
+			if (speed == value) return;
+			speed = value;
 		}
 	}
 
-	[SerializeField] private float enginePower = 0;
+	[SerializeField] [Range(0,1)] private float enginePower = 0;
 	public float EnginePower
 	{
-		get
-		{
-			return enginePower;
-		}
+		get => enginePower;
 		set
 		{
-			if (value > 1)
-				value = 1;
-			if (value < -1)
-				value = -1;
-			if (enginePower != value)
-			{
-				enginePower = value;
-			}
+			value = Mathf.Clamp01(value);
+			if(enginePower == value) return;
+			enginePower = value;
 		}
 	}
 
-	//Model
-	[SerializeField] private ModelEnum modelMode = ModelEnum.none;
-	public ModelEnum ModelMode {
-		get
-		{
-			return modelMode;
-		}
+	[SerializeField] [Tooltip("Rudder set by user")] [Range(-35,35)]
+	private float rudderTarget = 0;
+	public float RudderTarget
+	{
+		get => rudderTarget;
 		set
 		{
-			if (modelMode != value)
-			{
-				modelMode = value;
-			}
+			value = Mathf.Clamp((float)value, -RudderMax, RudderMax);
+			if (rudderTarget == value) return;
+			rudderTarget = value;
 		}
 	}
-	[SerializeField] private IModel model;
+	[SerializeField] [Tooltip("Actual rudder deflection in this moment")]
+	private float rudder = 0;
+	public float Rudder
+	{
+		get => rudder;
+		set
+		{
+			value = Mathf.Clamp((float)value, -RudderMax, RudderMax);
+			if (rudder == value) return;
+			rudder = value;
+		}
+	}
+	#endregion
+
+	#region Model
+	[Space]
+	[SerializeField] private ModelEnum modelMode = ModelEnum.none;
+	public ModelEnum ModelMode
+	{
+		get => modelMode;
+		set
+		{
+			if (modelMode == value) return;
+			modelMode = value;
+		}
+	}
+	private IModel model;
 	public IModel Model
 	{
-		get
-		{
-			return model;
-		}
+		get => model;
 		set
 		{
-			if (model != value)
-			{
-				model = value;
-				if (model is TestModel)
-				{
-					ModelMode = ModelEnum.test;
-				}
-				else
-				{
-					ModelMode = ModelEnum.none;
-				}
-			}
+			if (model == value) return;
+			model = value;
+		}
+	}
+	#endregion
+	[SerializeField] private ShipTypeEnum shipType;
+	public ShipTypeEnum ShipType
+	{
+		get => shipType;
+		set
+		{
+			if(shipType == value) return;
+			shipType = value;
 		}
 	}
 
-	public bool testModel = true;
 	public bool simulationRunning = false;
-	#endregion
+
+	#endregion Properties
 
 	void Start()
 	{
@@ -303,24 +295,25 @@ public class Ship : MonoBehaviour
 		else
 			OriginManager.Instance.Initialize(this);
 
-		if (testModel)
-			Model = ModelsFactory.GetModel(ModelEnum.test, this);
+		switch (ModelMode)
+		{
+			case ModelEnum.nomoto1stOrder:
+				Model = ModelsFactory.GetModel(this, ShipType, ModelMode);
+				break;
+			case ModelEnum.nomoto2ndOrder:
+				Model = ModelsFactory.GetModel(this, ShipType, ModelMode);
+				break;
+			case ModelEnum.test:
+				Model = ModelsFactory.GetModel(this, ShipType, ModelMode);
+				break;
+		}
 	}
 
-
-    void FixedUpdate()
-    {
-		if (simulationRunning)
-		{
-			Step();
-		}
-    }
-
-    public void Step()
+	public void ResetState(float speed = 0)
 	{
-		if (testModel)
-		{
-			Model.Calculate();
-		}
-	}
+		Model.ResetState();
+		RudderTarget = 0;
+		Rudder = 0;
+		Speed = speed;
+	} 
 }
