@@ -54,7 +54,7 @@ public class Ship : MonoBehaviour
 		}
 	}
 
-	[SerializeField] private float length = 200; // [m]
+	[SerializeField] private float length = 100; // [m]
 	public float Length
 	{
 		get => length;
@@ -269,7 +269,7 @@ public class Ship : MonoBehaviour
 		}
 	}
 	#endregion
-	private ShipTypeEnum shipType;
+	[SerializeField] private ShipTypeEnum shipType;
 	public ShipTypeEnum ShipType
 	{
 		get => shipType;

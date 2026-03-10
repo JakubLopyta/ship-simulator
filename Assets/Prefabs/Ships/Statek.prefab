@@ -106,6 +106,7 @@ MonoBehaviour:
   rudderTarget: 0
   rudder: 0
   modelMode: 2
+  shipType: 0
   simulationRunning: 1
 --- !u!54 &382312246754502498
 Rigidbody:

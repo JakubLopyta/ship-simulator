@@ -1,19 +1,17 @@
-﻿using Models.Models;
+using Models.Models;
 using System;
 using UnityEngine;
 
 /// <summary>
-/// Implementation of 2nd order Nomoto model with surge dynamics for ship movement testing
+/// Implementation of 1st order Nomoto model with surge dynamics for ship movement testing
 /// </summary>
-public class ModelNomoto2ndOrder: MonoBehaviour, IModel
+public class ModelNomoto1stOrder : MonoBehaviour, IModel
 {
 	private Ship Ship;
 
 	[Header("Nomoto parameters (dimensionless)")]
 	[SerializeField] private float K;
-	[SerializeField] private float T1;
-	[SerializeField] private float T2;
-	[SerializeField] private float T3;
+	[SerializeField] private float T;
 
 	[Header("Ship parameters")]
 	[Tooltip("Target top speed at full power, straight rudder. Expressed in m/s")]
@@ -25,15 +23,13 @@ public class ModelNomoto2ndOrder: MonoBehaviour, IModel
 
 	[Header("State")]
 	[Tooltip("Expressed in rad/s")]
-	[SerializeField] private double YawRate = 0;		// r
+	[SerializeField] private double YawRate = 0;        // r
 	[Tooltip("Expressed in rad/s^2")]
-	[SerializeField] private double YawAccel = 0;		// r_dot
-	[SerializeField] private double HeadingRad = 0;	// psi
+	[SerializeField] private double YawAccel = 0;       // r_dot
+	[SerializeField] private double HeadingRad = 0; // psi
 
 	[SerializeField] private double currentRudderDeg;
 	[SerializeField] private double currentRudderRad;
-	private double previousRudderAngle = 0; // Memory of previous rudder to calculate derivative
-	private bool isFirstUpdate = true;
 
 	// Surge tuning
 	[Header("Surge tuning")]
@@ -74,42 +70,28 @@ public class ModelNomoto2ndOrder: MonoBehaviour, IModel
 		float dt = Time.fixedDeltaTime;
 		rudderTarget = Ship.RudderTarget;
 		enginePower = Ship.EnginePower;
-		double v = Ship.Speed;		
+		double v = Ship.Speed;
 
-		#region Nomoto2ndOrder
+		#region Nomoto1stOrder
 		// Switch to dimensional parameters
 		double safeV = Math.Max(v, 0.5);
 		double K_dim = K * safeV / length;
 		double lov = length / safeV;
-		double T1_dim = T1 * lov;
-		double T2_dim = T2 * lov;
-		double T3_dim = T3 * lov;
+		double T_dim = T * lov;
 
 		// Limit rudder deflection rate
 		currentRudderDeg = Mathf.MoveTowardsAngle((float)currentRudderDeg, rudderTarget, 2.6f * dt);
 		currentRudderRad = currentRudderDeg * Math.PI / 180;
 
-		// Rudder deflection derivative calculation (delta_dot)
-		double delta_dot = 0;
-		if (isFirstUpdate)
-			isFirstUpdate = false;
-		else
-			delta_dot = (currentRudderRad - previousRudderAngle) / dt;
+		// 1. Obliczenie przyspieszenia kątowego (r_dot) z przekształconego równania Nomoto:
+		// r_dot = (K * delta - r) / T
+		YawAccel = (K_dim * currentRudderRad - YawRate) / T_dim;
 
-		// Preparing denominators
-		double T1T2 = T1_dim * T2_dim;
-		double T1plusT2 = T1_dim + T2_dim;
-
-		// r_dot_dot = [ K*(delta + T3*delta_dot) - (T1+T2)*r_dot - r ] / (T1*T2)
-		double term1 = K_dim * (currentRudderRad + T3_dim * delta_dot);
-		double term2 = T1plusT2 * YawAccel;
-		double term3 = YawRate;
-
-		double r_dot_dot = (term1 - term2 - term3) / T1T2;
-
-		// Semi implicit Euler (Euler-Cromer) - sequential variable updating
-		YawAccel += r_dot_dot * dt;
+		// 2. Całkowanie numeryczne prędkości kątowej (Euler)
 		YawRate += YawAccel * dt;
+
+		// 3. Całkowanie numeryczne kąta kursowego (Euler)
+		// d(psi)/dt = r  =>  psi_nowe = psi_stare + r * dt
 		HeadingRad += YawRate * dt;
 
 		// Wrap heading to [-pi, pi] for stability
@@ -117,9 +99,6 @@ public class ModelNomoto2ndOrder: MonoBehaviour, IModel
 			HeadingRad -= 2 * Math.PI;
 		else if (HeadingRad < -Math.PI)
 			HeadingRad += 2 * Math.PI;
-
-		// Saving rudder angle to calculate delta_dot in next simulation step
-		previousRudderAngle = currentRudderRad;
 		#endregion
 
 		#region Acceleration - thrust and drag
@@ -202,12 +181,10 @@ public class ModelNomoto2ndOrder: MonoBehaviour, IModel
 		#endregion
 	}
 
-	public void SetNomotoParameters(float K, float T1, float T2, float T3)
+	public void SetNomotoParameters(float K, float T)
 	{
 		this.K = K;
-		this.T1 = T1;
-		this.T2 = T2;
-		this.T3 = T3;
+		this.T = T;
 	}
 
 	[ContextMenu("Reset state")]
@@ -216,8 +193,6 @@ public class ModelNomoto2ndOrder: MonoBehaviour, IModel
 		YawRate = 0;
 		YawAccel = 0;
 		currentRudderDeg = 0;
-		previousRudderAngle = 0;
-		isFirstUpdate = true;
 		Ship.Sog = Ship.Speed;
 		Ship.Rot = YawRate;
 	}

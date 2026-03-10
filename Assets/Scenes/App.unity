@@ -59833,11 +59833,11 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1767788720537874655, guid: ac55ad286a275be44b9e3179bbff7731, type: 3}
-      propertyPath: length
-      value: 290
+      propertyPath: ShipType
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 1767788720537874655, guid: ac55ad286a275be44b9e3179bbff7731, type: 3}
-      propertyPath: ShipType
+      propertyPath: shipType
       value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 1767788720537874655, guid: ac55ad286a275be44b9e3179bbff7731, type: 3}
