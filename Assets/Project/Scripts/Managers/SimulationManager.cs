@@ -1,5 +1,5 @@
 using UnityEngine;
-
+// TODO: Zmiana szybkości symulacji
 public class SimulationManager : MonoBehaviour
 {
     [Range(0,50)]

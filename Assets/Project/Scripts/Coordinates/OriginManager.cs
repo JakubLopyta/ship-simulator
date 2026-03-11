@@ -8,8 +8,8 @@ using UnityEngine;
 public class OriginManager : MonoBehaviour
 {
 	public static OriginManager Instance { get; private set; }
-	public Ship playerShip;
-	public float recenterThreshold = 1000f;
+	private Ship playerShip;
+	[SerializeField] private float recenterThreshold = 1000f;
 
 	public double OriginLatitude { get; private set; }
 	public double OriginLongitude { get; private set; }
