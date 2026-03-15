@@ -1,4 +1,5 @@
 using UnityEngine;
+using System;
 
 /// <summary>
 /// Manages a "floating" ENU (East-North-Up) origin to maintain
@@ -7,6 +8,7 @@ using UnityEngine;
 /// </summary>
 public class OriginManager : MonoBehaviour
 {
+    public static event Action<Vector3> OnWorldRecentered;
 	public static OriginManager Instance { get; private set; }
 	private Ship playerShip;
 	[SerializeField] private float recenterThreshold = 1000f;
@@ -64,6 +66,8 @@ public class OriginManager : MonoBehaviour
 		Ship localShip = playerShip.GetComponent<Ship>();
 		if (localShip == null) return;
 
+		Vector3 worldOffset = -playerShip.transform.position;
+
 		// 1. Set the new origin to the player's current true (Geodetic) position
 		SetOrigin(localShip.LatitudeDeg, localShip.LongitudeDeg, localShip.Height);
 
@@ -78,6 +82,8 @@ public class OriginManager : MonoBehaviour
 			// Set the ship's transform position in Unity space
 			ship.transform.position = new Vector3((float)xEast, (float)zUp, (float)yNorth);
 		}
+
+		OnWorldRecentered?.Invoke(worldOffset);
 
 		Debug.Log($"Recentered origin to: {OriginLatitude}; {OriginLongitude}\n" +
 			$"Updated position of {allShips.Length} ships");

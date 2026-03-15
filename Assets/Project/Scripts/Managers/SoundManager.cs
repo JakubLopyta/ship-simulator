@@ -41,16 +41,16 @@ public class SoundManager : MonoBehaviour
        thunderstormSource = InitializeSound(thunderstormSFX, 0f, loop:true);
        
        ShipUIController.OnEnginePowerChanged += HandleEnginePower;
-       WeatherController.OnRain += HandleRain;
-       WeatherController.OnThunderstorm += HandleThunderstorm;
+       Weather.OnRain += HandleRain;
+       Weather.OnThunderstorm += HandleThunderstorm;
        CheckCollision.OnCollision += HandlePlayerCollision;
     }
 
     void OnDestroy()
     {
         ShipUIController.OnEnginePowerChanged -= HandleEnginePower;
-        WeatherController.OnRain -= HandleRain;
-        WeatherController.OnThunderstorm -= HandleThunderstorm;
+        Weather.OnRain -= HandleRain;
+        Weather.OnThunderstorm -= HandleThunderstorm;
         CheckCollision.OnCollision -= HandlePlayerCollision;
     }
 

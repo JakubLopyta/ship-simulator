@@ -284,6 +284,20 @@ public class Ship : MonoBehaviour
 
 	#endregion Properties
 
+	void OnEnable()
+	{
+		ToolbarUIController.OnPlay += _ => simulationRunning = true;
+		ToolbarUIController.OnPause += _ => simulationRunning = false;
+		ToolbarUIController.OnStop += _ => simulationRunning = false;
+	}
+
+	void OnDisable()
+	{
+		ToolbarUIController.OnPlay -= _ => simulationRunning = true;
+		ToolbarUIController.OnPause -= _ => simulationRunning = false;
+		ToolbarUIController.OnStop -= _ => simulationRunning = false;
+	}
+
 	void Start()
 	{
 		CoordinatesConversion.GeodeticToEcef(
@@ -309,11 +323,22 @@ public class Ship : MonoBehaviour
 		}
 	}
 
+	void FixedUpdate()
+	{
+		if (simulationRunning)
+			Step();
+	}
+
+	public void Step()
+	{
+		Model?.Calculate();
+	}
+
 	public void ResetState(float speed = 0)
 	{
 		Model.ResetState();
 		RudderTarget = 0;
 		Rudder = 0;
 		Speed = speed;
-	} 
+	}
 }

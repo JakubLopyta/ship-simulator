@@ -5,181 +5,129 @@ using UnityEngine.UI;
 
 public class ShipUIController : MonoBehaviour
 {
-    public OrbitCamera orbitCamera;
+    [Header("Engine UI")]
+    [SerializeField] private Slider enginePowerSlider;
+    [SerializeField] private TMP_InputField enginePowerField;
 
-    public Ship shipReference;
-    public Weather weatherReference;
+    [Header("Rudder UI")]
+    [SerializeField] private Slider rudderSlider;
+    [SerializeField] private TMP_InputField rudderField;
 
-    public Slider enginePowerSlider;
-    public TMP_InputField enginePowerField;
+    [Header("Info Texts")]
+    [SerializeField] private TextMeshProUGUI speedText;
+    [SerializeField] private TextMeshProUGUI rotText;
+    [SerializeField] private TextMeshProUGUI cogText;
+    [SerializeField] private TextMeshProUGUI hdgText;
+    [SerializeField] private TextMeshProUGUI sogText;
+    [SerializeField] private TextMeshProUGUI latitudeText;
+    [SerializeField] private TextMeshProUGUI longitudeText;
 
-    public Slider RudderSlider;
-    public TMP_InputField RudderField;
-
-    public TextMeshProUGUI speedText;
-    public TextMeshProUGUI rotText;
-
-    public TextMeshProUGUI cogText;
-    public TextMeshProUGUI hdgText;
-    public TextMeshProUGUI sogText;
-
-    public TextMeshProUGUI latitudeText;
-    public TextMeshProUGUI longitudeText;
-
-    [Header("Buttons")]
-    public Button playButton;
-    public Button stopButton;
-    public Button pauseButton;
-    public Button returnButton;
-
-    private Color translucentButtonColor = new Color32(0, 0, 0, 0);
-    private Color selectedButtonColor = new Color32(78, 101, 192, 190);
-
+    private Ship ship;
     private bool isEditingEngine = false;
     private bool isEditingRudder = false;
 
     public static event Action<float> OnEnginePowerChanged;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    private void Start()
     {
-        Button playBtn = playButton.GetComponent<Button>();
-        playBtn.onClick.AddListener(OnPlayButtonClick);
-        Button stopBtn = stopButton.GetComponent<Button>();
-        stopBtn.onClick.AddListener(OnStopButtonClick);
-        Button pauseBtn = pauseButton.GetComponent<Button>();
-        pauseBtn.onClick.AddListener(OnPauseButtonClick);
-        Button returnBtn = returnButton.GetComponent<Button>();
-        returnBtn.onClick.AddListener(OnReturnButtonClick);
+        GameObject shipObj = GameObject.FindGameObjectWithTag("Ship");
+        if (shipObj != null)
+            ship = shipObj.GetComponent<Ship>();
+        else
+            Debug.LogWarning("ShipUIController: No GameObject with tag 'Ship' found.");
 
         enginePowerSlider.onValueChanged.AddListener(OnEnginePowerSliderChanged);
         enginePowerField.onEndEdit.AddListener(OnEnginePowerFieldChanged);
         enginePowerField.onSelect.AddListener((_) => isEditingEngine = true);
         enginePowerField.onDeselect.AddListener((_) => isEditingEngine = false);
 
-        RudderSlider.onValueChanged.AddListener(OnRudderSliderChanged);
-        RudderField.onEndEdit.AddListener(OnRudderChanged);
-        RudderField.onSelect.AddListener((_) => isEditingRudder = true);
-        RudderField.onDeselect.AddListener((_) => isEditingRudder = false);
+        rudderSlider.onValueChanged.AddListener(OnRudderSliderChanged);
+        rudderField.onEndEdit.AddListener(OnRudderFieldChanged);
+        rudderField.onSelect.AddListener((_) => isEditingRudder = true);
+        rudderField.onDeselect.AddListener((_) => isEditingRudder = false);
     }
-    void OnDestroy()
-    {
-        stopButton.onClick.RemoveListener(OnStopButtonClick);
-        pauseButton.onClick.RemoveListener(OnStopButtonClick);
-        returnButton.onClick.RemoveListener(OnStopButtonClick);
 
+    private void OnDestroy()
+    {
         enginePowerSlider.onValueChanged.RemoveListener(OnEnginePowerSliderChanged);
         enginePowerField.onEndEdit.RemoveListener(OnEnginePowerFieldChanged);
         enginePowerField.onSelect.RemoveAllListeners();
         enginePowerField.onDeselect.RemoveAllListeners();
 
-        RudderSlider.onValueChanged.RemoveListener(OnRudderSliderChanged);
-        RudderField.onEndEdit.RemoveListener(OnRudderChanged);
-        RudderField.onSelect.RemoveAllListeners();
-        RudderField.onDeselect.RemoveAllListeners();
+        rudderSlider.onValueChanged.RemoveListener(OnRudderSliderChanged);
+        rudderField.onEndEdit.RemoveListener(OnRudderFieldChanged);
+        rudderField.onSelect.RemoveAllListeners();
+        rudderField.onDeselect.RemoveAllListeners();
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Update()
     {
-        if (shipReference == null) return;
+        if (ship == null) return;
 
-        speedText.text = shipReference.Speed.ToString() + " m/s";
-        rotText.text = Math.Floor(shipReference.Rot).ToString() + "�/s";
-        cogText.text = Math.Floor(shipReference.Cog).ToString() + "�";
-        hdgText.text = Math.Floor(shipReference.Hdg).ToString() + "�";
-        sogText.text = shipReference.Sog.ToString() + " m/s";
-        latitudeText.text = Math.Round(shipReference.LatitudeDeg, 4).ToString();
-        longitudeText.text = Math.Round(shipReference.LongitudeDeg, 4).ToString();
+        speedText.text = Math.Round(ship.Speed, 2).ToString("F2") + " m/s";
+        rotText.text = Math.Round(ship.Rot, 2).ToString("F2") + "°/s";
+        cogText.text = Math.Round(ship.Cog, 2).ToString("F2") + "°";
+        hdgText.text = Math.Round(ship.Hdg, 2).ToString("F2") + "°";
+        sogText.text = Math.Round(ship.Sog, 2).ToString("F2") + " m/s";
+        latitudeText.text = Math.Round(ship.LatitudeDeg, 4).ToString("F4");
+        longitudeText.text = Math.Round(ship.LongitudeDeg, 4).ToString("F4");
 
-		if (!isEditingEngine)
+        if (!isEditingEngine)
         {
-            enginePowerField.text = (shipReference.EnginePower * 100).ToString("F0");
-            enginePowerSlider.value = (shipReference.EnginePower * 100);
+            float engineDisplay = Mathf.Round(ship.EnginePower * 100);
+            enginePowerField.text = engineDisplay.ToString("F0");
+            SetSliderWithoutNotify(enginePowerSlider, engineDisplay);
         }
 
         if (!isEditingRudder)
         {
-            RudderField.text = shipReference.RudderTarget.ToString("F1");
-            RudderSlider.value = shipReference.RudderTarget;
-        }
-    }
-    public void SetSelectedShip(Ship newShip)
-    {
-        shipReference = newShip;
-
-        if (orbitCamera != null && newShip != null)
-        {
-            orbitCamera.SetTarget(newShip.transform);
+            float rudderDisplay = (float)Math.Round(ship.RudderTarget, 2);
+            rudderField.text = rudderDisplay.ToString("F2");
+            SetSliderWithoutNotify(rudderSlider, rudderDisplay);
         }
     }
 
-    private void OnReturnButtonClick()
+    private void SetSliderWithoutNotify(Slider slider, float value)
     {
-        shipReference.transform.position = Vector3.zero;
-        shipReference.transform.rotation = Quaternion.identity;
-    }
-    private void OnPauseButtonClick()
-    {
-        shipReference.simulationRunning = false;
-        weatherReference.SimulationRunning = false;
-        PlayButtonPressed(shipReference.simulationRunning);
-    }
-    private void OnStopButtonClick()
-    {
-		shipReference.transform.position = Vector3.zero;
-		shipReference.transform.rotation = Quaternion.identity;
+        slider.onValueChanged.RemoveAllListeners();
+        slider.value = value;
 
-		shipReference.simulationRunning = false;
-        weatherReference.SimulationRunning = false;
-        PlayButtonPressed(shipReference.simulationRunning);
-    }
-    private void OnPlayButtonClick()
-    {
-        shipReference.simulationRunning = true;
-        weatherReference.SimulationRunning = true;
-        PlayButtonPressed(shipReference.simulationRunning);
-    }
-
-    public void PlayButtonPressed(bool simulationState)
-    {
-        ColorBlock colorBlock = playButton.colors;
-        colorBlock.normalColor = simulationState ? selectedButtonColor : translucentButtonColor;
-        playButton.colors = colorBlock;
+        if (slider == enginePowerSlider)
+            slider.onValueChanged.AddListener(OnEnginePowerSliderChanged);
+        else if (slider == rudderSlider)
+            slider.onValueChanged.AddListener(OnRudderSliderChanged);
     }
 
     private void OnRudderSliderChanged(float value)
     {
-
-        shipReference.RudderTarget = value;
+        if (ship == null) return;
+        float snapped = Mathf.Round(value * 10f) / 10f;
+        ship.RudderTarget = snapped;
+        SetSliderWithoutNotify(rudderSlider, snapped);
     }
 
-    private void OnRudderChanged(string text)
+    private void OnRudderFieldChanged(string text)
     {
-
+        if (ship == null) return;
         if (float.TryParse(text, out float value))
-        {
-            shipReference.RudderTarget = value;
-        }
+            ship.RudderTarget = value;
     }
 
     private void OnEnginePowerSliderChanged(float value)
     {
+        if (ship == null) return;
         float newValue = value / 100f;
-        shipReference.EnginePower = newValue;
+        ship.EnginePower = newValue;
         OnEnginePowerChanged?.Invoke(newValue);
     }
 
     private void OnEnginePowerFieldChanged(string text)
     {
-
+        if (ship == null) return;
         if (float.TryParse(text, out float value))
         {
-            float newValue = 0;
-            if (value > 100) newValue = value / 100f;
-            else if (value < 0) newValue = 0;
-            else newValue = value / 100f;
-            shipReference.EnginePower = newValue;
+            float newValue = Mathf.Clamp(value, 0f, 100f) / 100f;
+            ship.EnginePower = newValue;
             OnEnginePowerChanged?.Invoke(newValue);
         }
     }

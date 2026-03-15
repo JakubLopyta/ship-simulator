@@ -17,6 +17,7 @@ public class SettingsPanelSwitcher : MonoBehaviour
     }
 
     [SerializeField] private Tab[] tabs;
+    [SerializeField] private string defaultTabName = "Obstacles";
 
     [SerializeField] private Color32 selectedColor = new(78, 101, 192, 190);
     [SerializeField] private Color32 defaultColor = new(78, 101, 192, 0);
@@ -38,11 +39,10 @@ public class SettingsPanelSwitcher : MonoBehaviour
             tabListeners[index] = listener;
         }
 
-        // Set initial active tab
-        if (tabs.Length > 0)
-        {
-            OnTabSelected(tabs[0]);
-        }
+        if (tabs.Length == 0) return;
+
+        Tab defaultTab = System.Array.Find(tabs, t => t.TabName == defaultTabName) ?? tabs[0];
+        OnTabSelected(defaultTab);
     }
 
     void OnDestroy()

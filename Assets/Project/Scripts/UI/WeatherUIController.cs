@@ -1,336 +1,184 @@
-﻿using UnityEngine;
-using System.Collections;
+using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using System.Collections.Generic;
 using System;
 
-public class WeatherController : MonoBehaviour
+public enum WeatherButton
 {
-    public Weather weather;
-    
-    public Light sunLight;
-    public bool rainEnabled = false;
-    public bool thunderstormEnabled = false;
-    public bool fogEnabled = false;
-    [Header("Time Management")]
-    [SerializeField]
-    public int timeMultiplier = 1;
+    SUN_BUTTON = 0, 
+    FOG_BUTTON = 1, 
+    RAIN_BUTTON = 2, 
+    THUNDERSTORM_BUTTON = 3
+}
 
-    [Header("Particles")]
-    public GameObject rainParticles;
-    public GameObject thunderstormParticles;
-    public GameObject fogParticles;
+public enum WeatherSlider
+{
+    WIND_SPEED, WIND_DIRECTION, WAVE_SIZE, VISIBILITY_RANGE, RAIN_INTENSITY, THUNDERSTORM_INTENSITY, FOG_INTENSITY
+}
 
-    [Header("Labels")]
-    public List<TextMeshProUGUI> timeLabels;
-    public List<TextMeshProUGUI> timeMultiplierLabels;
-    public TextMeshProUGUI wavesSizeLabel;
-    public TextMeshProUGUI visibilityRangeLabel;
-    public TextMeshProUGUI windLabel;
-    public TextMeshProUGUI thunderstormIntensityLabel;
-    public TextMeshProUGUI rainIntensityLabel;
-    public TextMeshProUGUI fogIntensityLabel;
+public class WeatherUIController : MonoBehaviour
+{
+    [Header("Weather Buttons")]
+    [SerializeField] private Button sunButton;
+    [SerializeField] private Button fogButton;
+    [SerializeField] private Button rainButton;
+    [SerializeField] private Button thunderstormButton;
 
-    [Header("Buttons")]
-    public Button addMinuteButton;
-    public Button removeMinuteButton;
-    public Button addHourButton;
-    public Button removeHourButton;
-    public Button addSecondButton;
-    public Button removeSecondButton;
-    public Button sunnyButton;
-    public Button rainyButton;
-    public Button foggyButton;
-    public Button thunderstormButton;
+    [Header("Weather Control")]
+    [SerializeField] private List<TextMeshProUGUI> timeLabelList;
+    [SerializeField] private TextMeshProUGUI wavesSizeLabel;
+    [SerializeField] private TextMeshProUGUI visibilityRangeLabel;
+    [SerializeField] private TextMeshProUGUI windLabel;
+    [SerializeField] private TextMeshProUGUI thunderstormIntensityLabel;
+    [SerializeField] private TextMeshProUGUI rainIntensityLabel;
+    [SerializeField] private TextMeshProUGUI fogIntensityLabel;
 
     [Header("Sliders")]
-    public Slider windSpeedSlider;
-    public Slider windDirectionSlider;
-    public Slider wavesSizeSlider;
-    public Slider visibilityRangeSlider;
-    public Slider rainIntensitySlider;
-    public Slider thunderstormIntensitySlider;
-    public Slider fogIntensitySlider;
-    public Slider timeScaleSlider;
+    [SerializeField] private Slider windSpeedSlider;
+    [SerializeField] private Slider windDirectionSlider;
+    [SerializeField] private Slider waveSizeSlider;
+    [SerializeField] private Slider visibilityRangeSlider;
+    [SerializeField] private Slider rainIntensitySlider;
+    [SerializeField] private Slider thunderstormIntensitySlider;
+    [SerializeField] private Slider fogIntensitySlider;
 
-    public float rainIntensity
-    {
-        get
-        {
-            return weather.RainIntensity;
-        }
-        set
-        {
-            _rainIntensity = Mathf.Round(value);
-            var ps = rainParticles.GetComponent<ParticleSystem>();
-            var emission = ps.emission;
-            var emissionRate = _rainIntensity;
-            emission.rateOverTime = emissionRate;
-            weather.RainIntensity = _rainIntensity;
-        }
-    }
-    public float fogDensity
-    {
-        get
-        {
-            return _fogDensity;
-        }
-        set
-        {
-            _fogDensity = Mathf.Round(value);
-            var ps = fogParticles.GetComponent<ParticleSystem>();
-            var emission = ps.emission;
-            var emissionRate = _fogDensity;
-            emission.rateOverTime = emissionRate;
-            weather.FogDensity = _fogDensity;
-        }
-    }
-    public float thunderstormIntensity
-    {
-        get
-        {
-            return _thunderstormIntensity;
-        }
-        set
-        {
-            var ps = thunderstormParticles.GetComponent<ParticleSystem>();
-            var emission = ps.emission;
-            var emissionRate = _thunderstormIntensity;
-            emission.rateOverTime = emissionRate;
-            weather.ThunderstormIntensity = _thunderstormIntensity;
-        }
-    }
-    [SerializeField]
-    [Range(0, 100)]
-    private float _rainIntensity = 0.0f;
+    public static event Action OnSunChanged;
+    public static event Action OnRainChanged;
+    public static event Action OnThunderstormChanged;
+    public static event Action OnFogChanged;
+    public static event Action<float> OnRainIntensityChanged;
+    public static event Action<float> OnFogIntensityChanged;
+    public static event Action<float> OnThunderstormIntensityChanged;
+    public static event Action<float> OnWindSpeedChanged;
+    public static event Action<float> OnWindDirectionChanged;
+    public static event Action<float> OnWaveSizeChanged;
+    public static event Action<float> OnVisibilityRangeChanged;
+    public static event Action<int> OnTimeChanged;
 
-    [SerializeField]
-    [Range(0, 100)]
-    private float _fogDensity = 0.0f;
+    private WeatherButton activeWeather = WeatherButton.SUN_BUTTON;
+    private Color buttonNormalColor;
 
-    [SerializeField]
-    [Range(0, 1)]
-    private float _thunderstormIntensity = 0.0f;
-
-    public static event Action<bool> OnRain;
-    public static event Action<bool> OnThunderstorm;
-    public static event Action<bool> OnFog;
-
-    private bool previousRainState;
-    private bool previousThunderstormState;
-    private bool previousFogState;
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
-    {  
-       Button sunnyBtn = sunnyButton.GetComponent<Button>();
-       sunnyBtn.onClick.AddListener(() =>
-       {
-           weather.SetClear();
-       });
-        Button rainyBtn = rainyButton.GetComponent<Button>();
-         rainyBtn.onClick.AddListener(() =>
-            {
-                weather.SetRain();
-            });
-            Button foggyBtn = foggyButton.GetComponent<Button>();
-            foggyBtn.onClick.AddListener(() =>
-            {
-                weather.SetFog();
-            });
-            Button thunderstormBtn = thunderstormButton.GetComponent<Button>();
-            thunderstormBtn.onClick.AddListener(() =>
-            {
-                weather.SetThunderstorm();
-            });
-        Button addHourBtn = addHourButton.GetComponent<Button>();
-        addHourBtn.onClick.AddListener(() =>
-        {
-            weather.Time += 60;
-        });
-        Button removeHourBtn = removeHourButton.GetComponent<Button>();
-        removeHourBtn.onClick.AddListener(() =>
-        {
-            weather.Time -= 60;
-        });
-        Button addSecondBtn = addSecondButton.GetComponent<Button>();
-        addSecondBtn.onClick.AddListener(() =>
-        {
-            weather.Time += 1 / 60;
-        });
-        Button removeSecondBtn = removeSecondButton.GetComponent<Button>();
-        removeSecondBtn.onClick.AddListener(() =>
-        {
-            weather.Time -= 1 / 60;
-        });
-        Button addMinuteBtn = addMinuteButton.GetComponent<Button>();
-        addMinuteBtn.onClick.AddListener(() => {
-            weather.Time += 1;
-        });
-        Button removeMinuteBtn = removeMinuteButton.GetComponent<Button>();
-        removeMinuteBtn.onClick.AddListener(() => {
-            weather.Time -= 1;
-        });
-
-        windDirectionSlider.onValueChanged.AddListener((float value) => {
-            weather.WindDirection = value;
-            windLabel.text = weather.WindSpeed + "kts @" + weather.WindDirection + "°";
-        }
-        );
-        windSpeedSlider.onValueChanged.AddListener((float value) => {
-            weather.WindSpeed = value;
-            windLabel.text = weather.WindSpeed + "kts @" + weather.WindDirection + "°";
-        });
-        wavesSizeSlider.onValueChanged.AddListener((float value) => {
-            weather.WaveHeight = value;
-            wavesSizeLabel.text = value.ToString() + " m";
-        });
-        visibilityRangeSlider.onValueChanged.AddListener((float value) => {
-            visibilityRangeLabel.text = value.ToString() + " m";
-            weather.Visibility = value;
-          });
-        rainIntensitySlider.onValueChanged.AddListener((float value) =>
-        {
-            rainIntensityLabel.text = value.ToString() + "%";
-            rainIntensity = value * 10;
-        });
-        fogIntensitySlider.onValueChanged.AddListener((float value) =>
-        {
-            fogIntensityLabel.text = value.ToString() + "%";
-            fogDensity = (float)(value * (double)0.6);
-        });
-        thunderstormIntensitySlider.onValueChanged.AddListener((float value) =>
-        {
-            thunderstormIntensityLabel.text = value.ToString() + "%";
-            thunderstormIntensity = value / 100;
-        });
-        timeScaleSlider.onValueChanged.AddListener((float value) =>
-        {
-            timeMultiplier = (int)value;
-            foreach (var timeMultiplierLabel in timeMultiplierLabels)
-            {
-                timeMultiplierLabel.text = "(" + timeMultiplier.ToString() + "×)";
-            }
-        });
-
-        // Push initial weather state to subscribers and keep event dispatch edge-triggered.
-        previousRainState = weather.IsRaining || rainEnabled;
-        previousThunderstormState = weather.IsStorm || thunderstormEnabled;
-        previousFogState = weather.IsFog || fogEnabled;
-        OnRain?.Invoke(previousRainState);
-        OnThunderstorm?.Invoke(previousThunderstormState);
-        OnFog?.Invoke(previousFogState);
-
-        StartCoroutine(UpdateEverySecond());
+    {
+        Weather.OnTimeUpdated += UpdateTimeLabels;
+        if (sunButton != null)
+            buttonNormalColor = sunButton.colors.normalColor;
+        RefreshAllLabels();
+        SelectButton(WeatherButton.SUN_BUTTON);
+        OnSunChanged?.Invoke();
     }
 
-    IEnumerator UpdateEverySecond()
+    private void RefreshAllLabels()
     {
-        // Wszystko co jest tutaj wrzucone będzie się działo co sekunde
-        while (true)
+        if (windSpeedSlider)      ChangeWindSpeed(windSpeedSlider.value);
+        if (windDirectionSlider)  ChangeWindDirection(windDirectionSlider.value);
+        if (waveSizeSlider)       ChangeWaveSize(waveSizeSlider.value);
+        if (visibilityRangeSlider) ChangeVisibilityRange(visibilityRangeSlider.value);
+        if (rainIntensitySlider)  ChangeRainIntensity(rainIntensitySlider.value);
+        if (thunderstormIntensitySlider) ChangeThunderstormIntensity(thunderstormIntensitySlider.value);
+        if (fogIntensitySlider)   ChangeFogIntensity(fogIntensitySlider.value);
+    }
+
+    void OnDestroy()
+    {
+        Weather.OnTimeUpdated -= UpdateTimeLabels;
+    }
+
+    private void UpdateTimeLabels(string time)
+    {
+        foreach (var label in timeLabelList)
+            label.text = time;
+    }
+
+    public void ChangeWeatherState(int button)
+    {
+        WeatherButton pressed = (WeatherButton)button;
+
+        if (pressed != WeatherButton.SUN_BUTTON && pressed == activeWeather)
         {
-            rainIntensity = _rainIntensity;
-            fogDensity = _fogDensity;
-            thunderstormIntensity = _thunderstormIntensity;
-            updateLighting();
-            weather.AdvanceTime(timeMultiplier);
-                foreach (var timeLabel in timeLabels)
-                {
-                    timeLabel.text = weather.GetTimeAsString();
-                }
-                
-            bool isRainActive = weather.IsRaining || rainEnabled;
-            bool isThunderstormActive = weather.IsStorm || thunderstormEnabled;
-            bool isFogActive = weather.IsFog || fogEnabled;
+            SelectButton(WeatherButton.SUN_BUTTON);
+            OnSunChanged?.Invoke();
+            return;
+        }
 
-            rainParticles.SetActive(isRainActive);
-            thunderstormParticles.SetActive(isThunderstormActive);
-            fogParticles.SetActive(isFogActive);
-
-            if (isRainActive != previousRainState)
-            {
-                previousRainState = isRainActive;
-                OnRain?.Invoke(isRainActive);
-            }
-            if (isThunderstormActive != previousThunderstormState)
-            {
-                previousThunderstormState = isThunderstormActive;
-                OnThunderstorm?.Invoke(isThunderstormActive);
-            }
-            if (isFogActive != previousFogState)
-            {
-                previousFogState = isFogActive;
-                OnFog?.Invoke(isFogActive);
-            }
-            yield return new WaitForSeconds(1);
+        SelectButton(pressed);
+        switch (pressed)
+        {
+            case WeatherButton.SUN_BUTTON:          OnSunChanged?.Invoke();          break;
+            case WeatherButton.FOG_BUTTON:          OnFogChanged?.Invoke();          break;
+            case WeatherButton.RAIN_BUTTON:         OnRainChanged?.Invoke();         break;
+            case WeatherButton.THUNDERSTORM_BUTTON: OnThunderstormChanged?.Invoke(); break;
         }
     }
 
-    void updateLighting()
+    private void SelectButton(WeatherButton weather)
     {
-        Color lightColor;
-
-        // Kolor światła zależny od pory dnia
-        if (weather.Time < 360 || weather.Time > 1080) // Noc
-        {
-            lightColor = new Color(0.1f, 0.1f, 0.2f); // zimny niebieski
-        }
-        else if (weather.Time < 480) // Świt (6:00–8:00)
-        {
-            float d = Mathf.InverseLerp(360, 480, weather.Time);
-            lightColor = Color.Lerp(new Color(0.1f, 0.1f, 0.2f), new Color(1.0f, 0.7f, 0.4f), d);
-        }
-        else if (weather.Time > 960 && weather.Time <= 1080) // Zmierzch (16:00–18:00)
-        {
-            float d = Mathf.InverseLerp(960, 1080, weather.Time);
-            lightColor = Color.Lerp(new Color(1.0f, 0.7f, 0.4f), new Color(0.1f, 0.1f, 0.2f), d);
-        }
-        else // Dzień
-        {
-            lightColor = Color.white;
-        }
-
-        sunLight.color = lightColor;
-
-        Material skyboxMat = RenderSettings.skybox;
-
-        // Obrót słońca
-        sunLight.transform.rotation = Quaternion.Euler(new Vector3((weather.Time / 1440f) * 360f - 90f, 170f, 0f));
-
-        // Jasność światła
-        float intensity;
-        if (weather.Time < 240 || weather.Time >= 1440) // Głęboka noc (0:00–4:00)
-        {
-            intensity = 0.05f;
-        }
-        else if (weather.Time >= 240 && weather.Time < 360) // Wschód (4:00–6:00)
-        {
-            float dawnFactor = Mathf.InverseLerp(240, 360, weather.Time);
-            intensity = Mathf.Lerp(0.05f, 1.0f, dawnFactor);
-        }
-        else if (weather.Time >= 360 && weather.Time < 1260) // Dzień (6:00–21:00)
-        {
-            intensity = 1.0f;
-        }
-        else // Zmrok (21:00–24:00)
-        {
-            float duskFactor = Mathf.InverseLerp(1260, 1440, weather.Time);
-            intensity = Mathf.Lerp(1.0f, 0.05f, duskFactor);
-        }
-
-        sunLight.intensity = intensity;
-        RenderSettings.ambientIntensity = intensity;
-        RenderSettings.reflectionIntensity = intensity;
-
-        float exposure = Mathf.Lerp(0.2f, 1.0f, intensity);
-        skyboxMat.SetFloat("_Exposure", exposure);
+        activeWeather = weather;
+        SetButtonActive(sunButton,          weather == WeatherButton.SUN_BUTTON);
+        SetButtonActive(fogButton,          weather == WeatherButton.FOG_BUTTON);
+        SetButtonActive(rainButton,         weather == WeatherButton.RAIN_BUTTON);
+        SetButtonActive(thunderstormButton, weather == WeatherButton.THUNDERSTORM_BUTTON);
     }
 
-
-    public void SetToFog() // Changed from local function to a public method
+    private void SetButtonActive(Button btn, bool active)
     {
-        weather.SetFog();
-        RenderSettings.fogDensity = 0.005f;
+        if (btn == null) return;
+        ColorBlock cb = btn.colors;
+        cb.normalColor   = active ? cb.pressedColor : buttonNormalColor;
+        cb.selectedColor = cb.normalColor;
+        btn.colors = cb;
+    }
+
+    private float windSpeed = 0f;
+    private float windDirection = 0f;
+
+    public void ChangeWindSpeed(float value)
+    {
+        windSpeed = value;
+        windLabel.text = windSpeed + "kts @" + windDirection + "°";
+        OnWindSpeedChanged?.Invoke(value);
+    }
+
+    public void ChangeWindDirection(float value)
+    {
+        windDirection = value;
+        windLabel.text = windSpeed + "kts @" + windDirection + "°";
+        OnWindDirectionChanged?.Invoke(value);
+    }
+
+    public void ChangeWaveSize(float value)
+    {
+        wavesSizeLabel.text = value + " m";
+        OnWaveSizeChanged?.Invoke(value);
+    }
+
+    public void ChangeVisibilityRange(float value)
+    {
+        visibilityRangeLabel.text = value + " m";
+        OnVisibilityRangeChanged?.Invoke(value);
+    }
+
+    public void ChangeRainIntensity(float value)
+    {
+        rainIntensityLabel.text = value + "%";
+        OnRainIntensityChanged?.Invoke(value);
+    }
+
+    public void ChangeThunderstormIntensity(float value)
+    {
+        thunderstormIntensityLabel.text = value + "%";
+        OnThunderstormIntensityChanged?.Invoke(value);
+    }
+
+    public void ChangeFogIntensity(float value)
+    {
+        fogIntensityLabel.text = value + "%";
+        OnFogIntensityChanged?.Invoke(value);
+    }
+
+    public void ChangeTime(int minutes)
+    {
+        OnTimeChanged?.Invoke(minutes);
     }
 }
