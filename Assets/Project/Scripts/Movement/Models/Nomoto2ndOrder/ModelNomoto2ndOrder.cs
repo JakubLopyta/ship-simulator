@@ -61,11 +61,6 @@ public class ModelNomoto2ndOrder: MonoBehaviour, IModel
 		rudderMax = Ship.RudderMax;
 		rudderDragK = 1.8;
 	}
-	void FixedUpdate()
-	{
-		Calculate();
-	}
-
 	/// <summary>
 	/// Method updating ship state
 	/// </summary>

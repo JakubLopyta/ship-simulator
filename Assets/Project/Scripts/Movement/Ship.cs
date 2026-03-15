@@ -280,23 +280,27 @@ public class Ship : MonoBehaviour
 		}
 	}
 
-	public bool simulationRunning = false;
+	private bool simulationRunning = false;
 
 	#endregion Properties
 
 	void OnEnable()
 	{
-		ToolbarUIController.OnPlay += _ => simulationRunning = true;
-		ToolbarUIController.OnPause += _ => simulationRunning = false;
-		ToolbarUIController.OnStop += _ => simulationRunning = false;
+		ToolbarUIController.OnPlay += OnPlay;
+		ToolbarUIController.OnPause += OnPause;
+		ToolbarUIController.OnStop += OnStop;
 	}
 
 	void OnDisable()
 	{
-		ToolbarUIController.OnPlay -= _ => simulationRunning = true;
-		ToolbarUIController.OnPause -= _ => simulationRunning = false;
-		ToolbarUIController.OnStop -= _ => simulationRunning = false;
+		ToolbarUIController.OnPlay -= OnPlay;
+		ToolbarUIController.OnPause -= OnPause;
+		ToolbarUIController.OnStop -= OnStop;
 	}
+
+	private void OnPlay(bool _) => simulationRunning = true;
+	private void OnPause(bool _) => simulationRunning = false;
+	private void OnStop(bool _) => simulationRunning = false;
 
 	void Start()
 	{

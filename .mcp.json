@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "mcp-unity": {
+      "command": "node",
+      "args": [
+        "/Volumes/PiotrSSD/Unity Projects/ship-simulator/Library/PackageCache/com.gamelovers.mcp-unity@72c005fa0ae2/Server~/build/index.js"
+      ],
+      "env": {
+        "UNITY_PORT": "8090"
+      }
+    }
+  }
+}

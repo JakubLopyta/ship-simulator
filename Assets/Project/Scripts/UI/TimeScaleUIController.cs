@@ -17,7 +17,6 @@ public class TimeScaleUIController : MonoBehaviour
             label.text = "(" + multiplier + "×)";
         foreach (var label in multiplierLabelsPlain)
             label.text = multiplier + "×";
-        Time.timeScale = value;
         OnTimeScaleChanged?.Invoke(value);
     }
 }

@@ -17,12 +17,17 @@ public class OrbitCamera : MonoBehaviour
 
     [Header("Top View")]
     [SerializeField] private float topViewDistance = 500f;
+    [SerializeField] private float topViewMinDistance = 100f;
+    [SerializeField] private float topViewMaxDistance = 2000f;
+    [SerializeField] private float topViewZoomStep = 300f;
+    [SerializeField] private float topViewZoomSpeed = 500f;
 
     private float x = 0f;
     private float y = 0f;
 
     private bool isTopView = false;
     private float savedX, savedY, savedDistance;
+    private Vector3 topViewPosition;
 
     public void SetTarget(Transform newTarget)
     {
@@ -48,6 +53,7 @@ public class OrbitCamera : MonoBehaviour
         ToolbarUIController.OnZoomIn += HandleZoomIn;
         ToolbarUIController.OnZoomOut += HandleZoomOut;
         ToolbarUIController.OnMove += HandleToggleTopView;
+        OriginManager.OnWorldRecentered += HandleWorldRecentered;
     }
 
     void OnDisable()
@@ -55,17 +61,26 @@ public class OrbitCamera : MonoBehaviour
         ToolbarUIController.OnZoomIn -= HandleZoomIn;
         ToolbarUIController.OnZoomOut -= HandleZoomOut;
         ToolbarUIController.OnMove -= HandleToggleTopView;
+        OriginManager.OnWorldRecentered -= HandleWorldRecentered;
     }
 
     private void HandleZoomIn(bool _)
     {
-        if (isTopView) return;
+        if (isTopView)
+        {
+            topViewPosition.y = Mathf.Clamp(topViewPosition.y - topViewZoomStep, topViewMinDistance, topViewMaxDistance);
+            return;
+        }
         distance = Mathf.Clamp(distance - zoomStep, minDistance, maxDistance);
     }
 
     private void HandleZoomOut(bool _)
     {
-        if (isTopView) return;
+        if (isTopView)
+        {
+            topViewPosition.y = Mathf.Clamp(topViewPosition.y + topViewZoomStep, topViewMinDistance, topViewMaxDistance);
+            return;
+        }
         distance = Mathf.Clamp(distance + zoomStep, minDistance, maxDistance);
     }
 
@@ -79,8 +94,10 @@ public class OrbitCamera : MonoBehaviour
             savedY = y;
             savedDistance = distance;
 
+            x = 0f;
             y = 90f;
             distance = topViewDistance;
+            topViewPosition = target.position + Vector3.up * topViewDistance;
         }
         else
         {
@@ -101,20 +118,33 @@ public class OrbitCamera : MonoBehaviour
             y = Mathf.Clamp(y, yMinLimit, yMaxLimit);
         }
 
-        if (!isTopView)
-        {
-            float scroll = Input.GetAxis("Mouse ScrollWheel");
+        float scroll = Input.GetAxis("Mouse ScrollWheel");
+        if (isTopView)
+            topViewPosition.y = Mathf.Clamp(topViewPosition.y - scroll * topViewZoomSpeed, topViewMinDistance, topViewMaxDistance);
+        else
             distance = Mathf.Clamp(distance - scroll * zoomSpeed, minDistance, maxDistance);
+
+        if (isTopView)
+        {
+            if (Input.GetMouseButton(1))
+            {
+                float panSpeed = topViewPosition.y * 0.001f;
+                topViewPosition.x -= Input.GetAxis("Mouse X") * panSpeed * xSpeed;
+                topViewPosition.z -= Input.GetAxis("Mouse Y") * panSpeed * ySpeed;
+            }
+
+            transform.SetPositionAndRotation(topViewPosition, Quaternion.Euler(90f, 0f, 0f));
+            return;
         }
 
-        Quaternion rotation = isTopView
-            ? Quaternion.Euler(90f, x, 0f)
-            : Quaternion.Euler(y, x, 0);
+        Quaternion rotation = Quaternion.Euler(y, x, 0);
+        Vector3 position = rotation * new Vector3(0f, 0f, -distance) + target.position;
+        transform.SetPositionAndRotation(position, rotation);
+    }
 
-        Vector3 negDistance = new Vector3(0.0f, 0.0f, -distance);
-        Vector3 position = rotation * negDistance + target.position;
-
-        transform.rotation = rotation;
-        transform.position = position;
+    private void HandleWorldRecentered(Vector3 offset)
+    {
+        if (isTopView)
+            topViewPosition += offset;
     }
 }

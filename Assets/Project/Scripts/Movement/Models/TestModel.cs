@@ -53,10 +53,6 @@ public class TestModel : MonoBehaviour, IModel
 		rudderMax = Ship.RudderMax;
 		rudderDragK = 1.8;
 	}
-	private void FixedUpdate()
-	{
-		Calculate();
-	}
 	public void Calculate()
 	{
 		float dt = Time.deltaTime;

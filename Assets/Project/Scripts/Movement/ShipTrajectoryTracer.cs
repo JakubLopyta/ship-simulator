@@ -4,129 +4,93 @@ using System.Collections.Generic;
 [RequireComponent(typeof(LineRenderer))]
 public class ShipTrajectoryTracer : MonoBehaviour
 {
-    [SerializeField] private Color trailColor = Color.red;
-    [SerializeField] private float lineWidth = 5f;
-    [SerializeField] private float minDistanceToRecord = 2f;
+    [SerializeField] private Color lineColor = Color.red;
+    [SerializeField] private float lineWidth = 3f;
+    [SerializeField] private float recordInterval = 1f;
+    [SerializeField] private float heightAboveWater = 30f;
 
     private LineRenderer lineRenderer;
-    private List<Vector3> positions = new List<Vector3>();
-    private bool isTracking = false;
+    private List<Vector3> positions = new();
     private Transform shipTransform;
+    private bool simulationRunning = false;
 
     private void Awake()
     {
-        GameObject ship = GameObject.FindGameObjectWithTag("Ship");
-        if (ship != null)
-            shipTransform = ship.transform;
-        else
-            Debug.LogWarning("ShipTrajectoryTracer: No GameObject with tag 'Ship' found.");
-
         lineRenderer = GetComponent<LineRenderer>();
         lineRenderer.startWidth = lineWidth;
         lineRenderer.endWidth = lineWidth;
         lineRenderer.material = new Material(Shader.Find("Sprites/Default"));
-        lineRenderer.startColor = trailColor;
-        lineRenderer.endColor = trailColor;
-        lineRenderer.positionCount = 0;
+        lineRenderer.startColor = lineColor;
+        lineRenderer.endColor = lineColor;
         lineRenderer.useWorldSpace = true;
+        lineRenderer.positionCount = 0;
         lineRenderer.enabled = false;
-        isTracking = true;
+        lineRenderer.localBounds = new Bounds(Vector3.zero, Vector3.one * 1e6f);
+
+        GameObject shipObj = GameObject.FindGameObjectWithTag("Ship");
+        if (shipObj != null)
+            shipTransform = shipObj.transform;
+        else
+            Debug.LogWarning("ShipTrajectoryTracer: no GameObject with tag 'Ship' found.");
     }
 
     private void OnEnable()
     {
-        ToolbarUIController.OnLine += HandleToggle;
-        ToolbarUIController.OnRestart += HandleRestart;
-        ToolbarUIController.OnStop += HandleStop;
-        OriginManager.OnWorldRecentered += HandleWorldRecentered;
-        Camera.onPreCull += HandlePreCull;
+        ToolbarUIController.OnLine += SetVisible;
+        ToolbarUIController.OnPlay += OnPlay;
+        ToolbarUIController.OnPause += OnPause;
+        ToolbarUIController.OnStop += OnStop;
+        ToolbarUIController.OnRestart += OnRestart;
+        OriginManager.OnWorldRecentered += OnWorldRecentered;
     }
 
     private void OnDisable()
     {
-        ToolbarUIController.OnLine -= HandleToggle;
-        ToolbarUIController.OnRestart -= HandleRestart;
-        ToolbarUIController.OnStop -= HandleStop;
-        OriginManager.OnWorldRecentered -= HandleWorldRecentered;
-        Camera.onPreCull -= HandlePreCull;
+        ToolbarUIController.OnLine -= SetVisible;
+        ToolbarUIController.OnPlay -= OnPlay;
+        ToolbarUIController.OnPause -= OnPause;
+        ToolbarUIController.OnStop -= OnStop;
+        ToolbarUIController.OnRestart -= OnRestart;
+        OriginManager.OnWorldRecentered -= OnWorldRecentered;
     }
 
-    private void OnValidate()
+    private void OnPlay(bool _) => simulationRunning = true;
+    private void OnPause(bool _) => simulationRunning = false;
+    private void OnStop(bool _) => simulationRunning = false;
+
+    private void LateUpdate()
     {
-        if (lineRenderer == null) return;
-        lineRenderer.startColor = trailColor;
-        lineRenderer.endColor = trailColor;
-        lineRenderer.startWidth = lineWidth;
-        lineRenderer.endWidth = lineWidth;
-    }
+        if (!simulationRunning || shipTransform == null) return;
 
-    private void Update()
-    {
-        if (!isTracking || shipTransform == null) return;
+        Vector3 pos = new Vector3(shipTransform.position.x, heightAboveWater, shipTransform.position.z);
 
-        Vector3 currentPos = shipTransform.position + Vector3.up * 0.5f;
-
-        if (positions.Count == 0 ||
-            Vector3.Distance(currentPos, positions[positions.Count - 1]) >= minDistanceToRecord)
+        if (positions.Count == 0 || Vector3.Distance(pos, positions[^1]) >= recordInterval)
         {
-            positions.Add(currentPos);
-            RefreshLine();
+            positions.Add(pos);
+            Rebuild();
         }
     }
 
-    private void HandlePreCull(Camera _)
+    private void Rebuild()
     {
-        if (positions.Count > 1)
-            UpdateBounds();
-    }
-
-    private void HandleWorldRecentered(Vector3 offset)
-    {
-        for (int i = 0; i < positions.Count; i++)
-            positions[i] += offset;
-
-        RefreshLine();
-    }
-
-    private void RefreshLine()
-    {
-        if (positions.Count == 0) return;
-
         lineRenderer.positionCount = positions.Count;
         lineRenderer.SetPositions(positions.ToArray());
-        UpdateBounds();
+        lineRenderer.localBounds = new Bounds(Vector3.zero, Vector3.one * 1e6f);
     }
 
-    private void UpdateBounds()
-    {
-        Vector3 min = positions[0];
-        Vector3 max = positions[0];
-        foreach (Vector3 p in positions)
-        {
-            min = Vector3.Min(min, p);
-            max = Vector3.Max(max, p);
-        }
-        lineRenderer.bounds = new Bounds((min + max) * 0.5f, max - min + Vector3.one * lineWidth * 2f);
-    }
+    private void SetVisible(bool visible) => lineRenderer.enabled = visible;
 
-    private void HandleToggle(bool active)
-    {
-        lineRenderer.enabled = active;
-    }
-
-    private void HandleRestart(bool _)
-    {
-        ClearTrail();
-    }
-
-    private void HandleStop(bool _)
-    {
-        // tracking continues, only simulation stops
-    }
-
-    private void ClearTrail()
+    private void OnRestart(bool _)
     {
         positions.Clear();
         lineRenderer.positionCount = 0;
+    }
+
+    private void OnWorldRecentered(Vector3 offset)
+    {
+        for (int i = 0; i < positions.Count; i++)
+            positions[i] += offset;
+        if (positions.Count > 0)
+            Rebuild();
     }
 }

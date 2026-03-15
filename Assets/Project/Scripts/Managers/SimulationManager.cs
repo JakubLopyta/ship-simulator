@@ -1,12 +1,22 @@
 using UnityEngine;
-// TODO: Zmiana szybkości symulacji
+
 public class SimulationManager : MonoBehaviour
 {
-    [Range(0,50)]
-    public float TimeMultiplier = 1;
+    [SerializeField] [Range(0, 50)] private float timeMultiplier = 1;
 
-    void Update()
+    void OnEnable()
     {
-        Time.timeScale = Mathf.Max(0, TimeMultiplier);
+        TimeScaleUIController.OnTimeScaleChanged += ApplyTimeScale;
+    }
+
+    void OnDisable()
+    {
+        TimeScaleUIController.OnTimeScaleChanged -= ApplyTimeScale;
+    }
+
+    void ApplyTimeScale(float value)
+    {
+        timeMultiplier = value;
+        Time.timeScale = Mathf.Max(0, timeMultiplier);
     }
 }
