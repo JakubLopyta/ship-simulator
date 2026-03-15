@@ -292,6 +292,20 @@ public class Ship : MonoBehaviour
 	public bool simulationRunning = false;
 	#endregion
 
+	void OnEnable()
+	{
+		ToolbarUIController.OnPlay += _ => simulationRunning = true;
+		ToolbarUIController.OnPause += _ => simulationRunning = false;
+		ToolbarUIController.OnStop += _ => simulationRunning = false;
+	}
+
+	void OnDisable()
+	{
+		ToolbarUIController.OnPlay -= _ => simulationRunning = true;
+		ToolbarUIController.OnPause -= _ => simulationRunning = false;
+		ToolbarUIController.OnStop -= _ => simulationRunning = false;
+	}
+
 	void Start()
 	{
 		CoordinatesConversion.GeodeticToEcef(
@@ -311,9 +325,7 @@ public class Ship : MonoBehaviour
     void FixedUpdate()
     {
 		if (simulationRunning)
-		{
 			Step();
-		}
     }
 
     public void Step()

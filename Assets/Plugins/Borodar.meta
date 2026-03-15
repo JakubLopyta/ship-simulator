@@ -1,9 +1,5 @@
 fileFormatVersion: 2
-<<<<<<<< HEAD:Assets/Plugins/Borodar.meta
 guid: ea8a9cf80455149f5a81f26981ccbf2c
-========
-guid: 1fd691a25271a794b9819d035740ac48
->>>>>>>> clean_up:Assets/Plugins/Borodar/RainbowFolders/Editor/Scripts/Prefs/Items.meta
 folderAsset: yes
 DefaultImporter:
   externalObjects: {}

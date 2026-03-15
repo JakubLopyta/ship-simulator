@@ -14,20 +14,34 @@ public enum WeatherButton
 
 public enum WeatherSlider
 {
-    WIND_SPEED, WIND_DIRECTION, WAVE_SIZE, VISIBILITY_RANGE, RAIN_INTENSITY, THUNDERSTORM_INTENSITY, FOG_INTENSITY, TIME_SCALE
+    WIND_SPEED, WIND_DIRECTION, WAVE_SIZE, VISIBILITY_RANGE, RAIN_INTENSITY, THUNDERSTORM_INTENSITY, FOG_INTENSITY
 }
 
 public class WeatherUIController : MonoBehaviour
 {
+    [Header("Weather Buttons")]
+    [SerializeField] private Button sunButton;
+    [SerializeField] private Button fogButton;
+    [SerializeField] private Button rainButton;
+    [SerializeField] private Button thunderstormButton;
+
     [Header("Weather Control")]
     [SerializeField] private List<TextMeshProUGUI> timeLabelList;
-    [SerializeField] private List<TextMeshProUGUI> timeMultiplierLabelList;
     [SerializeField] private TextMeshProUGUI wavesSizeLabel;
     [SerializeField] private TextMeshProUGUI visibilityRangeLabel;
     [SerializeField] private TextMeshProUGUI windLabel;
     [SerializeField] private TextMeshProUGUI thunderstormIntensityLabel;
     [SerializeField] private TextMeshProUGUI rainIntensityLabel;
     [SerializeField] private TextMeshProUGUI fogIntensityLabel;
+
+    [Header("Sliders")]
+    [SerializeField] private Slider windSpeedSlider;
+    [SerializeField] private Slider windDirectionSlider;
+    [SerializeField] private Slider waveSizeSlider;
+    [SerializeField] private Slider visibilityRangeSlider;
+    [SerializeField] private Slider rainIntensitySlider;
+    [SerializeField] private Slider thunderstormIntensitySlider;
+    [SerializeField] private Slider fogIntensitySlider;
 
     public static event Action OnSunChanged;
     public static event Action OnRainChanged;
@@ -40,12 +54,30 @@ public class WeatherUIController : MonoBehaviour
     public static event Action<float> OnWindDirectionChanged;
     public static event Action<float> OnWaveSizeChanged;
     public static event Action<float> OnVisibilityRangeChanged;
-    public static event Action<float> OnTimeScaleChanged;
     public static event Action<int> OnTimeChanged;
+
+    private WeatherButton activeWeather = WeatherButton.SUN_BUTTON;
+    private Color buttonNormalColor;
 
     void Start()
     {
         Weather.OnTimeUpdated += UpdateTimeLabels;
+        if (sunButton != null)
+            buttonNormalColor = sunButton.colors.normalColor;
+        RefreshAllLabels();
+        SelectButton(WeatherButton.SUN_BUTTON);
+        OnSunChanged?.Invoke();
+    }
+
+    private void RefreshAllLabels()
+    {
+        if (windSpeedSlider)      ChangeWindSpeed(windSpeedSlider.value);
+        if (windDirectionSlider)  ChangeWindDirection(windDirectionSlider.value);
+        if (waveSizeSlider)       ChangeWaveSize(waveSizeSlider.value);
+        if (visibilityRangeSlider) ChangeVisibilityRange(visibilityRangeSlider.value);
+        if (rainIntensitySlider)  ChangeRainIntensity(rainIntensitySlider.value);
+        if (thunderstormIntensitySlider) ChangeThunderstormIntensity(thunderstormIntensitySlider.value);
+        if (fogIntensitySlider)   ChangeFogIntensity(fogIntensitySlider.value);
     }
 
     void OnDestroy()
@@ -61,21 +93,41 @@ public class WeatherUIController : MonoBehaviour
 
     public void ChangeWeatherState(int button)
     {
-        switch ((WeatherButton)button)
+        WeatherButton pressed = (WeatherButton)button;
+
+        if (pressed != WeatherButton.SUN_BUTTON && pressed == activeWeather)
         {
-            case WeatherButton.SUN_BUTTON:
-                OnSunChanged?.Invoke();
-                break;
-            case WeatherButton.FOG_BUTTON:
-                OnFogChanged?.Invoke();
-                break;
-            case WeatherButton.RAIN_BUTTON:
-                OnRainChanged?.Invoke();
-                break;
-            case WeatherButton.THUNDERSTORM_BUTTON:
-                OnThunderstormChanged?.Invoke();
-                break;
+            SelectButton(WeatherButton.SUN_BUTTON);
+            OnSunChanged?.Invoke();
+            return;
         }
+
+        SelectButton(pressed);
+        switch (pressed)
+        {
+            case WeatherButton.SUN_BUTTON:          OnSunChanged?.Invoke();          break;
+            case WeatherButton.FOG_BUTTON:          OnFogChanged?.Invoke();          break;
+            case WeatherButton.RAIN_BUTTON:         OnRainChanged?.Invoke();         break;
+            case WeatherButton.THUNDERSTORM_BUTTON: OnThunderstormChanged?.Invoke(); break;
+        }
+    }
+
+    private void SelectButton(WeatherButton weather)
+    {
+        activeWeather = weather;
+        SetButtonActive(sunButton,          weather == WeatherButton.SUN_BUTTON);
+        SetButtonActive(fogButton,          weather == WeatherButton.FOG_BUTTON);
+        SetButtonActive(rainButton,         weather == WeatherButton.RAIN_BUTTON);
+        SetButtonActive(thunderstormButton, weather == WeatherButton.THUNDERSTORM_BUTTON);
+    }
+
+    private void SetButtonActive(Button btn, bool active)
+    {
+        if (btn == null) return;
+        ColorBlock cb = btn.colors;
+        cb.normalColor   = active ? cb.pressedColor : buttonNormalColor;
+        cb.selectedColor = cb.normalColor;
+        btn.colors = cb;
     }
 
     private float windSpeed = 0f;
@@ -125,13 +177,6 @@ public class WeatherUIController : MonoBehaviour
         OnFogIntensityChanged?.Invoke(value);
     }
 
-    public void ChangeTimeScale(float value)
-    {
-        int multiplier = (int)value;
-        foreach (var label in timeMultiplierLabelList)
-            label.text = "(" + multiplier + "×)";
-        OnTimeScaleChanged?.Invoke(value);
-    }
     public void ChangeTime(int minutes)
     {
         OnTimeChanged?.Invoke(minutes);

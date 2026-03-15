@@ -219,7 +219,7 @@ public class Weather : MonoBehaviour
         WeatherUIController.OnRainIntensityChanged += v => _rainIntensity = v * 10;
         WeatherUIController.OnFogIntensityChanged += v => _fogDensity = (float)(v * 0.6);
         WeatherUIController.OnThunderstormIntensityChanged += v => _thunderstormIntensity = v / 100;
-        WeatherUIController.OnTimeScaleChanged += v => { desiredTimeScale = v; if (simulationSpeed > 0) simulationSpeed = v; };
+        TimeScaleUIController.OnTimeScaleChanged += v => { desiredTimeScale = v; if (simulationSpeed > 0) simulationSpeed = v; };
         ToolbarUIController.OnPlay    += state => simulationSpeed = state ? desiredTimeScale : 0;
         ToolbarUIController.OnPause   += state => simulationSpeed = state ? 0 : desiredTimeScale;
         ToolbarUIController.OnStop    += _ => simulationSpeed = 0;

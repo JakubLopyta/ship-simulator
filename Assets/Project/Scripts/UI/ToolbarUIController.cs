@@ -15,13 +15,23 @@ public class ToolbarUIController : MonoBehaviour
     [SerializeField] private Button zoomInButton;
     [SerializeField] private Button zoomOutButton;
     [SerializeField] private Button moveButton;
+    [SerializeField] private Button lineButton;
 
     private bool isPlaying;
-    private bool isPaused;
-    private bool isStopped;
-    private bool isZoomingIn;
-    private bool isZoomingOut;
     private bool isMoving;
+    private bool isLineActive;
+
+    public void OnLineButtonPressed()
+    {
+        isLineActive = !isLineActive;
+        SetButtonColor(lineButton, isLineActive);
+        OnLine?.Invoke(isLineActive);
+    }
+
+    private void Start()
+    {
+        OnPauseButtonPressed();
+    }
 
     public static event Action<bool> OnPlay;
     public static event Action<bool> OnPause;
@@ -30,33 +40,44 @@ public class ToolbarUIController : MonoBehaviour
     public static event Action<bool> OnZoomIn;
     public static event Action<bool> OnZoomOut;
     public static event Action<bool> OnMove;
+    public static event Action<bool> OnLine;
 
     public void OnPlayButtonPressed()
     {
-        isPlaying = !isPlaying;
-        SetButtonColor(playButton, isPlaying);
-        OnPlay?.Invoke(isPlaying);
+        if (isPlaying)
+        {
+            OnPauseButtonPressed();
+            return;
+        }
+
+        isPlaying = true;
+        SetButtonColor(playButton, true);
+        SetButtonColor(pauseButton, false);
+        SetButtonColor(stopButton, false);
+        OnPlay?.Invoke(true);
     }
 
     public void OnPauseButtonPressed()
     {
-        isPaused = !isPaused;
-        SetButtonColor(pauseButton, isPaused);
-        OnPause?.Invoke(isPaused);
+        isPlaying = false;
+        SetButtonColor(pauseButton, true);
+        SetButtonColor(playButton, false);
+        SetButtonColor(stopButton, false);
+        OnPause?.Invoke(true);
     }
 
     public void OnStopButtonPressed()
     {
-        isStopped = !isStopped;
-        SetButtonColor(stopButton, isStopped);
-        OnStop?.Invoke(isStopped);
+        isPlaying = false;
+        SetButtonColor(stopButton, true);
+        SetButtonColor(playButton, false);
+        SetButtonColor(pauseButton, false);
+        OnStop?.Invoke(true);
     }
 
     public void OnRestartButtonPressed()
     {
         isPlaying = false;
-        isPaused = false;
-        isStopped = false;
         SetButtonColor(playButton, false);
         SetButtonColor(pauseButton, false);
         SetButtonColor(stopButton, false);
@@ -65,16 +86,12 @@ public class ToolbarUIController : MonoBehaviour
 
     public void OnZoomInPressed()
     {
-        isZoomingIn = !isZoomingIn;
-        SetButtonColor(zoomInButton, isZoomingIn);
-        OnZoomIn?.Invoke(isZoomingIn);
+        OnZoomIn?.Invoke(true);
     }
 
     public void OnZoomOutPressed()
     {
-        isZoomingOut = !isZoomingOut;
-        SetButtonColor(zoomOutButton, isZoomingOut);
-        OnZoomOut?.Invoke(isZoomingOut);
+        OnZoomOut?.Invoke(true);
     }
 
     public void OnMovePressed()

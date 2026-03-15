@@ -29,16 +29,16 @@ public class OpenClosePanel : MonoBehaviour
     [SerializeField] private AnimationCurve easingCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
     [Range(0, 1f)][SerializeField] public float animationDuration = 0.2f;
 
-    private bool _isOpen;
-    private Vector2 _initialPosition;
-    private Vector2 _currentPosition;
+    private bool isOpen;
+    private Vector2 initialPosition;
+    private Vector2 currentPosition;
 
-    private Vector2 _upOffset;
-    private Vector2 _downOffset;
-    private Vector2 _leftOffset;
-    private Vector2 _rightOffset;
+    private Vector2 upOffset;
+    private Vector2 downOffset;
+    private Vector2 leftOffset;
+    private Vector2 rightOffset;
 
-    private Coroutine _animateWindowCoroutine;
+    private Coroutine animateWindowCoroutine;
 
     private void OnValidate()
     {
@@ -53,7 +53,7 @@ public class OpenClosePanel : MonoBehaviour
 
     private void Start()
     {
-        _initialPosition = window.transform.position;
+        initialPosition = window.transform.position;
         InitializeOffsetPositions();
 
         if (closeOnStartup)
@@ -66,80 +66,75 @@ public class OpenClosePanel : MonoBehaviour
 
     private void InitializeOffsetPositions()
     {
-        _upOffset = new Vector2(0, distanceToAnimate.y);
-        _downOffset = new Vector2(0, -distanceToAnimate.y);
-        _rightOffset = new Vector2(distanceToAnimate.x, 0);
-        _leftOffset = new Vector2(-distanceToAnimate.x, 0);
+        upOffset = new Vector2(0, distanceToAnimate.y);
+        downOffset = new Vector2(0, -distanceToAnimate.y);
+        rightOffset = new Vector2(distanceToAnimate.x, 0);
+        leftOffset = new Vector2(-distanceToAnimate.x, 0);
     }
 
     public void ToggleOpenClose()
     {
-        if (_isOpen) CloseWindow();
+        if (isOpen) CloseWindow();
         else OpenWindow();
     }
 
     public void OpenWindow()
     {
-        if (_isOpen) return;
-        _isOpen = true;
+        if (isOpen) return;
+        isOpen = true;
 
         if (windowButton != null)
         {
             ColorBlock colorBlock = windowButton.colors;
-            colorBlock.normalColor = _isOpen ? selectedButtonColor : translucentButtonColor;
+            colorBlock.normalColor = isOpen ? selectedButtonColor : translucentButtonColor;
             windowButton.colors = colorBlock;
         }
 
-        if (_animateWindowCoroutine != null)
-            StopCoroutine(_animateWindowCoroutine);
+        if (animateWindowCoroutine != null)
+            StopCoroutine(animateWindowCoroutine);
 
         if (disableAnimation)
         {
             window.gameObject.SetActive(true);
-            window.transform.position = _initialPosition;
+            window.transform.position = initialPosition;
         }
         else
-            _animateWindowCoroutine = StartCoroutine(AnimateWindow(true));
+            animateWindowCoroutine = StartCoroutine(AnimateWindow(true));
     }
 
     public void CloseWindow()
     {
-        if (!_isOpen) return;
-        _isOpen = false;
+        if (!isOpen) return;
+        isOpen = false;
 
         if (windowButton != null)
         {
             ColorBlock colorBlock = windowButton.colors;
-            colorBlock.normalColor = _isOpen ? selectedButtonColor : translucentButtonColor;
+            colorBlock.normalColor = isOpen ? selectedButtonColor : translucentButtonColor;
             windowButton.colors = colorBlock;
         }
 
-        if (_animateWindowCoroutine != null)
-            StopCoroutine(_animateWindowCoroutine);
+        if (animateWindowCoroutine != null)
+            StopCoroutine(animateWindowCoroutine);
 
         if (disableAnimation)
         {
-            window.transform.position = _initialPosition;
+            window.transform.position = initialPosition;
             window.gameObject.SetActive(false);
         }
         else
-            _animateWindowCoroutine = StartCoroutine(AnimateWindow(false));
+            animateWindowCoroutine = StartCoroutine(AnimateWindow(false));
     }
 
     private Vector2 GetOffset(AnimateToDirection direction)
     {
-        switch(direction)
+        switch (direction)
         {
-            case AnimateToDirection.Top:
-                return _upOffset;
-            case AnimateToDirection.Bottom:
-                return _downOffset;
-            case AnimateToDirection.Left:
-                return _leftOffset;
-            case AnimateToDirection.Right:
-                return _rightOffset;
-            default:
-                return Vector2.zero;
+            case AnimateToDirection.Top:    return upOffset;
+            case AnimateToDirection.Bottom: return downOffset;
+            case AnimateToDirection.Left:   return leftOffset;
+            case AnimateToDirection.Right:  return rightOffset;
+            default:                        return Vector2.zero;
         }
     }
 
@@ -148,26 +143,26 @@ public class OpenClosePanel : MonoBehaviour
         if (open)
         {
             window.gameObject.SetActive(true);
-            window.transform.position = _initialPosition - GetOffset(openDirection);
-            _currentPosition = window.transform.position;
+            window.transform.position = initialPosition - GetOffset(openDirection);
+            currentPosition = window.transform.position;
         }
         else
         {
-            window.transform.position = _initialPosition;
-            _currentPosition = _initialPosition;
+            window.transform.position = initialPosition;
+            currentPosition = initialPosition;
         }
 
         float elapsedTime = 0f;
 
         Vector2 targetPosition = open
-            ? _initialPosition
-            : _initialPosition + GetOffset(closeDirection);
+            ? initialPosition
+            : initialPosition + GetOffset(closeDirection);
 
         while (elapsedTime < animationDuration)
         {
             float t = easingCurve.Evaluate(elapsedTime / animationDuration);
 
-            window.transform.position = Vector2.Lerp(_currentPosition, targetPosition, t);
+            window.transform.position = Vector2.Lerp(currentPosition, targetPosition, t);
 
             windowCanvasGroup.alpha = open
                 ? Mathf.Lerp(0, 1, t)
@@ -184,7 +179,7 @@ public class OpenClosePanel : MonoBehaviour
 
         if (!open)
         {
-            window.transform.position = _initialPosition;
+            window.transform.position = initialPosition;
             window.gameObject.SetActive(false);
         }
     }
