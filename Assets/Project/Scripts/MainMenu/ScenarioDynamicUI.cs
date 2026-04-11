@@ -26,11 +26,10 @@ public class ScenarioDynamicUI : MonoBehaviour
     const float fontSizeInput   = 38f;
     const float heightDropdown  = 100f;
     const float heightInput     = 100f;
-    const float heightSliderRow = 120f;
     const float heightHandle    = 44f;
 
     // ── Runtime state ─────────────────────────────────────────────────────────
-    CanvasGroup[] panels;
+    GameObject[] panels;
     Dictionary<string, System.Func<string>>[] gettersPerPanel;
     int activeIndex = -1;
 
@@ -41,13 +40,13 @@ public class ScenarioDynamicUI : MonoBehaviour
     {
         ClearChildren();
 
-        panels = new CanvasGroup[defs.Length];
+        panels = new GameObject[defs.Length];
         gettersPerPanel = new Dictionary<string, System.Func<string>>[defs.Length];
 
         for (int i = 0; i < defs.Length; i++)
         {
             gettersPerPanel[i] = new Dictionary<string, System.Func<string>>();
-            panels[i] = BuildPanel(defs[i], gettersPerPanel[i]);
+            panels[i] = BuildPanel(defs[i], gettersPerPanel[i]).gameObject;
         }
 
         // Hide all initially
@@ -60,12 +59,8 @@ public class ScenarioDynamicUI : MonoBehaviour
         if (panels == null) return;
 
         for (int i = 0; i < panels.Length; i++)
-        {
-            bool visible = i == index;
-            panels[i].alpha = visible ? 1f : 0f;
-            panels[i].interactable = visible;
-            panels[i].blocksRaycasts = visible;
-        }
+            panels[i].SetActive(i == index);
+
         activeIndex = index;
     }
 
@@ -84,18 +79,15 @@ public class ScenarioDynamicUI : MonoBehaviour
 
     // ── Panel builder ─────────────────────────────────────────────────────────
 
-    CanvasGroup BuildPanel(ScenarioDefinition def, Dictionary<string, System.Func<string>> getters)
+    RectTransform BuildPanel(ScenarioDefinition def, Dictionary<string, System.Func<string>> getters)
     {
-        // Container with CanvasGroup for show/hide
         var panelGO = new GameObject("Panel_" + def.scenarioId, typeof(RectTransform));
         panelGO.transform.SetParent(transform, false);
 
-        var cg = panelGO.AddComponent<CanvasGroup>();
-
         // VerticalLayoutGroup so elements stack properly
         var vlg = panelGO.AddComponent<VerticalLayoutGroup>();
-        vlg.padding = new RectOffset(48, 48, 32, 32);
-        vlg.spacing = 14;
+        vlg.padding = new RectOffset(48, 48, 48, 48);
+        vlg.spacing = 24;
         vlg.childControlWidth = true;
         vlg.childControlHeight = true;
         vlg.childForceExpandWidth = true;
@@ -122,7 +114,7 @@ public class ScenarioDynamicUI : MonoBehaviour
             }
         }
 
-        return cg;
+        return panelGO.GetComponent<RectTransform>();
     }
 
     // ── Element builders ──────────────────────────────────────────────────────
@@ -130,13 +122,13 @@ public class ScenarioDynamicUI : MonoBehaviour
     void BuildHeader(GameObject parent, ScenarioParameter param)
     {
         var titleGO = Child(parent, "Header_" + param.label);
-        titleGO.AddComponent<LayoutElement>().preferredHeight = 38f;
+        // No fixed height — VLG uses TMP's preferredHeight automatically
         var t = titleGO.AddComponent<TextMeshProUGUI>();
         t.text = param.label; t.fontSize = fontSizeHeader;
         t.fontStyle = FontStyles.Bold; t.color = colorText; t.raycastTarget = false;
 
         var sep = ImgChild(parent, "Separator", colorSeparator);
-        sep.AddComponent<LayoutElement>().preferredHeight = 1f;
+        sep.AddComponent<LayoutElement>().preferredHeight = 2f;
     }
 
     void BuildDropdown(GameObject parent, ScenarioParameter param, Dictionary<string, System.Func<string>> getters)
@@ -148,42 +140,117 @@ public class ScenarioDynamicUI : MonoBehaviour
         go.AddComponent<Outline>().effectColor = colorInputBorder;
 
         var dd = go.AddComponent<TMP_Dropdown>();
+
+        // ── Caption label ────────────────────────────────────────────────────
+        var captionGO = Child(go, "Label");
+        FillRT(captionGO, new Vector2(12, 0), new Vector2(-44, 0));
+        var captionTMP = captionGO.AddComponent<TextMeshProUGUI>();
+        captionTMP.fontSize = fontSizeInput; captionTMP.color = colorText;
+        captionTMP.alignment = TextAlignmentOptions.MidlineLeft;
+        captionTMP.raycastTarget = false;
+        dd.captionText = captionTMP;
+
+        // ── Arrow ────────────────────────────────────────────────────────────
+        var arrowGO = Child(go, "Arrow");
+        var art = arrowGO.GetComponent<RectTransform>();
+        art.anchorMin = new Vector2(1, 0.5f); art.anchorMax = new Vector2(1, 0.5f);
+        art.pivot     = new Vector2(1, 0.5f);
+        art.anchoredPosition = new Vector2(-14, 0);
+        art.sizeDelta = new Vector2(28, 28);
+        var at = arrowGO.AddComponent<TextMeshProUGUI>();
+        at.text = "v"; at.fontSize = 32f; at.color = colorTextGray;
+        at.alignment = TextAlignmentOptions.Center; at.raycastTarget = false;
+
+        // ── Dropdown popup template ──────────────────────────────────────────
+        var templateGO = ImgChild(go, "Template", colorBackground);
+        templateGO.AddComponent<Outline>().effectColor = colorInputBorder;
+        var templateRT = templateGO.GetComponent<RectTransform>();
+        // Anchor to bottom-left of the dropdown button, expand downward
+        templateRT.anchorMin        = new Vector2(0, 0);
+        templateRT.anchorMax        = new Vector2(1, 0);
+        templateRT.pivot            = new Vector2(0.5f, 1f);
+        templateRT.anchoredPosition = new Vector2(0, -2f);
+        templateRT.sizeDelta        = new Vector2(0, 300f);
+
+        var scrollRect = templateGO.AddComponent<ScrollRect>();
+        scrollRect.horizontal    = false;
+        scrollRect.movementType  = ScrollRect.MovementType.Clamped;
+
+        // Viewport
+        var viewportGO = Child(templateGO, "Viewport");
+        FillRT(viewportGO, Vector2.zero, Vector2.zero);
+        viewportGO.AddComponent<Image>().color = Color.clear; // needed for Mask
+        viewportGO.AddComponent<Mask>().showMaskGraphic = false;
+
+        // Content (grows downward)
+        var contentGO = Child(viewportGO, "Content");
+        var contentRT = contentGO.GetComponent<RectTransform>();
+        contentRT.anchorMin = new Vector2(0, 1);
+        contentRT.anchorMax = new Vector2(1, 1);
+        contentRT.pivot     = new Vector2(0.5f, 1f);
+        contentRT.sizeDelta = Vector2.zero;
+        var contentVLG = contentGO.AddComponent<VerticalLayoutGroup>();
+        contentVLG.childControlWidth    = true;
+        contentVLG.childControlHeight   = true;
+        contentVLG.childForceExpandWidth  = true;
+        contentVLG.childForceExpandHeight = false;
+        contentGO.AddComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+
+        // Item template (one per option — TMP_Dropdown clones this)
+        var itemGO = Child(contentGO, "Item");
+        itemGO.AddComponent<LayoutElement>().preferredHeight = heightDropdown;
+        var itemToggle = itemGO.AddComponent<Toggle>();
+
+        var itemBgGO = ImgChild(itemGO, "Item Background", new Color(1f, 1f, 1f, 0f));
+        FillRT(itemBgGO, Vector2.zero, Vector2.zero);
+        itemToggle.targetGraphic = itemBgGO.GetComponent<Image>();
+
+        // Highlight color when hovered/selected
+        var colors = itemToggle.colors;
+        colors.normalColor      = new Color(1f, 1f, 1f, 0f);
+        colors.highlightedColor = new Color(0.184f, 0.502f, 0.929f, 0.15f);
+        colors.selectedColor    = new Color(0.184f, 0.502f, 0.929f, 0.2f);
+        itemToggle.colors = colors;
+
+        var itemLabelGO = Child(itemGO, "Item Label");
+        FillRT(itemLabelGO, new Vector2(16, 0), new Vector2(-16, 0));
+        var itemLabelTMP = itemLabelGO.AddComponent<TextMeshProUGUI>();
+        itemLabelTMP.fontSize  = fontSizeInput; itemLabelTMP.color = colorText;
+        itemLabelTMP.alignment = TextAlignmentOptions.MidlineLeft;
+        itemLabelTMP.raycastTarget = false;
+
+        // Wire scrollRect
+        scrollRect.viewport = viewportGO.GetComponent<RectTransform>();
+        scrollRect.content  = contentRT;
+
+        // Wire TMP_Dropdown
+        dd.template  = templateRT;
+        dd.itemText  = itemLabelTMP;
         dd.options.Clear();
         if (param.options != null)
             foreach (var opt in param.options)
                 dd.options.Add(new TMP_Dropdown.OptionData(opt));
+        dd.SetValueWithoutNotify(0);
+        dd.RefreshShownValue();
 
-        var labelGO = Child(go, "Label");
-        FillRT(labelGO, new Vector2(12, 0), new Vector2(-36, 0));
-        var lt = labelGO.AddComponent<TextMeshProUGUI>();
-        lt.fontSize = fontSizeInput; lt.color = colorText;
-        lt.alignment = TextAlignmentOptions.MidlineLeft;
-        if (param.options?.Length > 0) lt.text = param.options[0];
-        dd.captionText = lt;
-
-        var arrowGO = Child(go, "Arrow");
-        var art = arrowGO.GetComponent<RectTransform>();
-        art.anchorMin = new Vector2(1, 0.5f); art.anchorMax = new Vector2(1, 0.5f);
-        art.pivot = new Vector2(1, 0.5f); art.anchoredPosition = new Vector2(-12, 0);
-        art.sizeDelta = new Vector2(20, 20);
-        var at = arrowGO.AddComponent<TextMeshProUGUI>();
-        at.text = "v"; at.fontSize = fontSizeInput; at.color = colorTextGray;
-        at.alignment = TextAlignmentOptions.Center;
+        templateGO.SetActive(false); // hidden until opened
 
         if (!string.IsNullOrEmpty(param.id))
             getters[param.id] = () => dd.options[dd.value].text;
     }
 
+
     void BuildSlider(GameObject parent, ScenarioParameter param, Dictionary<string, System.Func<string>> getters)
     {
         var row = Child(parent, "SliderRow_" + param.id);
-        row.AddComponent<LayoutElement>().preferredHeight = heightSliderRow;
+        // No fixed height — ContentSizeFitter lets VLG determine height from children
         var vlg = row.AddComponent<VerticalLayoutGroup>();
-        vlg.spacing = 8; vlg.childControlWidth = true; vlg.childControlHeight = true;
+        vlg.spacing = 12; vlg.childControlWidth = true; vlg.childControlHeight = true;
         vlg.childForceExpandWidth = true; vlg.childForceExpandHeight = false;
+        row.AddComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
 
         var lGO = Child(row, "Label");
-        lGO.AddComponent<LayoutElement>().preferredHeight = fontSizeLabel + 10f;
+        // No fixed height — VLG uses TMP's preferredHeight automatically
         var lt = lGO.AddComponent<TextMeshProUGUI>();
         lt.text = param.label; lt.fontSize = fontSizeLabel; lt.color = colorText; lt.raycastTarget = false;
 
@@ -317,7 +384,7 @@ public class ScenarioDynamicUI : MonoBehaviour
     void Label(GameObject parent, string text)
     {
         var go = Child(parent, "Label_" + text.Replace(" ", ""));
-        go.AddComponent<LayoutElement>().preferredHeight = 26f;
+        // No fixed height — VLG uses TMP's preferredHeight automatically
         var t = go.AddComponent<TextMeshProUGUI>();
         t.text = text; t.fontSize = fontSizeLabel; t.color = colorText; t.raycastTarget = false;
     }
@@ -325,12 +392,8 @@ public class ScenarioDynamicUI : MonoBehaviour
     void SetAllHidden()
     {
         if (panels == null) return;
-        foreach (var cg in panels)
-        {
-            cg.alpha = 0f;
-            cg.interactable = false;
-            cg.blocksRaycasts = false;
-        }
+        foreach (var p in panels)
+            p.SetActive(false);
     }
 
     void ClearChildren()
