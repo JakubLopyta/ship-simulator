@@ -1,0 +1,35 @@
+{
+  "scenarioId": "rough_weather_navigation",
+  "title": "Rough Weather Navigation",
+  "parameters": [
+    { "type": "header", "label": "Own Vessel" },
+    { "type": "dropdown", "id": "shipClass", "label": "Ship Class", "options": ["cargo_general", "tanker_lng"] },
+    {
+      "type": "row", "id": "vesselKinematics",
+      "children": [
+        { "type": "slider", "id": "initialSpeed", "label": "Speed (knots)", "min": 0, "max": 25, "defaultValue": 8 },
+        { "type": "input", "id": "initialHeading", "label": "Heading (degrees)", "defaultText": "315.0" }
+      ]
+    },
+
+    { "type": "header", "label": "Sea Conditions" },
+    {
+      "type": "row", "id": "windWave",
+      "children": [
+        { "type": "slider", "id": "windSpeed", "label": "Wind Speed (knots)", "min": 0, "max": 60, "defaultValue": 30 },
+        { "type": "slider", "id": "waveHeight", "label": "Wave Height (m)", "min": 0, "max": 10, "defaultValue": 4 }
+      ]
+    },
+    { "type": "slider", "id": "windDirection", "label": "Wind Direction (degrees)", "min": 0, "max": 359, "defaultValue": 270 },
+    { "type": "dropdown", "id": "seaState", "label": "Sea State (Beaufort)", "options": ["Force 5", "Force 6", "Force 7", "Force 8", "Force 9"] },
+
+    { "type": "header", "label": "Environment" },
+    {
+      "type": "row", "id": "envConditions",
+      "children": [
+        { "type": "slider", "id": "timeOfDay", "label": "Time of Day (hr)", "min": 0, "max": 23, "defaultValue": 3 },
+        { "type": "dropdown", "id": "weatherPreset", "label": "Weather Preset", "options": ["Rain", "Thunderstorm", "Fog", "Clear"] }
+      ]
+    }
+  ]
+}
