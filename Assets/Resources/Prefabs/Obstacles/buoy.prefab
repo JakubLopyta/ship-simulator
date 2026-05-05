@@ -62,6 +62,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: f01d3dbfacf33b443b27edfeee22c054, type: 3}
       insertIndex: -1
       addedObject: {fileID: 5874644224151046738}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: f01d3dbfacf33b443b27edfeee22c054, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5658731905625126862}
   m_SourcePrefab: {fileID: 100100000, guid: f01d3dbfacf33b443b27edfeee22c054, type: 3}
 --- !u!1 &413019090298195879 stripped
 GameObject:
@@ -101,3 +104,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 92f873354387142efb75bedac2cf4eda, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CheckCollision
+--- !u!114 &5658731905625126862
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 413019090298195879}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0646e911124dd234bad044d4a89b260e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MapEntity
+  IconConfig: {fileID: 11400000, guid: 6721f2f1bb5fe85459a508627e9cfe69, type: 2}
+  CustomRadius: 0

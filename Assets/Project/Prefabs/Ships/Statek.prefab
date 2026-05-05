@@ -69,6 +69,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: db5dd065b77eeaa42862f97a80f181c2, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2762334962563488222}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: db5dd065b77eeaa42862f97a80f181c2, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3078687160912424480}
   m_SourcePrefab: {fileID: 100100000, guid: db5dd065b77eeaa42862f97a80f181c2, type: 3}
 --- !u!1 &2286310300656426555 stripped
 GameObject:
@@ -107,7 +110,6 @@ MonoBehaviour:
   rudder: 0
   modelMode: 2
   shipType: 0
-  simulationRunning: 1
 --- !u!54 &382312246754502498
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -156,3 +158,17 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &3078687160912424480
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2286310300656426555}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0646e911124dd234bad044d4a89b260e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MapEntity
+  IconConfig: {fileID: 0}
+  CustomRadius: 0
