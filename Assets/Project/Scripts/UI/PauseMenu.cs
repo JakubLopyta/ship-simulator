@@ -1,26 +1,28 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.InputSystem;
 
 public class PauseMenu : MonoBehaviour
 {
     [SerializeField] private OpenClosePanel pauseMenuCanvas;
     private bool isPaused = false;
 
-    public void Update()
+    [SerializeField] private InputReader inputReader;
+
+    void Start()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (inputReader != null)
         {
-            if (isPaused)
-            {
-                Resume();
-            }
-            else
-            {
-                Pause();
-            }
+            inputReader.OnPauseEvent += TogglePause;
         }
     }
-
+    private void OnDestroy()
+    {
+        if (inputReader != null)
+        {
+            inputReader.OnPauseEvent -= TogglePause;
+        }
+    }
     public void Pause()
     {
         isPaused = true;
@@ -41,5 +43,17 @@ public class PauseMenu : MonoBehaviour
     public void QuitToDesktop()
     {
         Application.Quit();
+    }
+
+    private void TogglePause()
+    {
+        if (isPaused)
+        {
+            Resume();
+        }
+        else
+        {
+            Pause();
+        }
     }
 }

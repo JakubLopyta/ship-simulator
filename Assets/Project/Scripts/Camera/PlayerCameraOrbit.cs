@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class OrbitCamera : MonoBehaviour
 {
+    [SerializeField] private InputReader inputReader;
+
     [SerializeField] private Transform target;
     [SerializeField] private float distance = 100f;
     [SerializeField] private float zoomSpeed = 100f;
@@ -111,14 +113,14 @@ public class OrbitCamera : MonoBehaviour
     {
         if (target == null) return;
 
-        if (!isTopView && Input.GetMouseButton(1))
+        if (!isTopView && inputReader.IsRightMouseButtonPressed)
         {
-            x += Input.GetAxis("Mouse X") * xSpeed * Time.unscaledDeltaTime;
-            y -= Input.GetAxis("Mouse Y") * ySpeed * Time.unscaledDeltaTime;
+            x += inputReader.LookDelta.x * xSpeed * Time.unscaledDeltaTime;
+            y -= inputReader.LookDelta.y * ySpeed * Time.unscaledDeltaTime;
             y = Mathf.Clamp(y, yMinLimit, yMaxLimit);
         }
 
-        float scroll = Input.GetAxis("Mouse ScrollWheel");
+        float scroll = inputReader.ScrollDelta;
         if (isTopView)
             topViewPosition.y = Mathf.Clamp(topViewPosition.y - scroll * topViewZoomSpeed, topViewMinDistance, topViewMaxDistance);
         else
@@ -126,11 +128,11 @@ public class OrbitCamera : MonoBehaviour
 
         if (isTopView)
         {
-            if (Input.GetMouseButton(1))
+            if (inputReader.IsRightMouseButtonPressed)
             {
                 float panSpeed = topViewPosition.y * 0.001f;
-                topViewPosition.x -= Input.GetAxis("Mouse X") * panSpeed * xSpeed;
-                topViewPosition.z -= Input.GetAxis("Mouse Y") * panSpeed * ySpeed;
+                topViewPosition.x -= inputReader.LookDelta.x * panSpeed * xSpeed;
+                topViewPosition.z -= inputReader.LookDelta.y * panSpeed * ySpeed;
             }
 
             transform.SetPositionAndRotation(topViewPosition, Quaternion.Euler(90f, 0f, 0f));
