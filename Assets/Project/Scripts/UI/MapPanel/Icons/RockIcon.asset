@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b37ca6bed192dbd49805ec2999244358, type: 3}
+  m_Name: RockIcon
+  m_EditorClassIdentifier: Assembly-CSharp::MapIconData
+  IconSprite: {fileID: 21300000, guid: 9ee57df5e8179664cb636ba5da68d48a, type: 3}
+  IconColor: {r: 1, g: 1, b: 1, a: 1}
+  IsZoneType: 0
+  DefaultRadius: 10
