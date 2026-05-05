@@ -29981,6 +29981,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pauseMenuCanvas: {fileID: 1397015058}
+  inputReader: {fileID: 11400000, guid: db2ad9f20e9ee9948ad74cb5455aad6a, type: 2}
 --- !u!21 &1400453443
 Material:
   serializedVersion: 8
@@ -34174,6 +34175,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8164f6f01f25bfb41b78a2ed8c4364f3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  inputReader: {fileID: 11400000, guid: db2ad9f20e9ee9948ad74cb5455aad6a, type: 2}
   target: {fileID: 501526635}
   distance: 5
   zoomSpeed: 3
