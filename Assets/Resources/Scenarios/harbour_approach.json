@@ -1,0 +1,35 @@
+{
+  "scenarioId": "harbour_approach",
+  "title": "Harbour Approach",
+  "parameters": [
+    { "type": "header", "label": "Own Vessel" },
+    { "type": "dropdown", "id": "shipClass", "label": "Ship Class", "options": ["cargo_general", "tanker_lng"] },
+    {
+      "type": "row", "id": "vesselKinematics",
+      "children": [
+        { "type": "slider", "id": "initialSpeed", "label": "Speed (knots)", "min": 0, "max": 12, "defaultValue": 6 },
+        { "type": "input", "id": "initialHeading", "label": "Heading (degrees)", "defaultText": "090.0" }
+      ]
+    },
+
+    { "type": "header", "label": "Harbour Settings" },
+    { "type": "dropdown", "id": "harbourLayout", "label": "Harbour Layout", "options": ["Port Alpha", "Port Beta", "Port Gamma"] },
+    { "type": "slider", "id": "tugAssist", "label": "Tug Assistance (units)", "min": 0, "max": 4, "defaultValue": 2 },
+
+    { "type": "header", "label": "Environment" },
+    {
+      "type": "row", "id": "envConditions",
+      "children": [
+        { "type": "slider", "id": "timeOfDay", "label": "Time of Day (hr)", "min": 0, "max": 23, "defaultValue": 8 },
+        { "type": "dropdown", "id": "weatherPreset", "label": "Weather Preset", "options": ["Clear", "Fog", "Rain", "Thunderstorm"] }
+      ]
+    },
+    {
+      "type": "row", "id": "seaConditions",
+      "children": [
+        { "type": "slider", "id": "windSpeed", "label": "Wind Speed (knots)", "min": 0, "max": 40, "defaultValue": 10 },
+        { "type": "slider", "id": "currentSpeed", "label": "Current Speed (knots)", "min": 0, "max": 5, "defaultValue": 1 }
+      ]
+    }
+  ]
+}

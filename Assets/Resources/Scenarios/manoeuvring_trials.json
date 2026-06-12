@@ -1,0 +1,28 @@
+{
+  "scenarioId": "manoeuvring_trials",
+  "title": "Manoeuvring Trials",
+  "parameters": [
+    { "type": "header", "label": "Own Vessel" },
+    { "type": "dropdown", "id": "shipClass", "label": "Ship Class", "options": ["cargo_general", "tanker_lng"] },
+    {
+      "type": "row", "id": "vesselKinematics",
+      "children": [
+        { "type": "slider", "id": "initialSpeed", "label": "Speed (knots)", "min": 0, "max": 25, "defaultValue": 12 },
+        { "type": "input", "id": "initialHeading", "label": "Heading (degrees)", "defaultText": "000.0" }
+      ]
+    },
+
+    { "type": "header", "label": "Trial Parameters" },
+    { "type": "dropdown", "id": "trialType", "label": "Trial Type", "options": ["Turning Circle", "Zig-Zag 10/10", "Zig-Zag 20/20", "Crash Stop"] },
+    { "type": "slider", "id": "zigZagAngle", "label": "Zig-Zag Angle (degrees)", "min": 5, "max": 35, "defaultValue": 10 },
+
+    { "type": "header", "label": "Environment" },
+    {
+      "type": "row", "id": "envConditions",
+      "children": [
+        { "type": "slider", "id": "timeOfDay", "label": "Time of Day (hr)", "min": 0, "max": 23, "defaultValue": 12 },
+        { "type": "dropdown", "id": "weatherPreset", "label": "Weather Preset", "options": ["Clear", "Fog", "Rain", "Thunderstorm"] }
+      ]
+    }
+  ]
+}
